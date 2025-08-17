@@ -68,7 +68,7 @@
                 border-radius: 12500rem;
                 background: var(--bg-colors-grey-light, #f9fbff);
 
-                .button {
+                .button_container {
                     display: flex;
                     padding: 1rem 1.5rem;
                     justify-content: center;
@@ -90,7 +90,6 @@
                         text-align: center;
                         leading-trim: both;
                         text-edge: cap;
-                        font-family: "Helvetica Neue";
                         font-size: 1.25rem;
                         font-style: normal;
                         font-weight: 400;

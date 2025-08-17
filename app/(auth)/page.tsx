@@ -24,7 +24,7 @@ const page = (props: Props) => {
             </p>
           </div>
           <div className={styles.actions}>
-            <div className={styles.button}>
+            <div className={styles.button_container}>
               <Image
                 src='/images/Google.svg'
                 alt='Google Logo'
@@ -32,7 +32,7 @@ const page = (props: Props) => {
                 height={24}
                 className={styles.button_icon}
               />
-              <p className={styles.button_text}>Continue with Google</p>
+              <p className={styles.button_text}>Continue with google</p>
             </div>
           </div>
         </div>
