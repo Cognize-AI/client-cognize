@@ -1,0 +1,137 @@
+.cardContainer {
+    display: flex;
+    padding: 0.75rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    align-self: stretch;
+    border-radius: 0.75rem;
+    background: var(--bg-colors-opaque, #fff);
+    .userInfo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        align-self: stretch;
+
+        .avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            aspect-ratio: 1/1;
+            border-radius: 1250000rem;
+            background-color: black;
+        }
+
+        .userDetails {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 0.25rem;
+            flex: 1 0 0;
+            .userName {
+                align-self: stretch;
+                color: var(--text-colors-primary-dark, #00020f);
+                font-family: "Inter Tight";
+                font-size: 1rem;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+            }
+
+            .userTitle {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                align-self: stretch;
+                overflow: hidden;
+                color: var(--text-colors-secondary-dark, #3d3d3d);
+                text-overflow: ellipsis;
+                font-family: "Inter Tight";
+                font-size: 0.875rem;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+            }
+        }
+
+        .userActions {
+            display: flex;
+            padding: 0.25rem;
+            justify-content: center;
+            align-items: center;
+            gap: 0.625rem;
+            border-radius: 0.5rem;
+        }
+    }
+
+    .cardContent {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+        align-self: stretch;
+        .userEmail {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25rem;
+            align-self: stretch;
+
+            .email {
+                flex: 1 0 0;
+                color: var(--text-colors-secondary-dark, #3d3d3d);
+                font-family: "Inter Tight";
+                font-size: 0.875rem;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+            }
+        }
+
+        .userContact {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25rem;
+            align-self: stretch;
+            .contact {
+                color: var(--text-colors-secondary-dark, #3d3d3d);
+                font-family: "Inter Tight";
+                font-size: 0.875rem;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+                flex: 1 0 0;
+            }
+        }
+    }
+
+    .userTags {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        gap: 0.25rem;
+        align-self: stretch;
+        flex-wrap: wrap;
+        .userTag {
+            display: flex;
+            padding: 0.25rem 0.5rem;
+            justify-content: center;
+            align-items: center;
+            gap: 0.625rem;
+            border-radius: 0.25rem;
+            background: rgba(24, 186, 96, 0.04);
+        }
+        .addTag {
+            display: flex;
+            padding: 0.25rem 0.5rem;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25rem;
+            border-radius: 0.25rem;
+        }
+    }
+}

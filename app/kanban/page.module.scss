@@ -1,0 +1,13 @@
+.kanbanPage {
+    padding: 1.5rem;
+    gap: 2rem;
+
+    .kanbanLists {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1 0 0;
+        align-self: stretch;
+        margin-top: 2rem;
+    }
+}
