@@ -2,24 +2,30 @@
 import { axios_instance } from '@/lib/axios'
 import styles from './page.module.scss'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 type Props = {}
 
 const Page = (props: Props) => {
-  const router = useRouter()
-
-  const handleGoogleSignIn = async () => {
-    try {
-      const response = await axios_instance.get('/oauth/google/redirect-uri')
-      console.log('Google Sign-In response:', response)
-      if (response.data?.data?.redirect_url) {
-        window.location.href = response.data.data.redirect_url
+  const verifyGoogleSignIn = async () => {
+    const code = new URLSearchParams(window.location.search).get('code')
+    if (code) {
+      try {
+        const response = await axios_instance.get(
+          `/oauth/google/callback?code=${code}`
+        )
+        console.log('Google Sign-In response:', response)
+        if (response.data?.data?.redirect_url) {
+          window.location.href = response.data.data.redirect_url
+        }
+      } catch (error) {
+        console.error(error)
       }
-    } catch (error) {
-      console.error(error)
     }
   }
+  useEffect(() => {
+    verifyGoogleSignIn()
+  }, [])
 
   return (
     <div className={styles.main_container}>
@@ -40,10 +46,7 @@ const Page = (props: Props) => {
             </p>
           </div>
           <div className={styles.actions}>
-            <div
-              className={styles.button_container}
-              onClick={handleGoogleSignIn}
-            >
+            <div className={styles.button_container}>
               <Image
                 src='/images/Google.svg'
                 alt='Google Logo'
@@ -51,7 +54,7 @@ const Page = (props: Props) => {
                 height={24}
                 className={styles.button_icon}
               />
-              <p className={styles.button_text}>Continue with Google</p>
+              <p className={styles.button_text}>Redirecting...</p>
             </div>
           </div>
         </div>
