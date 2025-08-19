@@ -2,7 +2,7 @@ import axios from 'axios';
 // import { SLICE_NAMES } from '../../constants/enums';
 // instance
 const axios_instance = axios.create({
-  baseURL: `http://localhost:8080`,
+  baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}`,
   headers: {
     'Content-Type': 'application/json',
   },
