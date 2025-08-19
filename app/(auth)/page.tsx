@@ -12,7 +12,6 @@ const Page = (props: Props) => {
   const handleGoogleSignIn = async () => {
     try {
       const response = await axios_instance.get('/oauth/google/redirect-uri')
-      console.log('Google Sign-In response:', response)
       if (response.data?.data?.redirect_url) {
         window.location.href = response.data.data.redirect_url
       }

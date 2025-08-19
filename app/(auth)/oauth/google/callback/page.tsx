@@ -14,7 +14,6 @@ const Page = (props: Props) => {
         const response = await axios_instance.get(
           `/oauth/google/callback?code=${code}`
         )
-        console.log('Google Sign-In response:', response)
         if (response.data?.data?.redirect_url) {
           window.location.href = response.data.data.redirect_url
         }
