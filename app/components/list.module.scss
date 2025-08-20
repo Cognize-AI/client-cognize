@@ -1,4 +1,4 @@
-.listContainer {
+.listItem {
     display: flex;
     padding: 1rem 0.75rem;
     flex-direction: column;
@@ -8,14 +8,32 @@
     align-self: stretch;
     border-radius: 1rem;
     border-top: 4px solid var(--colors-yellow-11, #f9ba0b);
-    background: rgba(249, 186, 11, 0.04);
 
-    .listItem {
+    .listHeader {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 0.75rem;
         align-self: stretch;
+
+        .listTitle {
+            flex: 1 0 0;
+            color: var(--text-colors-secondary-dark, #3d3d3d);
+            font-family: "Inter Tight";
+            font-size: 1rem;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+
+        .listActions {
+            display: flex;
+            padding: 0.25rem;
+            justify-content: center;
+            align-items: center;
+            gap: 0.625rem;
+            border-radius: 0.5rem;
+        }
     }
 
     .searchContainer {
@@ -37,6 +55,8 @@
             font-style: normal;
             font-weight: 400;
             line-height: normal;
+            border: none;
+            outline: none;
         }
     }
 
@@ -44,5 +64,9 @@
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
+        flex-grow: 1;
+        overflow-y: auto;
+        padding-right: 0.25rem;
+        width: 100%;
     }
 }
