@@ -3,20 +3,64 @@ import Image from 'next/image'
 import styles from './AddCard.module.scss'
 import { useState } from 'react'
 
-type Props = {}
+type Props = {
+  listId?: number
+  onCardAdded?: () => void
+}
 
-const AddCard = (props: Props) => {
+const AddCard = ({ listId, onCardAdded }: Props) => {
   const [name, setName] = useState('')
   const [title, setTitle] = useState('')
   const [email, setEmail] = useState('')
   const [contact, setContact] = useState('')
   const [tags, setTags] = useState<string[]>([])
   const [newTag, setNewTag] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleAddTag = () => {
     if (newTag.trim() !== '') {
       setTags([...tags, newTag.trim()])
       setNewTag('')
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (!name || !title || !email || !contact) return
+    setLoading(true)
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('http://localhost:8080/card/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+        body: JSON.stringify({
+          name,
+          designation: title,
+          email,
+          phone: contact,
+          listID: listId,
+        }),
+      })
+
+      if (response.ok) {
+        setName('')
+        setTitle('')
+        setEmail('')
+        setContact('')
+        setTags([])
+        if (onCardAdded) onCardAdded()
+      } else if (response.status === 401) {
+        console.error('Unauthorized. Please login first.')
+      } else {
+        console.error('Failed to create card')
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -43,7 +87,14 @@ const AddCard = (props: Props) => {
           />
         </div>
         <div className={styles.userActions}>
-          <Image src='/images/tick.png' alt='Edit' width={22} height={14} />
+          <Image
+            src='/images/tick.png'
+            alt='Submit'
+            width={22}
+            height={14}
+            style={{ cursor: 'pointer' }}
+            onClick={handleSubmit}
+          />
         </div>
       </div>
 
@@ -76,14 +127,8 @@ const AddCard = (props: Props) => {
             {tag}
           </div>
         ))}
-        <div className={styles.addTag}>
-          <Image
-            src='/images/add.png'
-            alt='Add'
-            width={16}
-            height={16}
-            className={styles.add}
-          />
+        <div className={styles.addTag} onClick={handleAddTag}>
+          <Image src='/images/add.png' alt='Add' width={16} height={16} />
           <p className={styles.tag}>Add tag</p>
         </div>
       </div>

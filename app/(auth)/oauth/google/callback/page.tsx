@@ -10,22 +10,15 @@ const Page = () => {
   useEffect(() => {
     const verifyGoogleSignIn = async () => {
       const code = new URLSearchParams(window.location.search).get('code')
-      if (!code) {
-        window.location.href = '/signin?error=invalid_callback'
-        return
-      }
+      if (!code) return
 
       try {
         const response = await axios_instance.get(`/oauth/google/callback?code=${code}`)
         const token = response.data?.data?.token
         const redirectUrl = response.data?.data?.redirect_url
 
-        if (token && redirectUrl) {
-          localStorage.setItem('token', token)
-          window.location.href = redirectUrl ?? '/kanban'
-        } else {
-          window.location.href = '/signin?error=auth_failed'
-        }
+        if (token) localStorage.setItem('token', token)
+        window.location.href = redirectUrl ?? '/kanban'
       } catch (error) {
         console.error('Error verifying Google sign-in:', error)
         window.location.href = '/signin?error=auth_failed'

@@ -1,6 +1,6 @@
 'use client'
 import { axios_instance } from '@/lib/axios'
-import styles from './page.module.scss' // Make sure this path is correct
+import styles from './page.module.scss' 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
@@ -11,10 +11,8 @@ const Page = (props: Props) => {
 
   const handleGoogleSignIn = async () => {
     try {
-      // This endpoint provides the Google URL to redirect the user to
       const response = await axios_instance.get('/oauth/google/redirect-uri')
       if (response.data?.data?.redirect_url) {
-        // Redirect the user to Google's sign-in page
         window.location.href = response.data.data.redirect_url
       }
     } catch (error) {
