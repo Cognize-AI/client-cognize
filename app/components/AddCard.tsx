@@ -2,10 +2,11 @@
 import Image from 'next/image'
 import styles from './AddCard.module.scss'
 import { useState } from 'react'
+import { CardType } from '../kanban/page'
 
 type Props = {
   listId?: number
-  onCardAdded?: () => void
+  onCardAdded?: (newCard: CardType) => void
 }
 
 const AddCard = ({ listId, onCardAdded }: Props) => {
@@ -13,24 +14,21 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
   const [title, setTitle] = useState('')
   const [email, setEmail] = useState('')
   const [contact, setContact] = useState('')
-  const [tags, setTags] = useState<string[]>([])
-  const [newTag, setNewTag] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleAddTag = () => {
-    if (newTag.trim() !== '') {
-      setTags([...tags, newTag.trim()])
-      setNewTag('')
-    }
-  }
-
   const handleSubmit = async () => {
-    if (!name || !title || !email || !contact) return
+    if (!name || !title || !email || !contact || !listId) return
+
+    if (!email.endsWith('@gmail.com')) {
+      alert('Email must end with @gmail.com')
+      return
+    }
+
     setLoading(true)
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:8080/card/create', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,24 +39,39 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
           designation: title,
           email,
           phone: contact,
-          listID: listId,
+          image_url: 'https://lh3.googleusercontent.com/a/ACg8ocJw2xWE84QKYmFuzKTPglJM75nl3SFjohtEvDSkVy1thdiTDaeS6g=s96-c',
+          list_id: listId,
         }),
       })
 
       if (response.ok) {
+        const jsonResponse = await response.json()
+        const data = jsonResponse.data 
+
+        const newCard: CardType = {
+          id: data.id,
+          name: data.name,
+          designation: data.designation,
+          email: data.email,
+          phone: data.phone,
+          image_url: data.image_url || 'https://lh3.googleusercontent.com/a/ACg8ocJw2xWE84QKYmFuzKTPglJM75nl3SFjohtEvDSkVy1thdiTDaeS6g=s96-c',
+          list_id: data.list_id,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+        }
+
+        if (onCardAdded) onCardAdded(newCard)
         setName('')
         setTitle('')
         setEmail('')
         setContact('')
-        setTags([])
-        if (onCardAdded) onCardAdded()
-      } else if (response.status === 401) {
-        console.error('Unauthorized. Please login first.')
       } else {
         console.error('Failed to create card')
+        alert('Failed to add the new card. Please try again.')
       }
     } catch (err) {
       console.error(err)
+      alert('An error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -73,17 +86,17 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
         <div className={styles.userDetails}>
           <input
             type='text'
-            className={styles.userName}
             placeholder='Enter Name'
             value={name}
             onChange={e => setName(e.target.value)}
+            className={styles.userName}
           />
           <input
             type='text'
-            className={styles.userTitle}
             placeholder='Enter Title'
             value={title}
             onChange={e => setTitle(e.target.value)}
+            className={styles.userTitle}
           />
         </div>
         <div className={styles.userActions}>
@@ -103,33 +116,21 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
           <Image src='/images/email.png' alt='Email' width={16} height={16} />
           <input
             type='email'
-            className={styles.email}
             placeholder='Enter Email'
             value={email}
             onChange={e => setEmail(e.target.value)}
+            className={styles.email}
           />
         </div>
         <div className={styles.userContact}>
           <Image src='/images/phone.png' alt='Phone' width={16} height={16} />
           <input
             type='text'
-            className={styles.contact}
             placeholder='Enter Contact'
             value={contact}
             onChange={e => setContact(e.target.value)}
+            className={styles.contact}
           />
-        </div>
-      </div>
-
-      <div className={styles.userTags}>
-        {tags.map((tag, index) => (
-          <div key={index} className={styles.userTag}>
-            {tag}
-          </div>
-        ))}
-        <div className={styles.addTag} onClick={handleAddTag}>
-          <Image src='/images/add.png' alt='Add' width={16} height={16} />
-          <p className={styles.tag}>Add tag</p>
         </div>
       </div>
     </div>

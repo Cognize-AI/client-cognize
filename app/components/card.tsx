@@ -1,31 +1,35 @@
+'use client'
+import Image from 'next/image'
 import styles from './card.module.scss'
-type Props = {}
+import { CardType } from '../kanban/page'
 
-const Card = (props: Props) => {
+type Props = { card: CardType }
+
+const Card = ({ card }: Props) => {
   return (
     <div className={styles.cardContainer}>
       <div className={styles.userInfo}>
-        <div className={styles.avatar}></div>
-        <div className={styles.userDetails}>
-          <p className={styles.userName}>John Doe</p>
-          <p className={styles.userTitle}>Software Engineer</p>
+        <div className={styles.avatar}>
+          <Image
+            src={card.image_url || '/images/default.png'}
+            alt='Avatar'
+            width={24}
+            height={24}
+          />
         </div>
-        <div className={styles.userActions}></div>
+        <div className={styles.userDetails}>
+          <p className={styles.userName}>{card.name || 'Unknown'}</p>
+          <p className={styles.userTitle}>{card.designation || '-'}</p>
+        </div>
       </div>
 
       <div className={styles.cardContent}>
         <div className={styles.userEmail}>
-          <p className={styles.email}>johndoe@example.com</p>
+          <p className={styles.email}>{card.email || '-'}</p>
         </div>
         <div className={styles.userContact}>
-          <p className={styles.contact}>2374982752</p>
+          <p className={styles.contact}>{card.phone || '-'}</p>
         </div>
-      </div>
-
-      <div className={styles.userTags}>
-        <div className={styles.userTag}>Frontend</div>
-        <div className={styles.userTag}>Backend</div>
-        <div className={styles.addTag}>Add Tag....</div>
       </div>
     </div>
   )
