@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter_Tight } from "next/font/google";
 import "./globals.scss";
+import { CounterStoreProvider } from '@/provider/counter-store-provider'
+
 
 const interTight = Inter_Tight({
   variable: "--font-inter-tight",
@@ -20,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${interTight.variable}`}>
-        {children}
+        <CounterStoreProvider>{children}</CounterStoreProvider>
       </body>
     </html>
   );
