@@ -21,8 +21,8 @@ const List = ({ list, onCardAdded }: Props) => {
   };
 
   const filteredCards = (list.cards || []).filter(card =>
-    card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    card.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (card.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (card.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -61,13 +61,20 @@ const List = ({ list, onCardAdded }: Props) => {
       </div>
 
       <div className={styles.listItemsContainer}>
-        {showAddUser && <AddCard listId={list.id} onCardAdded={handleNewCard} onCancel={() => setShowAddUser(false)} />}
+        {showAddUser && (
+          <AddCard 
+            listId={list.id} 
+            onCardAdded={handleNewCard} 
+            onCancel={() => setShowAddUser(false)} 
+          />
+        )}
 
         {filteredCards.length > 0 ? (
           filteredCards.map(card => <Card key={card.id} card={card} />)
         ) : (
           !showAddUser && (
             <div className={styles.emptyListState}>
+              No contacts found
             </div>
           )
         )}

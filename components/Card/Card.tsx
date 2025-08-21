@@ -2,10 +2,12 @@
 import Image from 'next/image';
 import styles from './Card.module.scss';
 import { CardType } from '@/types';
+import { useState } from 'react';
 
 type Props = { card: CardType };
 
 const Card = ({ card }: Props) => {
+  const [imageError, setImageError] = useState(false);
   const colors = ['#16a34a', '#f97316', '#dc2626', '#2563eb', '#7c3aed', '#d97706'];
 
   const getTagColor = (tag: string) => {
@@ -17,28 +19,41 @@ const Card = ({ card }: Props) => {
     return colors[index];
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  if (!card || !card.name) {
+    return null;
+  }
+
   return (
     <div className={styles.cardContainer}>
       <div className={styles.userInfo}>
         <div className={styles.avatar}>
-          {card.image_url ? (
+          {card.image_url && !imageError ? (
             <Image
               src={card.image_url}
               alt="Avatar"
-              width={24}
-              height={24}
+              width={48}
+              height={48}
+              className={styles.avatarImage}
+              onError={handleImageError}
+              unoptimized={true}
+              priority={true}
             />
           ) : (
             <Image
-              src="/images/addUser.png" // ✅ fallback image
+              src="/images/addUser.png"
               alt="Default Avatar"
-              width={24}
-              height={24}
+              width={48}
+              height={48}
+              className={styles.avatarImage}
             />
           )}
         </div>
         <div className={styles.userDetails}>
-          <p className={styles.userName}>{card.name || 'Unknown'}</p>
+          <p className={styles.userName}>{card.name}</p>
           <p className={styles.userTitle}>{card.designation || '-'}</p>
         </div>
         <div>
@@ -58,7 +73,7 @@ const Card = ({ card }: Props) => {
       </div>
 
       <div className={styles.userTags}>
-        {card.tags && card.tags.map((tag, index) => {
+        {card.tags?.map((tag, index) => {
           const color = getTagColor(tag);
           return (
             <div

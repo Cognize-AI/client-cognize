@@ -10,6 +10,39 @@ type Props = {
   onCancel: () => void;
 };
 
+const colors = ['#16a34a', '#f97316', '#dc2626', '#2563eb', '#7c3aed', '#d97706'];
+
+const uploadToCloudinary = async (file: File): Promise<string> => {
+  if (!file || !(file instanceof File)) {
+    throw new Error('Invalid file provided');
+  }
+
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      try {
+        const base64data = reader.result;
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64data }),
+        });
+        const data = await res.json();
+        if (data.url) {
+          resolve(data.url);
+        } else {
+          reject('Upload failed');
+        }
+      } catch (err) {
+        console.error('Upload error:', err);
+        reject(err);
+      }
+    };
+    reader.onerror = () => reject('File reading failed');
+  });
+};
+
 const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
   const [name, setName] = useState('');
   const [title, setTitle] = useState('');
@@ -20,59 +53,15 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
   const [tagInput, setTagInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>('/images/add.png');
 
-  const colors = ['#16a34a', '#f97316', '#dc2626', '#2563eb', '#7c3aed', '#d97706'];
-
-  const handleSubmit = async () => {
-    if (!name || !title || !email || !contact) {
-      setError('All fields are required.');
-      return;
-    }
-    if (!email.includes('@')) {
-      setError('Please enter a valid email.');
-      return;
-    }
-    setError(null);
-    setLoading(true);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-        body: JSON.stringify({
-          name,
-          designation: title,
-          email,
-          phone: contact,
-          image_url: '', 
-          list_id: listId,
-          tags,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add the new card. Please try again.');
-      }
-
-      const jsonResponse = await response.json();
-      onCardAdded(jsonResponse.data);
-      setName('');
-      setTitle('');
-      setEmail('');
-      setContact('');
-      setTags([]);
-      setTagColors([]);
-      onCancel();
-
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setImageFile(file);
+      setImageUrl(URL.createObjectURL(file));
     }
   };
 
@@ -93,13 +82,101 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
     }
   };
 
+  const handleSubmit = async () => {
+    if (!name || !title || !email || !contact) {
+      setError('All fields are required.');
+      return;
+    }
+    if (!email.includes('@')) {
+      setError('Please enter a valid email.');
+      return;
+    }
+    setError(null);
+    setLoading(true);
+
+    try {
+      let uploadedUrl = '';
+      if (imageFile && imageFile instanceof File) {
+        uploadedUrl = await uploadToCloudinary(imageFile);
+      }
+
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+        body: JSON.stringify({
+          name,
+          designation: title,
+          email,
+          phone: contact,
+          image_url: uploadedUrl,
+          list_id: listId,
+          tags,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add the new card. Please try again.');
+      }
+
+      const jsonResponse = await response.json();
+      
+      const newCardData = {
+        id: jsonResponse.data.id || Date.now(),
+        name: name,
+        designation: title,
+        email: email,
+        phone: contact,
+        image_url: uploadedUrl,
+        list_id: listId,
+        tags: tags,
+        ...jsonResponse.data
+      };
+      
+      onCardAdded(newCardData);
+
+      setName('');
+      setTitle('');
+      setEmail('');
+      setContact('');
+      setTags([]);
+      setTagColors([]);
+      setImageFile(null);
+      setImageUrl('/images/add.png');
+      onCancel();
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className={styles.cardContainer}>
       {error && <p className={styles.error}>{error}</p>}
+
       <div className={styles.userInfo}>
         <div className={styles.avatar}>
-          <Image src="/images/add.png" alt="Avatar" width={24} height={24} />
+          <Image 
+            src={imageUrl} 
+            alt="Avatar" 
+            width={48} 
+            height={48}
+            priority={true}
+            unoptimized={imageUrl.startsWith('blob:')}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className={styles.imageInput}
+          />
         </div>
+
         <div className={styles.userDetails}>
           <input
             type="text"
@@ -116,6 +193,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
             className={styles.userTitle}
           />
         </div>
+
         <div className={styles.userActions}>
           <Image
             src="/images/tick.png"
@@ -125,8 +203,8 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
             style={{ cursor: 'pointer' }}
             onClick={handleSubmit}
           />
-           <Image
-            src="/images/cancel.png" 
+          <Image
+            src="/images/cancel.png"
             alt="Cancel"
             width={16}
             height={16}
@@ -147,6 +225,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
             className={styles.email}
           />
         </div>
+
         <div className={styles.userContact}>
           <Image src="/images/phone.png" alt="Phone" width={16} height={16} />
           <input
@@ -172,6 +251,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
             {tag}
           </div>
         ))}
+
         <div className={styles.addTag}>
           <Image src="/images/add.png" alt="Tag" width={16} height={16} />
           <input
@@ -185,6 +265,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
           />
         </div>
       </div>
+
       {loading && <p>Saving...</p>}
     </div>
   );

@@ -1,138 +1,144 @@
 .cardContainer {
+  display: flex;
+  width: 100%;
+  padding: 0.75rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0.75rem;
+  background: var(--bg-colors-opaque, #fff);
+
+  .userInfo {
     display: flex;
-    width: 100%;
-    padding: 0.75rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: stretch;
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: #0000001a; 
+      overflow: hidden;
+      position: relative;
+
+      img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+      }
+
+      input.imageInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+    }
+
+    .userDetails {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 0.25rem;
+      flex: 1 0 0;
+
+      .userName {
+        align-self: stretch;
+        color: var(--text-colors-primary-dark, #00020f);
+        font-family: "Inter Tight";
+        font-size: 1rem;
+        font-weight: 400;
+      }
+
+      .userTitle {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        align-self: stretch;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text-colors-secondary-dark, #3d3d3d);
+        font-family: "Inter Tight";
+        font-size: 0.875rem;
+        font-weight: 400;
+      }
+    }
+
+    .userActions {
+      display: flex;
+      padding: 0.25rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.625rem;
+      border-radius: 0.5rem;
+    }
+  }
+
+  .cardContent {
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
-    border-radius: 0.75rem;
-    background: var(--bg-colors-opaque, #fff);
+    gap: 0.75rem;
+    align-self: stretch;
 
-    .userInfo {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
-        align-self: stretch;
+    .userEmail,
+    .userContact {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.25rem;
+      align-self: stretch;
 
-        .avatar {
-            width: 2.5rem;
-            height: 2.5rem;
-            aspect-ratio: 1/1;
-            border-radius: 1250000rem;
-            background-color: black;
-        }
+      .email,
+      .contact {
+        flex: 1 0 0;
+        color: var(--text-colors-secondary-dark, #3d3d3d);
+        font-family: "Inter Tight";
+        font-size: 0.875rem;
+        font-weight: 400;
+      }
+    }
+  }
 
-        .userDetails {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 0.25rem;
-            flex: 1 0 0;
-            .userName {
-                align-self: stretch;
-                color: var(--text-colors-primary-dark, #00020f);
-                font-family: "Inter Tight";
-                font-size: 1rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-            }
+  .userTags {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    gap: 0.25rem;
+    align-self: stretch;
+    flex-wrap: wrap;
 
-            .userTitle {
-                display: -webkit-box;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 1;
-                align-self: stretch;
-                overflow: hidden;
-                color: var(--text-colors-secondary-dark, #3d3d3d);
-                text-overflow: ellipsis;
-                font-family: "Inter Tight";
-                font-size: 0.875rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-            }
-        }
-
-        .userActions {
-            display: flex;
-            padding: 0.25rem;
-            justify-content: center;
-            align-items: center;
-            gap: 0.625rem;
-            border-radius: 0.5rem;
-        }
+    .userTag {
+      display: flex;
+      padding: 0.25rem 0.5rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.625rem;
+      border-radius: 0.25rem;
+      background: rgba(24, 186, 96, 0.04);
     }
 
-    .cardContent {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 0.75rem;
-        align-self: stretch;
-        .userEmail {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.25rem;
-            align-self: stretch;
+    .addTag {
+      display: flex;
+      padding: 0.25rem 0.5rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.25rem;
+      border-radius: 0.25rem;
 
-            .email {
-                flex: 1 0 0;
-                color: var(--text-colors-secondary-dark, #3d3d3d);
-                font-family: "Inter Tight";
-                font-size: 0.875rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-            }
-        }
-
-        .userContact {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.25rem;
-            align-self: stretch;
-            .contact {
-                color: var(--text-colors-secondary-dark, #3d3d3d);
-                font-family: "Inter Tight";
-                font-size: 0.875rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-                flex: 1 0 0;
-            }
-        }
+      input.tagInput {
+        border: none;
+        outline: none;
+        background: transparent;
+      }
     }
-
-    .userTags {
-        display: flex;
-        align-items: center;
-        align-content: center;
-        gap: 0.25rem;
-        align-self: stretch;
-        flex-wrap: wrap;
-        .userTag {
-            display: flex;
-            padding: 0.25rem 0.5rem;
-            justify-content: center;
-            align-items: center;
-            gap: 0.625rem;
-            border-radius: 0.25rem;
-            background: rgba(24, 186, 96, 0.04);
-        }
-        .addTag {
-            display: flex;
-            padding: 0.25rem 0.5rem;
-            justify-content: center;
-            align-items: center;
-            gap: 0.25rem;
-            border-radius: 0.25rem;
-        }
-    }
+  }
 }

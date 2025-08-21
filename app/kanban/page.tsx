@@ -60,15 +60,18 @@ const Page = () => {
   }, [router]);
 
   const handleCardAdded = (newCard: CardType) => {
-    setLists(prevLists =>
-      prevLists.map(list => {
-        if (list.id === newCard.list_id) {
-          const updatedCards = list.cards ? [...list.cards, newCard] : [newCard];
-          return { ...list, cards: updatedCards };
+    setLists(prevLists => {
+      const newLists = prevLists.map(list => {
+        if (String(list.id) === String(newCard.list_id)) {
+          return {
+            ...list,
+            cards: [...(list.cards || []), newCard]
+          };
         }
         return list;
-      })
-    );
+      });
+      return [...newLists];
+    });
   };
 
   if (loading) {
