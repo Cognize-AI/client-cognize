@@ -21,8 +21,7 @@
             padding: 0.5rem;
             justify-content: center;
             align-items: center;
-            gap: 0.625rem;
-            border-radius: 1250000rem;
+            border-radius: 9999rem;
             background-color: #f9fbff;
         }
 
@@ -34,8 +33,8 @@
             gap: 0.25rem;
             flex: 1 0 0;
 
-            .userName {
-                // STYLES FOR THE INPUT ARE HERE
+            .userName,
+            .userTitle {
                 align-self: stretch;
                 font-family: "Inter Tight";
                 font-size: 1rem;
@@ -50,17 +49,9 @@
                 display: -webkit-box;
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: 1;
-                align-self: stretch;
                 overflow: hidden;
                 color: var(--text-colors-secondary-dark, #3d3d3d);
-                text-overflow: ellipsis;
-                font-family: "Inter Tight";
                 font-size: 0.875rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-                border: none;
-                outline: none;
             }
         }
 
@@ -69,7 +60,6 @@
             padding: 0.25rem;
             justify-content: center;
             align-items: center;
-            gap: 0.625rem;
             border-radius: 0.5rem;
         }
     }
@@ -77,44 +67,23 @@
     .cardContent {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
         gap: 0.75rem;
         align-self: stretch;
-        .userEmail {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.25rem;
-            align-self: stretch;
 
-            .email {
-                flex: 1 0 0;
-                color: var(--text-colors-secondary-dark, #3d3d3d);
-                font-family: "Inter Tight";
-                font-size: 0.875rem;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-                border: none;
-                outline: none;
-            }
-        }
-
+        .userEmail,
         .userContact {
             display: flex;
-            justify-content: center;
             align-items: center;
             gap: 0.25rem;
             align-self: stretch;
-            .contact {
+
+            input {
+                flex: 1 0 0;
                 color: var(--text-colors-secondary-dark, #3d3d3d);
                 font-family: "Inter Tight";
                 font-size: 0.875rem;
-                font-style: normal;
                 font-weight: 400;
                 line-height: normal;
-                flex: 1 0 0;
                 border: none;
                 outline: none;
             }
@@ -123,37 +92,37 @@
 
     .userTags {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        align-content: center;
         gap: 0.25rem;
         align-self: stretch;
-        flex-wrap: wrap;
+
         .userTag {
             display: flex;
             padding: 0.25rem 0.5rem;
-            justify-content: center;
-            align-items: center;
-            gap: 0.625rem;
             border-radius: 0.25rem;
-            background: rgba(24, 186, 96, 0.04);
         }
+
         .addTag {
             display: flex;
             padding: 0.25rem 0.5rem;
-            justify-content: center;
-            align-items: center;
-            gap: 0.25rem;
             border-radius: 0.25rem;
-            
+            gap: 0.25rem;
+            align-items: center;
+            color: #194eff;
 
-            .tag {
-                color: var(--Colors-blue-1, #194EFF);
-font-family: "Inter Tight";
-font-size: 0.875rem;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
+            input {
+                border: none;
+                outline: none;
+                font-family: "Inter Tight";
+                font-size: 0.875rem;
+                color: #194eff;
+                background: transparent;
             }
         }
     }
+}
+
+.tagInput {
+    width: 80px;
 }

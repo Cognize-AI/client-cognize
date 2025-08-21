@@ -14,7 +14,12 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
   const [title, setTitle] = useState('')
   const [email, setEmail] = useState('')
   const [contact, setContact] = useState('')
+  const [tags, setTags] = useState<string[]>([])
+  const [tagColors, setTagColors] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const colors = ['#16a34a', '#f97316', '#dc2626', '#2563eb', '#7c3aed', '#d97706']
 
   const handleSubmit = async () => {
     if (!name || !title || !email || !contact || !listId) return
@@ -28,25 +33,30 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-        body: JSON.stringify({
-          name,
-          designation: title,
-          email,
-          phone: contact,
-          image_url: 'https://lh3.googleusercontent.com/a/ACg8ocJw2xWE84QKYmFuzKTPglJM75nl3SFjohtEvDSkVy1thdiTDaeS6g=s96-c',
-          list_id: listId,
-        }),
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/create`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : ''
+          },
+          body: JSON.stringify({
+            name,
+            designation: title,
+            email,
+            phone: contact,
+            image_url:'',
+              // 'https://lh3.googleusercontent.com/a/ACg8ocJw2xWE84QKYmFuzKTPglJM75nl3SFjohtEvDSkVy1thdiTDaeS6g=s96-c',
+            list_id: listId,
+            tags
+          })
+        }
+      )
 
       if (response.ok) {
         const jsonResponse = await response.json()
-        const data = jsonResponse.data 
+        const data = jsonResponse.data
 
         const newCard: CardType = {
           id: data.id,
@@ -54,10 +64,13 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
           designation: data.designation,
           email: data.email,
           phone: data.phone,
-          image_url: data.image_url || 'https://lh3.googleusercontent.com/a/ACg8ocJw2xWE84QKYmFuzKTPglJM75nl3SFjohtEvDSkVy1thdiTDaeS6g=s96-c',
+          image_url:
+            data.image_url,
+            // 'https://lh3.googleusercontent.com/a/ACg8ocJw2xWE84QKYmFuzKTPglJM75nl3SFjohtEvDSkVy1thdiTDaeS6g=s96-c'
           list_id: data.list_id,
           created_at: data.created_at,
           updated_at: data.updated_at,
+          tags: data.tags || []
         }
 
         if (onCardAdded) onCardAdded(newCard)
@@ -65,15 +78,35 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
         setTitle('')
         setEmail('')
         setContact('')
+        setTags([])
+        setTagColors([])
+        setTagInput('')
+
+        window.location.reload()
       } else {
-        console.error('Failed to create card')
         alert('Failed to add the new card. Please try again.')
       }
     } catch (err) {
-      console.error(err)
       alert('An error occurred. Please try again.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAddTag = () => {
+    const trimmed = tagInput.trim()
+    if (trimmed && !tags.includes(trimmed)) {
+      const randomColor = colors[Math.floor(Math.random() * colors.length)]
+      setTags(prev => [...prev, trimmed])
+      setTagColors(prev => [...prev, randomColor])
+      setTagInput('')
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddTag()
     }
   }
 
@@ -130,6 +163,33 @@ const AddCard = ({ listId, onCardAdded }: Props) => {
             value={contact}
             onChange={e => setContact(e.target.value)}
             className={styles.contact}
+          />
+        </div>
+      </div>
+
+      <div className={styles.userTags}>
+        {tags.map((tag, idx) => (
+          <div
+            key={idx}
+            className={styles.userTag}
+            style={{
+              color: tagColors[idx],
+              background: `${tagColors[idx]}0A`
+            }}
+          >
+            {tag}
+          </div>
+        ))}
+        <div className={styles.addTag}>
+          <Image src='/images/add.png' alt='Tag' width={16} height={16} />
+          <input
+            type='text'
+            placeholder='Add tag'
+            value={tagInput}
+            onChange={e => setTagInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={handleAddTag}
+            className={styles.tagInput}
           />
         </div>
       </div>

@@ -27,7 +27,7 @@ const List = ({ list, onCardAdded }: Props) => {
       className={styles.listItem}
       style={{
         borderTop: `6px solid ${list.color}`,
-        backgroundColor: `${list.color}08`
+        backgroundColor: `${list.color}10`
       }}
     >
       <div className={styles.listHeader}>
