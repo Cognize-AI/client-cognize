@@ -1,10 +1,10 @@
 'use client'
 import { useState } from 'react'
 import styles from './list.module.scss'
-import { ListType, CardType } from '../kanban/page'
 import Image from 'next/image'
 import Card from './card'
 import AddCard from './AddCard'
+import { CardType, ListType } from '@/types'
 
 type Props = {
   list?: ListType
@@ -21,6 +21,8 @@ const List = ({ list, onCardAdded }: Props) => {
   }
 
   if (!list) return null
+
+  const cards = list.cards || []
 
   return (
     <div
@@ -58,10 +60,15 @@ const List = ({ list, onCardAdded }: Props) => {
       <div className={styles.listItemsContainer}>
         {showAddUser && <AddCard listId={list.id} onCardAdded={handleNewCard} />}
 
-        {list.cards && list.cards.length > 0 ? (
-          list.cards.map(card => <Card key={card.id} card={card} />)
+        {cards.length > 0 ? (
+          cards.map(card => <Card key={card.id} card={card} />)
         ) : (
-          !showAddUser && <p>No cards available</p>
+          !showAddUser && (
+            <div className={styles.emptyListState}>
+              <p className={styles.emptyMessage}>No cards yet</p>
+              <p className={styles.emptySubMessage}>Click + to add your first card</p>
+            </div>
+          )
         )}
       </div>
     </div>
