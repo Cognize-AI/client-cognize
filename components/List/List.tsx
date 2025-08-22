@@ -14,7 +14,13 @@ type Props = {
   onDragEnter: (listId: number, cardIndex: number) => void
 }
 
-const List = ({ list, onCardAdded, onDragStart, onDragEnd, onDragEnter }: Props) => {
+const List = ({
+  list,
+  onCardAdded,
+  onDragStart,
+  onDragEnd,
+  onDragEnter
+}: Props) => {
   const [showAddUser, setShowAddUser] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -36,7 +42,7 @@ const List = ({ list, onCardAdded, onDragStart, onDragEnd, onDragEnter }: Props)
         borderTop: `6px solid ${list.color}`,
         backgroundColor: `${list.color}10`
       }}
-      onDragOver={(e) => e.preventDefault()}
+      onDragOver={e => e.preventDefault()}
       onDrop={onDragEnd}
       onDragEnter={() => {
         if (filteredCards.length === 0) {
@@ -46,9 +52,7 @@ const List = ({ list, onCardAdded, onDragStart, onDragEnd, onDragEnter }: Props)
     >
       <div className={styles.listHeader}>
         <p className={styles.listTitle}>
-          {filteredCards.length > 0
-            ? ` ${list.name} (${filteredCards.length})`
-            : list.name}
+          {`${list.name} (${filteredCards.length})`}
         </p>
         <div className={styles.listActions}>
           <Image
@@ -101,12 +105,6 @@ const List = ({ list, onCardAdded, onDragStart, onDragEnd, onDragEnter }: Props)
             className={styles.endDropZone}
             onDragEnter={() => onDragEnter(list.id, filteredCards.length)}
           />
-        )}
-
-        {filteredCards.length === 0 && !showAddUser && (
-          <div className={styles.emptyListDropZone}>
-           
-          </div>
         )}
       </div>
     </div>

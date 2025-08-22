@@ -108,11 +108,9 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
           {showMenu && (
             <div className={styles.menu}>
               <div className={styles.menuItem} onClick={handleEdit}>
-                {/* <Image src='/images/edit.png' alt='Edit' width={16} height={16} /> */}
                 <span className={styles.menuText}>Edit</span>
               </div>
               <div className={styles.menuItem} onClick={handleDelete}>
-                {/* <Image src='/images/delete.png' alt='Delete' width={16} height={16} /> */}
                 <span className={styles.menuTextDelete}>Delete</span>
               </div>
             </div>

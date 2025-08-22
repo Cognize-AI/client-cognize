@@ -14,6 +14,52 @@ const Page = () => {
     null
   )
   const router = useRouter()
+  const moveCardToServer = async (
+    prevCard: CardType | null,
+    currCard: CardType,
+    nextCard: CardType | null,
+    listId: number
+  ) => {
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        throw new Error('No auth token')
+      }
+
+      const payload = {
+        prev_card: prevCard?.id || null,
+        curr_card: currCard.id,
+        next_card: nextCard?.id || null,
+        list_id: listId
+      }
+
+      console.log('Sending payload to server:', payload)
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/move`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        }
+      )
+
+      if (!res.ok) {
+        const errorText = await res.text()
+        console.error('Server error:', errorText)
+        throw new Error(`Failed to move card: ${res.status} - ${res.statusText}`)
+      }
+
+      const data = await res.json()
+      return data
+    } catch (error) {
+      console.error('Error moving card:', error)
+      throw error
+    }
+  }
 
   const handleDragStart = (listId: number, cardId: number) => {
     dragItem.current = { listId, cardId }
@@ -23,11 +69,13 @@ const Page = () => {
     dragOverItem.current = { listId, cardIndex }
   }
 
-  const handleDragEnd = () => {
+  const handleDragEnd = async () => {
     if (!dragItem.current || !dragOverItem.current) return
 
     const { listId: fromListId, cardId } = dragItem.current
     const { listId: toListId, cardIndex } = dragOverItem.current
+
+    const originalLists = JSON.parse(JSON.stringify(lists))
 
     let draggedCard: CardType | undefined
     const updatedLists = lists
@@ -47,18 +95,34 @@ const Page = () => {
         return list
       })
 
-    const targetList = updatedLists.find(l => l.id === toListId)
-    if (targetList) {
-      const idx = targetList.cards.findIndex(c => c.id === cardId)
-      const aboveCard = targetList.cards[idx - 1] || null
-      const belowCard = targetList.cards[idx + 1] || null
-      console.log('Dragged Card ID:', cardId)
-      console.log('Target List ID:', toListId)
-      console.log('Card Above:', aboveCard)
-      console.log('Card Below:', belowCard)
+    setLists(updatedLists)
+
+    if (draggedCard) {
+      try {
+        const targetList = updatedLists.find(l => l.id === toListId)
+        if (targetList) {
+          const droppedCardIndex = targetList.cards.findIndex(
+            c => c.id === cardId
+          )
+          const prevCard =
+            droppedCardIndex > 0
+              ? targetList.cards[droppedCardIndex - 1]
+              : null
+          const nextCard =
+            droppedCardIndex < targetList.cards.length - 1
+              ? targetList.cards[droppedCardIndex + 1]
+              : null
+
+          await moveCardToServer(prevCard, draggedCard, nextCard, toListId)
+        }
+      } catch (error) {
+        console.error('Failed to move card, reverting UI.', error)
+        setLists(originalLists)
+        setError('Failed to move the card. Please try again.')
+        setTimeout(() => setError(null), 3000)
+      }
     }
 
-    setLists(updatedLists)
     dragItem.current = null
     dragOverItem.current = null
   }
@@ -88,10 +152,8 @@ const Page = () => {
                 headers: { Authorization: `Bearer ${token}` }
               }
             )
-
-            if (!defaultRes.ok) {
+            if (!defaultRes.ok)
               throw new Error('Failed to create default lists')
-            }
             const defaultJson = await defaultRes.json()
             setLists(defaultJson.data.lists || [])
           } else {
@@ -99,11 +161,12 @@ const Page = () => {
           }
         } else {
           const json = await res.json()
-          const existingLists = json.data.lists || []
-          const listsWithCards = existingLists.map((list: ListType) => ({
-            ...list,
-            cards: list.cards || []
-          }))
+          const listsWithCards = (json.data.lists || []).map(
+            (list: ListType) => ({
+              ...list,
+              cards: list.cards || []
+            })
+          )
           setLists(listsWithCards)
         }
       } catch (err: any) {
@@ -120,8 +183,8 @@ const Page = () => {
   }, [router])
 
   const handleCardAdded = (newCard: CardType) => {
-    setLists(prevLists => {
-      const newLists = prevLists.map(list => {
+    setLists(prevLists =>
+      prevLists.map(list => {
         if (String(list.id) === String(newCard.list_id)) {
           return {
             ...list,
@@ -130,8 +193,7 @@ const Page = () => {
         }
         return list
       })
-      return [...newLists]
-    })
+    )
   }
 
   if (loading) {
@@ -151,8 +213,8 @@ const Page = () => {
             key={list.id}
             list={list}
             onCardAdded={handleCardAdded}
-            onDragStart={(list_id, card_id) => handleDragStart(list_id, card_id)}
-            onDragEnter={(list_id, cardIndex) => handleDragEnter(list_id, cardIndex)}
+            onDragStart={handleDragStart}
+            onDragEnter={handleDragEnter}
             onDragEnd={handleDragEnd}
           />
         ))}

@@ -1,77 +1,381 @@
 .listItem {
+  display: flex;
+  padding: 1rem 0.75rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1 0 0;
+  align-self: stretch;
+  border-radius: 1rem;
+  border-top: 4px solid var(--colors-yellow-11, #f9ba0b);
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+
+  .listHeader {
     display: flex;
-    padding: 1rem 0.75rem;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
     gap: 0.75rem;
-    flex: 1 0 0;
     align-self: stretch;
-    border-radius: 1rem;
-    border-top: 4px solid var(--colors-yellow-11, #f9ba0b);
+    flex-shrink: 0;
 
-    .listHeader {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.75rem;
-        align-self: stretch;
-
-        .listTitle {
-            flex: 1 0 0;
-            color: var(--text-colors-secondary-dark, #3d3d3d);
-            font-family: "Inter Tight";
-            font-size: 1rem;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-        }
-
-        .listActions {
-            display: flex;
-            padding: 0.25rem;
-            justify-content: center;
-            align-items: center;
-            gap: 0.625rem;
-            border-radius: 0.5rem;
-        }
+    .listTitle {
+      flex: 1 0 0;
+      color: var(--text-colors-secondary-dark, #3d3d3d);
+      font-family: "Inter Tight";
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
     }
 
-    .searchContainer {
-        display: flex;
-        padding: 0.75rem;
-        justify-content: center;
-        align-items: center;
-        gap: 0.625rem;
-        align-self: stretch;
-        border-radius: 0.5rem;
-        border: 1px solid var(--border-colors-light, #f2f6fc);
-        background: var(--bg-colors-opaque, #fff);
+    .listActions {
+      display: flex;
+      padding: 0.25rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.625rem;
+      border-radius: 0.5rem;
+    }
+  }
 
-        .searchInput {
-            flex: 1 0 0;
-            color: var(--text-colors-secondary-dark, #3d3d3d);
-            font-family: "Inter Tight";
-            font-size: 1rem;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-            border: none;
-            outline: none;
-        }
+  .searchContainer {
+    display: flex;
+    padding: 0.75rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.625rem;
+    align-self: stretch;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-colors-light, #f2f6fc);
+    background: var(--bg-colors-opaque, #fff);
+    flex-shrink: 0;
+
+    .searchInput {
+      flex: 1 0 0;
+      color: var(--text-colors-secondary-dark, #3d3d3d);
+      font-family: "Inter Tight";
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      border: none;
+      outline: none;
+    }
+  }
+
+  .listItemsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.25rem;
+    width: 100%;
+    min-height: 0;
+
+    &::-webkit-scrollbar {
+      width: 6px;
     }
 
-    .listItemsContainer {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        flex-grow: 1;
-        overflow-y: auto;
-        padding-right: 0.25rem;
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .endDropZone {
+      height: 20px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .emptyListDropZone {
+      height: 100px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed transparent;
+      border-radius: 0.75rem;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        border-color: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.02);
+      }
+    }
+  }
+}
+
+.cardContainer {
+  display: flex;
+  width: 100%;
+  padding: 0.75rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0.75rem;
+  background: var(--bg-colors-opaque, #fff);
+  position: relative;
+  cursor: grab;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 123, 255, 0.2);
+  }
+  &:active {
+    cursor: grabbing;
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 123, 255, 0.4);
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+  }
+
+  .userInfo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: stretch;
+
+    .avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      aspect-ratio: 1/1;
+      border-radius: 1250000rem;
+      background-color: #0000001a;
+      overflow: hidden;
+      position: relative;
+
+      img {
+        object-fit: cover;
         width: 100%;
-
-
-        .emptyListState{
-            height: calc(100vh - 30vh);
-        }
+        height: 100%;
+      }
     }
+
+    .userDetails {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 0.25rem;
+      flex: 1 0 0;
+
+      .userName {
+        align-self: stretch;
+        color: var(--text-colors-primary-dark, #00020f);
+        font-family: "Inter Tight";
+        font-size: 1rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+
+      .userTitle {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        align-self: stretch;
+        overflow: hidden;
+        color: var(--text-colors-secondary-dark, #3d3d3d);
+        text-overflow: ellipsis;
+        font-family: "Inter Tight";
+        font-size: 0.875rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+    }
+
+    .userEdit {
+      display: flex;
+      padding: 0.25rem;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s ease;
+
+      .menu {
+        position: absolute;
+        padding: 0.25rem;
+        top: 100%;
+        right: 0;
+        gap: 1rem;
+        width: 7rem;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        overflow: hidden;
+        animation: menuAppear 0.2s ease-out;
+
+        @keyframes menuAppear {
+          from {
+            opacity: 0;
+            transform: translateY(-8px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: -8px;
+          right: 12px;
+          width: 0;
+          height: 0;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-bottom: 8px solid white;
+          filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .menuItem {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem 1rem;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+          }
+
+          .menuText {
+            font-family: "Inter Tight";
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-colors-primary-dark, #00020f);
+            line-height: 1.2;
+          }
+
+          .menuTextDelete {
+            font-family: "Inter Tight";
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #dc2626;
+            line-height: 1.2;
+          }
+
+          &:last-child {
+            &:hover {
+              background-color: rgba(220, 38, 38, 0.04);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .cardContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    align-self: stretch;
+
+    .userEmail,
+    .userContact {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.25rem;
+      align-self: stretch;
+
+      .email,
+      .contact {
+        flex: 1 0 0;
+        color: var(--text-colors-secondary-dark, #3d3d3d);
+        font-family: "Inter Tight";
+        font-size: 0.875rem;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .userTags {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    gap: 0.25rem;
+    align-self: stretch;
+    flex-wrap: wrap;
+
+    .userTag {
+      display: flex;
+      padding: 0.25rem 0.5rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.625rem;
+      border-radius: 0.25rem;
+      background: rgba(24, 186, 96, 0.04);
+    }
+
+    .addTag {
+      display: flex;
+      padding: 0.25rem 0.5rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      border-radius: 0.25rem;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: rgba(25, 74, 255, 0.04);
+      }
+
+      .addTagIcon {
+        display: flex;
+        width: 1rem;
+        height: 1rem;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 1/1;
+      }
+
+      .addTagText {
+        color: var(--Colors-blue-1, #194eff);
+        font-family: "Inter Tight";
+        font-size: 0.875rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+    }
+  }
 }
