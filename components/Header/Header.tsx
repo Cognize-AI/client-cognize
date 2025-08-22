@@ -35,7 +35,7 @@ const Header = () => {
       } catch (error) {
         console.error(error)
         localStorage.removeItem('token')
-        router.push('/signin')
+        router.push('/')
       } finally {
         setLoading(false)
       }

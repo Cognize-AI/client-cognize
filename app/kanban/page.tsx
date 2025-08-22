@@ -16,7 +16,7 @@ const Page = () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          router.push('/signin');
+          router.push('/');
           return;
         }
 
