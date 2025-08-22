@@ -1,0 +1,29 @@
+.kanbanPage {
+  gap: 2rem;
+  height: calc(100vh - 130px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 2rem;
+
+
+  .kanbanLists {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    flex: 1 0 0;
+    align-self: stretch;
+    height: calc(100vh - 180px);
+    overflow: hidden;
+  }
+
+  .message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: "Inter Tight";
+    font-size: 1.125rem;
+    color: var(--text-colors-secondary-dark, #3d3d3d);
+  }
+}
