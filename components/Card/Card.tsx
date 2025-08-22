@@ -4,9 +4,16 @@ import styles from './Card.module.scss'
 import { CardType } from '@/types'
 import { useEffect, useState } from 'react'
 
-type Props = { card: CardType }
+type Props = {
+  card: CardType
+  onDragStart: (list_id: number, card_id: number) => void
+  onDragEnd: () => void
+  onDragEnter: (listId: number, cardIndex: number) => void
+  list_id: number,
+  index: number
+}
 
-const Card = ({ card }: Props) => {
+const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Props) => {
   const [imageError, setImageError] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const colors = [
@@ -62,7 +69,13 @@ const Card = ({ card }: Props) => {
   }
 
   return (
-    <div className={styles.cardContainer}>
+    <div
+      className={styles.cardContainer}
+      draggable
+      onDragStart={() => onDragStart(list_id, card.id)}
+      onDragEnter={() => onDragEnter(list_id, index)}
+      onDragEnd={onDragEnd}
+    >
       <div className={styles.userInfo}>
         <div className={styles.avatar}>
           {card.image_url && !imageError ? (
