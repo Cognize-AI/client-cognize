@@ -3,6 +3,7 @@ import Image from 'next/image'
 import styles from './Card.module.scss'
 import { CardType } from '@/types'
 import { useEffect, useState } from 'react'
+import { Phone } from '../icons'
 
 type Props = {
   card: CardType
@@ -124,7 +125,8 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
           <p className={styles.email}>{card.email || '-'}</p>
         </div>
         <div className={styles.userContact}>
-          <Image src='/images/phone.png' alt='Phone' width={16} height={16} />
+          {/* <Image src='/images/phone.png' alt='Phone' width={16} height={16} /> */}
+          <Phone width={16} height={16} fill='#3D3D3D' />
           <p className={styles.contact}>{card.phone || '-'}</p>
         </div>
       </div>
