@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react'
 import styles from './List.module.scss'
-import Image from 'next/image'
 import Card from '../Card/Card'
 import AddCard from '../AddCard/AddCard'
 import { CardType, ListType } from '@/types'
@@ -41,7 +40,7 @@ const List = ({
       className={styles.listItem}
       style={{
         borderTop: `6px solid ${list.color}`,
-        backgroundColor: `${list.color}10`
+        backgroundColor: `${list.color}04`
       }}
       onDragOver={e => e.preventDefault()}
       onDrop={onDragEnd}
@@ -64,7 +63,12 @@ const List = ({
             onClick={() => setShowAddUser(prev => !prev)}
             style={{ cursor: 'pointer' }}
           /> */}
-          <AddUser width={24} height={24} fill='#3D3D3D' onClick={() => setShowAddUser(prev => !prev)} />
+          <AddUser
+            width={24}
+            height={24}
+            fill='#3D3D3D'
+            onClick={() => setShowAddUser(prev => !prev)}
+          />
         </div>
       </div>
 
@@ -101,13 +105,6 @@ const List = ({
             onDragEnd={onDragEnd}
           />
         ))}
-
-        {filteredCards.length > 0 && (
-          <div
-            className={styles.endDropZone}
-            onDragEnter={() => onDragEnter(list.id, filteredCards.length)}
-          />
-        )}
       </div>
     </div>
   )

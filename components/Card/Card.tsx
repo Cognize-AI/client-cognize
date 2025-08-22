@@ -101,7 +101,7 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
         </div>
         <div className={styles.userDetails}>
           <p className={styles.userName}>{card.name}</p>
-          <p className={styles.userTitle}>{card.designation || '-'}</p>
+          <p className={styles.userTitle}>{card.designation || <span className={styles.userTitlePlaceholder}>professional exp...</span> }</p>
         </div>
         <div className={styles.userEdit} onClick={toggleMenu}>
           {/* <Image src='/images/dots.png' alt='Edit' width={24} height={24} /> */}
@@ -124,12 +124,12 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
         <div className={styles.userEmail}>
           {/* <Image src='/images/email.png' alt='Email' width={16} height={12} /> */}
           <Mail width={16} height={12} fill='#3D3D3D' />
-          <p className={styles.email}>{card.email || '-'}</p>
+          <p className={styles.email}>{card.email || <span className={styles.emailPlaceholder}>email...</span> }</p>
         </div>
         <div className={styles.userContact}>
           {/* <Image src='/images/phone.png' alt='Phone' width={16} height={16} /> */}
           <Phone width={16} height={16} fill='#3D3D3D' />
-          <p className={styles.contact}>{card.phone || '-'}</p>
+          <p className={styles.contact}>{card.phone || <span className={styles.contactPlaceholder}>phone...</span> }</p>
         </div>
       </div>
 
