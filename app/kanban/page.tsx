@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Header, List } from '@/components'
+import { List } from '@/components'
 import { CardType, ListType } from '@/types'
 import styles from './page.module.scss'
 
@@ -169,10 +169,11 @@ const Page = () => {
           )
           setLists(listsWithCards)
         }
-      } catch (err: any) {
+        // @typescript-eslint/no-explicit-any
+      } catch (err: unknown) {
         console.error(err)
         setError(
-          err.message || 'Could not load the board. Please try again later.'
+          (err as Error).message || 'Could not load the board. Please try again later.'
         )
       } finally {
         setLoading(false)

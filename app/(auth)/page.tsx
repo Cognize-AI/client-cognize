@@ -2,13 +2,8 @@
 import { axios_instance } from '@/lib/axios'
 import styles from './page.module.scss' 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 
-type Props = {}
-
-const Page = (props: Props) => {
-  const router = useRouter()
-
+const Page = () => {
   const handleGoogleSignIn = async () => {
     try {
       const response = await axios_instance.get('/oauth/google/redirect-uri')

@@ -1,9 +1,7 @@
 import React from 'react'
 import styles from './page.module.scss'
 
-type Props = {}
-
-const page = (props: Props) => {
+const page = () => {
   return (
     <div className={styles.main}>Coming soon</div>
   )
