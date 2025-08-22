@@ -34,7 +34,7 @@ const List = ({ list, onCardAdded }: Props) => {
       }}
     >
       <div className={styles.listHeader}>
-        <p className={styles.listTitle}>{list.name}</p>
+        <p className={styles.listTitle}>{filteredCards.length >0 ?  ` ${list.name} (${filteredCards.length})` : list.name}</p>
         <div className={styles.listActions}>
           <Image
             src="/images/addUser.png"
@@ -74,7 +74,6 @@ const List = ({ list, onCardAdded }: Props) => {
         ) : (
           !showAddUser && (
             <div className={styles.emptyListState}>
-              No contacts found
             </div>
           )
         )}

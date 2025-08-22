@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import styles from './AddCard.module.scss';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CardType } from '@/types';
 
 type Props = {
@@ -56,6 +56,9 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('/images/add.png');
 
+  // Add a ref for the hidden file input
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -63,6 +66,11 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       setImageFile(file);
       setImageUrl(URL.createObjectURL(file));
     }
+  };
+
+  // Function to trigger file input click
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleAddTag = () => {
@@ -160,7 +168,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.userInfo}>
-        <div className={styles.avatar}>
+        <div className={styles.avatar} onClick={handleImageClick}>
           <Image 
             src={imageUrl} 
             alt="Avatar" 
@@ -170,24 +178,25 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
             unoptimized={imageUrl.startsWith('blob:')}
           />
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className={styles.imageInput}
+            className={styles.hiddenInput}
           />
         </div>
 
         <div className={styles.userDetails}>
           <input
             type="text"
-            placeholder="Enter Name"
+            placeholder="name..."
             value={name}
             onChange={e => setName(e.target.value)}
             className={styles.userName}
           />
           <input
             type="text"
-            placeholder="Enter Title"
+            placeholder="professional exp..."
             value={title}
             onChange={e => setTitle(e.target.value)}
             className={styles.userTitle}
@@ -203,20 +212,12 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
             style={{ cursor: 'pointer' }}
             onClick={handleSubmit}
           />
-          <Image
-            src="/images/cancel.png"
-            alt="Cancel"
-            width={16}
-            height={16}
-            style={{ cursor: 'pointer', marginLeft: '8px' }}
-            onClick={onCancel}
-          />
         </div>
       </div>
 
       <div className={styles.cardContent}>
         <div className={styles.userEmail}>
-          <Image src="/images/email.png" alt="Email" width={16} height={16} />
+          <Image src="/images/email.png" alt="Email" width={16} height={12} />
           <input
             type="email"
             placeholder="Enter Email"
@@ -253,10 +254,10 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         ))}
 
         <div className={styles.addTag}>
-          <Image src="/images/add.png" alt="Tag" width={16} height={16} />
+          <Image src="/images/addTag.png" alt="Tag" width={16} height={16} />
           <input
             type="text"
-            placeholder="Add tag"
+            placeholder="Add tag..."
             value={tagInput}
             onChange={e => setTagInput(e.target.value)}
             onKeyDown={handleKeyDown}

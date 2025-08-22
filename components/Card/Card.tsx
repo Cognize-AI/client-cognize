@@ -35,8 +35,8 @@ const Card = ({ card }: Props) => {
             <Image
               src={card.image_url}
               alt="Avatar"
-              width={48}
-              height={48}
+              width={40}
+              height={40}
               className={styles.avatarImage}
               onError={handleImageError}
               unoptimized={true}
@@ -44,7 +44,7 @@ const Card = ({ card }: Props) => {
             />
           ) : (
             <Image
-              src="/images/addUser.png"
+              src="/images/User.png"
               alt="Default Avatar"
               width={48}
               height={48}
@@ -56,14 +56,14 @@ const Card = ({ card }: Props) => {
           <p className={styles.userName}>{card.name}</p>
           <p className={styles.userTitle}>{card.designation || '-'}</p>
         </div>
-        <div>
-          <Image src="/images/dots.png" alt="Edit" width={16} height={16} />
+        <div className={styles.userEdit}>
+          <Image src="/images/dots.png" alt="Edit" width={24} height={24} />
         </div>
       </div>
 
       <div className={styles.cardContent}>
         <div className={styles.userEmail}>
-          <Image src="/images/email.png" alt="Email" width={16} height={16} />
+          <Image src="/images/email.png" alt="Email" width={16} height={12} />
           <p className={styles.email}>{card.email || '-'}</p>
         </div>
         <div className={styles.userContact}>
@@ -89,8 +89,8 @@ const Card = ({ card }: Props) => {
           );
         })}
         <div className={styles.addTag}>
-          <Image src="/images/add.png" alt="Tag" width={16} height={16} />
-          Add tag
+          <Image src="/images/addTag.png" alt="Tag" width={16} height={16} className={styles.addTagIcon} />
+          <p className={styles.addTagText}>Add tag...</p>
         </div>
       </div>
     </div>
