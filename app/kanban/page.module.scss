@@ -1,10 +1,11 @@
 .kanbanPage {
-  padding: 1.5rem;
   gap: 2rem;
-  height: 100vh;
+  height: calc(100vh - 130px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-top: 2rem;
+
 
   .kanbanLists {
     display: flex;

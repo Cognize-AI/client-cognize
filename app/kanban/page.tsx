@@ -206,7 +206,7 @@ const Page = () => {
 
   return (
     <div className={styles.kanbanPage}>
-      <Header />
+      {/* <Header /> */}
       <div className={styles.kanbanLists}>
         {lists.map(list => (
           <List
