@@ -74,7 +74,7 @@ const Header = () => {
           <p>Loading...</p>
         ) : user ? (
           <>
-            <div className={styles.profileArea}>
+            <div className={styles.profileArea} onClick={toggleMenu}>
               <Image
                 src={user.profilePicture}
                 alt="User Profile Picture"
@@ -83,7 +83,7 @@ const Header = () => {
                 className={styles.userPic}
               />
               <p className={styles.user}>{user.name}</p>
-              <div className={styles.dropdownArrow} onClick={toggleMenu} >
+              <div className={styles.dropdownArrow}  >
                 <Image src="/images/dropdown.png" alt="Dropdown" width={12} height={12} />
                 {/* <ArrowDown width={24} height={24} fill='#00020F' /> */}
               </div>

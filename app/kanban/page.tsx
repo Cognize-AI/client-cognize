@@ -13,6 +13,8 @@ const Page = () => {
   const dragOverItem = useRef<{ listId: number; cardIndex: number } | null>(
     null
   )
+
+  
   const router = useRouter()
   const moveCardToServer = async (
     prevCard: CardType | null,
@@ -198,7 +200,7 @@ const Page = () => {
   }
 
   if (loading) {
-    return <p className={styles.message}>Loading board...</p>
+    return <p className={styles.message}></p>
   }
 
   if (error) {
