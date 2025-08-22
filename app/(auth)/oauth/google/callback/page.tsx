@@ -39,7 +39,7 @@ const Page = () => {
             src='/images/login_card.png'
             alt=''
             width={394}
-            height={256}
+            height={226}
             className={styles.image}
             quality={100}
           />
