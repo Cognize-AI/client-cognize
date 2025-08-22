@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Card from '../Card/Card'
 import AddCard from '../AddCard/AddCard'
 import { CardType, ListType } from '@/types'
+import { AddUser } from '../icons'
 
 type Props = {
   list: ListType
@@ -55,14 +56,15 @@ const List = ({
           {`${list.name} (${filteredCards.length})`}
         </p>
         <div className={styles.listActions}>
-          <Image
+          {/* <Image
             src='/images/addUser.png'
             alt='Add User'
             width={16}
             height={16}
             onClick={() => setShowAddUser(prev => !prev)}
             style={{ cursor: 'pointer' }}
-          />
+          /> */}
+          <AddUser width={24} height={24} fill='#3D3D3D' onClick={() => setShowAddUser(prev => !prev)} />
         </div>
       </div>
 

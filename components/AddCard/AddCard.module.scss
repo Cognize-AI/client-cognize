@@ -25,19 +25,19 @@
     align-self: stretch;
 
     .avatar {
+      display: flex;
       width: 2.5rem;
       height: 2.5rem;
       aspect-ratio: 1/1;
       border-radius: 1250000rem;
+      align-items: center;
+      justify-content: center;
       background-color: #0000001a;
       overflow: hidden;
       position: relative;
       cursor: pointer;
       transition: background-color 0.2s ease;
 
-      &:hover {
-        background-color: #00000030;
-      }
 
       img {
         object-fit: cover;

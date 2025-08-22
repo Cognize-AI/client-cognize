@@ -3,6 +3,7 @@ import Image from 'next/image';
 import styles from './AddCard.module.scss';
 import { useState, useRef } from 'react';
 import { CardType } from '@/types';
+import { Add, AddImage, AddUser, Checkmark, Mail, Phone } from '../icons';
 
 type Props = {
   listId: number;
@@ -170,14 +171,15 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
 
       <div className={styles.userInfo}>
         <div className={styles.avatar} onClick={handleImageClick}>
-          <Image 
+          {/* <Image 
             src={imageUrl} 
             alt="Avatar" 
             width={48} 
             height={48}
             priority={true}
             unoptimized={imageUrl.startsWith('blob:')}
-          />
+          /> */}
+          <AddImage width={24} height={24} fill='#BCBBB8' />
           <input
             ref={fileInputRef}
             type="file"
@@ -205,20 +207,23 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         </div>
 
         <div className={styles.userActions}>
-          <Image
+          {/* <Image
             src="/images/tick.png"
             alt="Submit"
             width={22}
             height={14}
             style={{ cursor: 'pointer' }}
             onClick={handleSubmit}
-          />
+          /> */}
+          <Checkmark onClick={handleSubmit} width={24} height={24} fill='#194EFF' />
         </div>
       </div>
 
       <div className={styles.cardContent}>
         <div className={styles.userEmail}>
-          <Image src="/images/email.png" alt="Email" width={16} height={12} />
+          {/* <Image src="/images/email.png" alt="Email" width={16} height={12} /> */}
+                    <Mail width={16} height={16} fill='#3D3D3D' />
+
           <input
             type="email"
             placeholder="Enter Email"
@@ -229,7 +234,9 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         </div>
 
         <div className={styles.userContact}>
-          <Image src="/images/phone.png" alt="Phone" width={16} height={16} />
+          {/* <Image src="/images/phone.png" alt="Phone" width={16} height={16} /> */}
+                    <Phone width={16} height={16} fill='#3D3D3D' />
+
           <input
             type="text"
             placeholder="Enter Contact"
@@ -255,7 +262,8 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         ))}
 
         <div className={styles.addTag}>
-          <Image src="/images/addTag.png" alt="Tag" width={16} height={16} />
+          {/* <Image src="/images/addTag.png" alt="Tag" width={16} height={16} /> */}
+          <Add width={16} height={16} />
           <input
             type="text"
             placeholder="Add tag..."

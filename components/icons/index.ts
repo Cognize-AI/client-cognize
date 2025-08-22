@@ -1,5 +1,10 @@
+export { default as AddImage } from './AddImage';
+export { default as AddUser } from './AddUser';
 export { default as Add } from './Add';
+export { default as ArrowDown } from './ArrowDown';
 export { default as Checkmark } from './Checkmark';
 export { default as Dots } from './Dots';
+export { default as Logout } from './Logout';
 export { default as Mail } from './Mail';
 export { default as Phone } from './Phone';
+export { default as Settings } from './Settings';
