@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from './Card.module.scss'
 import { CardType } from '@/types'
 import { useEffect, useState } from 'react'
-import { Phone } from '../icons'
+import { Add, Dots, Mail, Phone } from '../icons'
 
 type Props = {
   card: CardType
@@ -104,7 +104,8 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
           <p className={styles.userTitle}>{card.designation || '-'}</p>
         </div>
         <div className={styles.userEdit} onClick={toggleMenu}>
-          <Image src='/images/dots.png' alt='Edit' width={24} height={24} />
+          {/* <Image src='/images/dots.png' alt='Edit' width={24} height={24} /> */}
+          <Dots width={24} height={24} fill='#3D3D3D' />
 
           {showMenu && (
             <div className={styles.menu}>
@@ -121,7 +122,8 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
 
       <div className={styles.cardContent}>
         <div className={styles.userEmail}>
-          <Image src='/images/email.png' alt='Email' width={16} height={12} />
+          {/* <Image src='/images/email.png' alt='Email' width={16} height={12} /> */}
+          <Mail width={16} height={12} fill='#3D3D3D' />
           <p className={styles.email}>{card.email || '-'}</p>
         </div>
         <div className={styles.userContact}>
@@ -148,13 +150,14 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
           )
         })}
         <div className={styles.addTag}>
-          <Image
+          {/* <Image
             src='/images/addTag.png'
             alt='Tag'
             width={16}
             height={16}
             className={styles.addTagIcon}
-          />
+          /> */}
+          <Add width={16} height={16} />
           <p className={styles.addTagText}>Add tag...</p>
         </div>
       </div>
