@@ -155,9 +155,10 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       setImageFile(null);
       setImageUrl('/images/add.png');
       onCancel();
-    } catch (err: any) {
+      // @typescript-eslint/no-explicit-any
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }

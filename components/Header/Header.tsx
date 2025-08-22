@@ -5,10 +5,6 @@ import Image from 'next/image'
 import styles from './Header.module.scss'
 import { User } from '@/types'
 
-const deleteCookie = (name: string) => {
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-}
-
 const Header = () => {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
