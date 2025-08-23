@@ -35,6 +35,11 @@ const Card = ({
   const colors = ['#16a34a', '#f97316', '#dc2626', '#2563eb', '#7c3aed', '#d97706']
 
   useEffect(() => {
+    setEditedCard(card)
+    setImageError(false)
+  }, [card])
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
       if (showMenu && !target.closest(`.${styles.userEdit}`)) {
@@ -249,10 +254,10 @@ const Card = ({
           ) : (
             <>
               <p className={styles.userName}>
-                {card.name || <span className={styles.userNamePlaceholder}>name...</span>}
+                {editedCard.name || <span className={styles.userNamePlaceholder}>name...</span>}
               </p>
               <p className={styles.userTitle}>
-                {card.designation || <span className={styles.userTitlePlaceholder}>professional exp...</span>}
+                {editedCard.designation || <span className={styles.userTitlePlaceholder}>professional exp...</span>}
               </p>
             </>
           )}
@@ -322,13 +327,13 @@ const Card = ({
             <div className={styles.userEmail}>
               <Mail width={16} height={12} fill="#3D3D3D" />
               <p className={styles.email}>
-                {card.email || <span className={styles.emailPlaceholder}>email...</span>}
+                {editedCard.email || <span className={styles.emailPlaceholder}>email...</span>}
               </p>
             </div>
             <div className={styles.userContact}>
               <Phone width={16} height={16} fill="#3D3D3D" />
               <p className={styles.contact}>
-                {card.phone || <span className={styles.contactPlaceholder}>phone...</span>}
+                {editedCard.phone || <span className={styles.contactPlaceholder}>phone...</span>}
               </p>
             </div>
           </>
@@ -337,7 +342,7 @@ const Card = ({
 
       {!isEditing && (
         <div className={styles.userTags}>
-          {card.tags?.map((tag, index) => {
+          {editedCard.tags?.map((tag, index) => {
             const color = getTagColor(tag)
             return (
               <div

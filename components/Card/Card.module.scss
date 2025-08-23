@@ -72,10 +72,6 @@
         cursor: pointer;
         transition: background-color 0.2s ease;
 
-        &:hover {
-          background-color: rgba(25, 74, 255, 0.04);
-        }
-
         .uploadingText {
           color: #194eff;
           font-family: "Inter Tight";
