@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import styles from './Header.module.scss'
 import { User } from '@/types'
@@ -11,6 +11,8 @@ const Header = () => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [showMenu, setShowMenu] = useState(false)
+
+  const pathname = usePathname();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -65,8 +67,14 @@ const Header = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <p className={styles.heading}>My Contacts</p>
-        <p className={styles.subheading}>List of people for communication</p>
+        <p className={styles.heading}>
+          {pathname == "/tags" && "My Tags"}
+          {pathname == "/kanban" && "My Contacts"}
+        </p>
+        <p className={styles.subheading}>
+          {pathname == "/kanban" && "List of people for communication"}
+          {pathname == "/tags" && "Manage your tags"}
+        </p>
       </div>
 
       <div className={styles.actions}>
