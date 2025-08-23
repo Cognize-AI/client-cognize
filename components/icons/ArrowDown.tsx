@@ -1,0 +1,3 @@
+import type { SVGProps } from "react";
+const ArrowDown = (props: SVGProps<SVGSVGElement>) => <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" {...props}><path d="M16.6 7.45833L11.1667 12.8917C10.525 13.5333 9.47503 13.5333 8.83336 12.8917L3.40002 7.45833" stroke="#00020F" strokeWidth={1.5} strokeMiterlimit={10} strokeLinecap="round" strokeLinejoin="round" /></svg>;
+export default ArrowDown;

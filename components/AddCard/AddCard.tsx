@@ -3,6 +3,7 @@ import Image from 'next/image';
 import styles from './AddCard.module.scss';
 import { useState, useRef } from 'react';
 import { CardType } from '@/types';
+import { Add, AddImage, AddUser, Checkmark, Mail, Phone } from '../icons';
 
 type Props = {
   listId: number;
@@ -56,7 +57,6 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('/images/add.png');
 
-  // Add a ref for the hidden file input
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +68,6 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
     }
   };
 
-  // Function to trigger file input click
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
@@ -91,11 +90,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
   };
 
   const handleSubmit = async () => {
-    if (!name || !title || !email || !contact) {
-      setError('All fields are required.');
-      return;
-    }
-    if (!email.includes('@')) {
+    if (email && !email.includes('@')) {
       setError('Please enter a valid email.');
       return;
     }
@@ -116,7 +111,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
           Authorization: token ? `Bearer ${token}` : '',
         },
         body: JSON.stringify({
-          name,
+          name: name || 'Unknown Contact',
           designation: title,
           email,
           phone: contact,
@@ -134,7 +129,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       
       const newCardData = {
         id: jsonResponse.data.id || Date.now(),
-        name: name,
+        name: name || 'Unknown Contact',
         designation: title,
         email: email,
         phone: contact,
@@ -155,7 +150,6 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       setImageFile(null);
       setImageUrl('/images/add.png');
       onCancel();
-      // @typescript-eslint/no-explicit-any
     } catch (err: unknown) {
       console.error(err);
       setError((err as Error).message);
@@ -170,14 +164,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
 
       <div className={styles.userInfo}>
         <div className={styles.avatar} onClick={handleImageClick}>
-          <Image 
-            src={imageUrl} 
-            alt="Avatar" 
-            width={48} 
-            height={48}
-            priority={true}
-            unoptimized={imageUrl.startsWith('blob:')}
-          />
+          <AddImage width={24} height={24} fill='#BCBBB8' />
           <input
             ref={fileInputRef}
             type="file"
@@ -205,23 +192,16 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         </div>
 
         <div className={styles.userActions}>
-          <Image
-            src="/images/tick.png"
-            alt="Submit"
-            width={22}
-            height={14}
-            style={{ cursor: 'pointer' }}
-            onClick={handleSubmit}
-          />
+          <Checkmark onClick={handleSubmit} width={24} height={24} fill='#194EFF' />
         </div>
       </div>
 
       <div className={styles.cardContent}>
         <div className={styles.userEmail}>
-          <Image src="/images/email.png" alt="Email" width={16} height={12} />
+          <Mail width={16} height={16} fill='#3D3D3D' />
           <input
             type="email"
-            placeholder="Enter Email"
+            placeholder="email..."
             value={email}
             onChange={e => setEmail(e.target.value)}
             className={styles.email}
@@ -229,10 +209,10 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         </div>
 
         <div className={styles.userContact}>
-          <Image src="/images/phone.png" alt="Phone" width={16} height={16} />
+          <Phone width={16} height={16} fill='#3D3D3D' />
           <input
             type="text"
-            placeholder="Enter Contact"
+            placeholder="phone..."
             value={contact}
             onChange={e => setContact(e.target.value)}
             className={styles.contact}
@@ -255,7 +235,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         ))}
 
         <div className={styles.addTag}>
-          <Image src="/images/addTag.png" alt="Tag" width={16} height={16} />
+          <Add width={16} height={16} />
           <input
             type="text"
             placeholder="Add tag..."

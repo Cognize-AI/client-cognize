@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from './Card.module.scss'
 import { CardType } from '@/types'
 import { useEffect, useState } from 'react'
-import { Phone } from '../icons'
+import { Add, Dots, Mail, Phone } from '../icons'
 
 type Props = {
   card: CardType
@@ -73,7 +73,10 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
     <div
       className={styles.cardContainer}
       draggable
-      onDragStart={() => onDragStart(list_id, card.id)}
+      onDragStart={() => 
+        onDragStart(list_id, card.id)
+              
+      }
       onDragEnter={() => onDragEnter(list_id, index)}
       onDragEnd={onDragEnd}
     >
@@ -101,10 +104,11 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
         </div>
         <div className={styles.userDetails}>
           <p className={styles.userName}>{card.name}</p>
-          <p className={styles.userTitle}>{card.designation || '-'}</p>
+          <p className={styles.userTitle}>{card.designation || <span className={styles.userTitlePlaceholder}>professional exp...</span> }</p>
         </div>
         <div className={styles.userEdit} onClick={toggleMenu}>
-          <Image src='/images/dots.png' alt='Edit' width={24} height={24} />
+          {/* <Image src='/images/dots.png' alt='Edit' width={24} height={24} /> */}
+          <Dots width={24} height={24} fill='#3D3D3D' />
 
           {showMenu && (
             <div className={styles.menu}>
@@ -121,13 +125,14 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
 
       <div className={styles.cardContent}>
         <div className={styles.userEmail}>
-          <Image src='/images/email.png' alt='Email' width={16} height={12} />
-          <p className={styles.email}>{card.email || '-'}</p>
+          {/* <Image src='/images/email.png' alt='Email' width={16} height={12} /> */}
+          <Mail width={16} height={12} fill='#3D3D3D' />
+          <p className={styles.email}>{card.email || <span className={styles.emailPlaceholder}>email...</span> }</p>
         </div>
         <div className={styles.userContact}>
           {/* <Image src='/images/phone.png' alt='Phone' width={16} height={16} /> */}
           <Phone width={16} height={16} fill='#3D3D3D' />
-          <p className={styles.contact}>{card.phone || '-'}</p>
+          <p className={styles.contact}>{card.phone || <span className={styles.contactPlaceholder}>phone...</span> }</p>
         </div>
       </div>
 
@@ -148,13 +153,14 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
           )
         })}
         <div className={styles.addTag}>
-          <Image
+          {/* <Image
             src='/images/addTag.png'
             alt='Tag'
             width={16}
             height={16}
             className={styles.addTagIcon}
-          />
+          /> */}
+          <Add width={16} height={16} />
           <p className={styles.addTagText}>Add tag...</p>
         </div>
       </div>
