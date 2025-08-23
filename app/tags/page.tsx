@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { useTagsStore } from '@/provider/tags-store-provider'
 import { axios_instance } from '@/lib/axios'
 
-const page = () => {
+const Page = () => {
   const groupedTags = useTagsStore((state) => state.groupedTags)
   const addTags = useTagsStore((state) => state.addTags)
 
@@ -99,4 +99,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
