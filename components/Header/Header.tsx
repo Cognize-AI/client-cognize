@@ -81,11 +81,11 @@ const Header = () => {
                 width={24}
                 height={24}
                 className={styles.userPic}
+                quality={100}
               />
               <p className={styles.user}>{user.name}</p>
               <div className={styles.dropdownArrow}  >
-                <Image src="/images/dropdown.png" alt="Dropdown" width={12} height={12} />
-                {/* <ArrowDown width={24} height={24} fill='#00020F' /> */}
+                <ArrowDown width={20} height={20} fill='none' stroke='#00020F' />
               </div>
             </div>
 

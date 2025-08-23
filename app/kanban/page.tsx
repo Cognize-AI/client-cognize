@@ -200,7 +200,12 @@ const Page = () => {
   }
 
   if (loading) {
-    return <p className={styles.message}></p>
+   return (
+  <div className={styles.spinnerWrapper}>
+    <div className={styles.spinner}></div>
+  </div>
+)
+
   }
 
   if (error) {

@@ -67,7 +67,18 @@
                 gap: 0.625rem;
                 border-radius: 12500rem;
                 background: var(--bg-colors-grey-light, #f9fbff);
+                transition: transform 0.2s ease;
+                    cursor: pointer;
 
+                    &:hover {
+                        transform: scale(1.08); 
+                    }
+
+                    &:active {
+                        transform: scale(1.05); 
+                    }
+
+                
                 .button_container {
                     display: flex;
                     padding: 1rem 1.5rem;

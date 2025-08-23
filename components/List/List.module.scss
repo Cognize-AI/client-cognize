@@ -12,7 +12,6 @@
   max-height: 100%;
   overflow: hidden;
 
-
   .listHeader {
     display: flex;
     justify-content: center;
@@ -20,7 +19,6 @@
     gap: 0.75rem;
     align-self: stretch;
     flex-shrink: 0;
-
 
     .listTitle {
       flex: 1 0 0;
@@ -36,7 +34,6 @@
       min-width: 0;
     }
 
-
     .listActions {
       display: flex;
       padding: 0.25rem;
@@ -44,9 +41,9 @@
       align-items: center;
       gap: 0.625rem;
       border-radius: 0.5rem;
+      cursor: pointer;
     }
   }
-
 
   .searchContainer {
     display: flex;
@@ -59,7 +56,9 @@
     border: 1px solid var(--border-colors-light, #f2f6fc);
     background: var(--bg-colors-opaque, #fff);
     flex-shrink: 0;
-
+    &:focus-within {
+    border: 1px solid var(--active-color);
+  }
 
     .searchInput {
       flex: 1 0 0;
@@ -76,7 +75,6 @@
     }
   }
 
-
   .listItemsContainer {
     display: flex;
     flex-direction: column;
@@ -87,18 +85,15 @@
     width: 100%;
     min-height: 0;
 
-
     &::-webkit-scrollbar {
       width: 0px;
     }
-
 
     .endDropZone {
       height: 10px;
       width: 100%;
       flex-shrink: 0;
     }
-
 
     .emptyListDropZone {
       height: 100px;
@@ -109,7 +104,7 @@
       border: 2px dashed transparent;
       border-radius: 0.75rem;
       transition: all 0.2s ease;
-      
+
       &:hover {
         border-color: rgba(0, 0, 0, 0.1);
         background: rgba(0, 0, 0, 0.02);
@@ -117,7 +112,6 @@
     }
   }
 }
-
 
 .cardContainer {
   display: flex;
@@ -135,7 +129,6 @@
   flex-shrink: 0;
   border: 2px solid transparent;
 
-
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -150,7 +143,6 @@
     background: rgba(255, 255, 255, 0.98);
   }
 
-
   img {
     -webkit-user-drag: none;
     -khtml-user-drag: none;
@@ -160,14 +152,12 @@
     pointer-events: none;
   }
 
-
   .userInfo {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
     align-self: stretch;
-
 
     .avatar {
       width: 2.5rem;
@@ -178,14 +168,12 @@
       overflow: hidden;
       position: relative;
 
-
       img {
         object-fit: cover;
         width: 100%;
         height: 100%;
       }
     }
-
 
     .userDetails {
       display: flex;
@@ -194,7 +182,6 @@
       align-items: flex-start;
       gap: 0.25rem;
       flex: 1 0 0;
-
 
       .userName {
         align-self: stretch;
@@ -205,7 +192,6 @@
         font-weight: 400;
         line-height: normal;
       }
-
 
       .userTitle {
         display: -webkit-box;
@@ -223,7 +209,6 @@
       }
     }
 
-
     .userEdit {
       display: flex;
       padding: 0.25rem;
@@ -233,7 +218,6 @@
       cursor: pointer;
       border-radius: 0.375rem;
       transition: background-color 0.2s ease;
-
 
       .menu {
         position: absolute;
@@ -250,7 +234,6 @@
         overflow: hidden;
         animation: menuAppear 0.2s ease-out;
 
-
         @keyframes menuAppear {
           from {
             opacity: 0;
@@ -262,9 +245,8 @@
           }
         }
 
-
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           top: -8px;
           right: 12px;
@@ -276,7 +258,6 @@
           filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
         }
 
-
         .menuItem {
           display: flex;
           align-items: center;
@@ -285,11 +266,9 @@
           cursor: pointer;
           transition: background-color 0.2s ease;
 
-
           &:hover {
             background-color: rgba(0, 0, 0, 0.04);
           }
-
 
           .menuText {
             font-family: "Inter Tight";
@@ -299,7 +278,6 @@
             line-height: 1.2;
           }
 
-
           .menuTextDelete {
             font-family: "Inter Tight";
             font-size: 0.875rem;
@@ -307,7 +285,6 @@
             color: #dc2626;
             line-height: 1.2;
           }
-
 
           &:last-child {
             &:hover {
@@ -319,7 +296,6 @@
     }
   }
 
-
   .cardContent {
     display: flex;
     flex-direction: column;
@@ -328,7 +304,6 @@
     gap: 0.75rem;
     align-self: stretch;
 
-
     .userEmail,
     .userContact {
       display: flex;
@@ -336,7 +311,6 @@
       align-items: center;
       gap: 0.25rem;
       align-self: stretch;
-
 
       .email,
       .contact {
@@ -349,7 +323,6 @@
     }
   }
 
-
   .userTags {
     display: flex;
     align-items: center;
@@ -357,7 +330,6 @@
     gap: 0.25rem;
     align-self: stretch;
     flex-wrap: wrap;
-
 
     .userTag {
       display: flex;
@@ -369,7 +341,6 @@
       background: rgba(24, 186, 96, 0.04);
     }
 
-
     .addTag {
       display: flex;
       padding: 0.25rem 0.5rem;
@@ -380,11 +351,9 @@
       border-radius: 0.25rem;
       transition: background-color 0.2s ease;
 
-
       &:hover {
         background-color: rgba(25, 74, 255, 0.04);
       }
-
 
       .addTagIcon {
         display: flex;
@@ -394,7 +363,6 @@
         align-items: center;
         aspect-ratio: 1/1;
       }
-
 
       .addTagText {
         color: var(--Colors-blue-1, #194eff);
