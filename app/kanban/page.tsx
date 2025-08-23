@@ -171,7 +171,6 @@ const Page = () => {
           )
           setLists(listsWithCards)
         }
-        // @typescript-eslint/no-explicit-any
       } catch (err: unknown) {
         console.error(err)
         setError(
