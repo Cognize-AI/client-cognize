@@ -1,12 +1,18 @@
 "use client"
 
-import { Add, ArrowLeft, Pen, Tag, Tick, Trash } from '@/components/icons'
-import styles from './page.module.scss'
 import { useEffect, useState } from 'react'
-import { useTagsStore } from '@/provider/tags-store-provider'
+import { useRouter } from 'next/navigation'
+
 import { axios_instance } from '@/lib/axios'
+import { useTagsStore } from '@/provider/tags-store-provider'
+
+import { Add, ArrowLeft, Pen, Tag, Trash } from '@/components/icons'
+import AddInput from '@/components/AddInput/AddInput'
+
+import styles from './page.module.scss'
 
 const Page = () => {
+  const router = useRouter();
   const groupedTags = useTagsStore((state) => state.groupedTags)
   const addTags = useTagsStore((state) => state.addTags)
 
@@ -44,7 +50,9 @@ const Page = () => {
   return (
     <div className={styles.main}>
       <div className={styles.top_row}>
-        <div className={styles.btn_back}>
+        <div className={styles.btn_back} onClick={() => {
+          router.back();
+        }}>
           <ArrowLeft width={20} height={20} stroke='#194EFF' fill='none' />
           <p>Go back</p>
         </div>
@@ -78,7 +86,7 @@ const Page = () => {
                   <Add width={16} height={16} stroke='#194EFF' />
                   <p>Add tag</p>
                 </div>}
-                {
+                {/* {
                   tagOpen && tagOpen === key && <div style={{
                     border: `1px solid ${key}`
                   }} className={styles.new_tag}>
@@ -89,6 +97,16 @@ const Page = () => {
                     }} autoFocus type="text" value={newTagData.name} onChange={(e) => setNewTagData({ ...newTagData, name: e.target.value })} />
                     <Tick width={16} height={16} fill={key} onClick={createTag} />
                   </div>
+                } */}
+                {
+                  tagOpen && tagOpen === key && <AddInput
+                    color={key}
+                    createTag={createTag}
+                    name={newTagData.name}
+                    setNewTagData={setNewTagData}
+                    setTagOpen={setTagOpen}
+                    newTagData={newTagData}
+                  />
                 }
               </div>
             </div>

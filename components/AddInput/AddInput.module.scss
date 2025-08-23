@@ -1,0 +1,28 @@
+.new_tag {
+  display: flex;
+  padding: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background: var(--bg-colors-opaque, #FFF);
+
+  input {
+    border: none;
+    outline: none;
+    color: var(--text-colors-primary-dark, #00020F);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  .icon {
+    display: flex;
+    padding: 0.25rem;
+    align-items: center;
+    gap: 0.625rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+}

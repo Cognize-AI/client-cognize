@@ -44,6 +44,7 @@
     justify-content: center;
     align-items: center;
     gap: 0.75rem;
+    overflow-y: auto;
 
     .tag_row {
       display: flex;
@@ -81,6 +82,14 @@
           align-items: center;
           gap: 0.5rem;
           border-radius: 0.5rem;
+          height: 36px;
+          min-height: 36px;
+          max-height: 36px;
+          cursor: pointer;
+
+          * {
+            transition: all 0.2s ease;
+          }
 
           p {
             color: var(--text-colors-primary-dark, #00020F);
@@ -92,6 +101,16 @@
 
           .icons {
             cursor: pointer;
+
+            * {
+              fill-opacity: 0.48;
+            }
+          }
+
+          &:hover {
+            * {
+              fill-opacity: 1;
+            }
           }
         }
 
@@ -106,26 +125,6 @@
 
           p {
             color: var(--Colors-blue-1, #194EFF);
-            font-size: 1rem;
-            font-style: normal;
-            font-weight: 400;
-            line-height: normal;
-          }
-        }
-
-        .new_tag {
-          display: flex;
-          padding: 0.5rem;
-          justify-content: center;
-          align-items: center;
-          gap: 0.5rem;
-          border-radius: 0.5rem;
-          background: var(--bg-colors-opaque, #FFF);
-
-          input {
-            border: none;
-            outline: none;
-            color: var(--text-colors-primary-dark, #00020F);
             font-size: 1rem;
             font-style: normal;
             font-weight: 400;
