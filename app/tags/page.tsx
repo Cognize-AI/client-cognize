@@ -1,15 +1,31 @@
 "use client"
 
-import { ArrowLeft, Pen, Tag, Trash } from '@/components/icons'
+import { Add, ArrowLeft, Pen, Tag, Tick, Trash } from '@/components/icons'
 import styles from './page.module.scss'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTagsStore } from '@/provider/tags-store-provider'
 import { axios_instance } from '@/lib/axios'
 
 const page = () => {
-  // const tags = useTagsStore((state) => state.tags)
   const groupedTags = useTagsStore((state) => state.groupedTags)
   const addTags = useTagsStore((state) => state.addTags)
+
+  const [tagOpen, setTagOpen] = useState<boolean | string>(false)
+  const [newTagData, setNewTagData] = useState({ name: '', color: '' })
+
+  const createTag = async () => {
+    axios_instance.post("/tag/create", { ...newTagData })
+      .then(_response => {
+        setNewTagData({ name: '', color: '' })
+        setTagOpen(false)
+        fetchTags()
+      })
+      .catch(_error => {
+        setNewTagData({ name: '', color: '' })
+        setTagOpen(false)
+        fetchTags()
+      });
+  }
 
   const fetchTags = async () => {
     axios_instance.get('/tag/')
@@ -39,23 +55,42 @@ const page = () => {
       <div className={styles.tags}>
         {
           Object.keys(groupedTags)?.map((key) => {
-            return <div className={styles.tag_row} key={key} style={{ background: key+"14" }}>
-              <div className={styles.icon} style={{ background: key+"1F" }}>
+            return <div className={styles.tag_row} key={key} style={{ background: key + "14" }}>
+              <div className={styles.icon} style={{ background: key + "1F" }}>
                 <Tag width={24} height={24} fill='#00020F' />
               </div>
               <div className={styles.ta_gs_row}>
-                  {
-                    groupedTags[key]?.map((tag) => (
-                      <div className={styles.tag} style={{ background: key }} key={tag.id}>
-                        <p>
-                          {tag.name}
-                        </p>
-                        <Pen className={styles.icons} width={16} height={16} fill='white' />
-                        <Trash className={styles.icons} width={16} height={16} fill='white' />
-                      </div>
-                    ))
-                  }
-                </div>
+                {
+                  groupedTags[key]?.map((tag) => (
+                    <div className={styles.tag} style={{ background: key }} key={tag.id}>
+                      <p>
+                        {tag.name}
+                      </p>
+                      <Pen className={styles.icons} width={16} height={16} fill='white' />
+                      <Trash className={styles.icons} width={16} height={16} fill='white' />
+                    </div>
+                  ))
+                }
+                {!(tagOpen && tagOpen === key) && <div onClick={() => {
+                  setTagOpen(key)
+                  setNewTagData({ ...newTagData, color: key })
+                }} className={styles.add_tag}>
+                  <Add width={16} height={16} stroke='#194EFF' />
+                  <p>Add tag</p>
+                </div>}
+                {
+                  tagOpen && tagOpen === key && <div style={{
+                    border: `1px solid ${key}`
+                  }} className={styles.new_tag}>
+                    <input placeholder='New tag name' onKeyUp={(e) => {
+                      if (e.key === 'Enter') {
+                        createTag()
+                      }
+                    }} autoFocus type="text" value={newTagData.name} onChange={(e) => setNewTagData({ ...newTagData, name: e.target.value })} />
+                    <Tick width={16} height={16} fill={key} onClick={createTag} />
+                  </div>
+                }
+              </div>
             </div>
           })
         }
