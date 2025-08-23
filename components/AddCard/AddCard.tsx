@@ -55,7 +55,8 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>('/images/add.png');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -111,11 +112,11 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
           Authorization: token ? `Bearer ${token}` : '',
         },
         body: JSON.stringify({
-          name: name || 'Unknown Contact',
-          designation: title,
-          email,
-          phone: contact,
-          image_url: uploadedUrl,
+          name: name.trim() || null,
+          designation: title.trim() || null,
+          email: email.trim() || null,
+          phone: contact.trim() || null,
+          image_url: uploadedUrl || null,
           list_id: listId,
           tags,
         }),
@@ -129,11 +130,11 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       
       const newCardData = {
         id: jsonResponse.data.id || Date.now(),
-        name: name || 'Unknown Contact',
-        designation: title,
-        email: email,
-        phone: contact,
-        image_url: uploadedUrl,
+        name: name.trim() || null,
+        designation: title.trim() || null,
+        email: email.trim() || null,
+        phone: contact.trim() || null,
+        image_url: uploadedUrl || null,
         list_id: listId,
         tags: tags,
         ...jsonResponse.data
@@ -164,7 +165,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
 
       <div className={styles.userInfo}>
         <div className={styles.avatar} onClick={handleImageClick}>
-          <AddImage width={24} height={24} fill='#BCBBB8' />
+          <AddImage width={24} height={24} fill='#BCBBB8' /> 
           <input
             ref={fileInputRef}
             type="file"
@@ -247,8 +248,6 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
           />
         </div>
       </div>
-
-      {loading && <p>Saving...</p>}
     </div>
   );
 };

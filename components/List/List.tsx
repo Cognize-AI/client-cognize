@@ -74,7 +74,7 @@ const List = ({
 
       <div
         className={styles.searchContainer}
-        style={{ border: `1px solid ${list.color}` }}
+        style={{ '--active-color': list.color } as React.CSSProperties}
       >
         <input
           type='text'

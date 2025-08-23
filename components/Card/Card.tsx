@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from './Card.module.scss'
 import { CardType } from '@/types'
 import { useEffect, useState } from 'react'
-import { Add, Dots, Mail, Phone } from '../icons'
+import { Add, AddImage, Delete, Dots, Edit, Mail, Phone } from '../icons'
 
 type Props = {
   card: CardType
@@ -51,9 +51,9 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
     setImageError(true)
   }
 
-  if (!card || !card.name) {
-    return null
-  }
+  // if (!card || !card.name) {
+  //   return null
+  // }
 
   const toggleMenu = () => {
     setShowMenu(!showMenu)
@@ -81,7 +81,7 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
       onDragEnd={onDragEnd}
     >
       <div className={styles.userInfo}>
-        <div className={styles.avatar}>
+        <div className={styles.avatar}> 
           {card.image_url && !imageError ? (
             <Image
               src={card.image_url}
@@ -93,24 +93,18 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
               quality={100}
             />
           ) : (
-            <Image
-              src='/images/User.png'
-              alt='Default Avatar'
-              width={48}
-              height={48}
-              className={styles.avatarImage}
-            />
+            <AddImage width={24} height={24} fill="#BCBBB8" />
           )}
         </div>
         <div className={styles.userDetails}>
-          <p className={styles.userName}>{card.name}</p>
+          <p className={styles.userName}>{card.name || <span className={styles.userNamePlaceholder}>name...</span>}</p>
           <p className={styles.userTitle}>{card.designation || <span className={styles.userTitlePlaceholder}>professional exp...</span> }</p>
         </div>
         <div className={styles.userEdit} onClick={toggleMenu}>
           {/* <Image src='/images/dots.png' alt='Edit' width={24} height={24} /> */}
           <Dots width={24} height={24} fill='#3D3D3D' />
 
-          {showMenu && (
+          {/* {showMenu && (
             <div className={styles.menu}>
               <div className={styles.menuItem} onClick={handleEdit}>
                 <span className={styles.menuText}>Edit</span>
@@ -119,7 +113,23 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
                 <span className={styles.menuTextDelete}>Delete</span>
               </div>
             </div>
-          )}
+          )} */}
+          {showMenu && (
+              <div className={styles.userMenu}>
+                <div className={styles.editMenu} onClick={handleEdit}>
+                  <div className={styles.edit}>
+                    <Edit width={16} height={16} fill='#00020F'/>
+                  </div>
+                  <div className={styles.editText}>Edit</div>
+                </div>
+                <div onClick={handleDelete} className={styles.deleteButton} >
+                  <div className={styles.delete}>
+                    <Delete width={16} height={16} fill='#FB7285'/>
+                  </div>
+                  <div className={styles.deleteText}>Delete</div>
+                </div>
+              </div>
+            )}
         </div>
       </div>
 
