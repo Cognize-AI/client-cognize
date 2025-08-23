@@ -73,7 +73,10 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
     <div
       className={styles.cardContainer}
       draggable
-      onDragStart={() => onDragStart(list_id, card.id)}
+      onDragStart={() => 
+        onDragStart(list_id, card.id)
+              
+      }
       onDragEnter={() => onDragEnter(list_id, index)}
       onDragEnd={onDragEnd}
     >
