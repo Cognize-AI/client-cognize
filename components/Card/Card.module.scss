@@ -11,8 +11,9 @@
   position: relative;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
-  border: 2px solid transparent;
   cursor: grab;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-colors-light, #E2E8F0) !important;
 
   &:active {
     cursor: grabbing;

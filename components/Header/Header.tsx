@@ -104,7 +104,7 @@ const Header = () => {
                     {/* <Image src="/images/settings.png" alt="Settings" width={16} height={16} /> */}
                     <Settings width={16} height={16} fill='#00020F' />
                   </div>
-                  <div className={styles.tag}>Tags man..</div>
+                  <div className={styles.tag} onClick={() => router.push('/tags')}>Tags man..</div>
                 </div>
                 <div onClick={handleLogout} className={styles.logoutButton}>
                   <div className={styles.logout}>
