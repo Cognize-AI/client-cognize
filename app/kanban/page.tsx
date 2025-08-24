@@ -202,13 +202,11 @@ const Page = () => {
    return (
   <div className={styles.spinnerWrapper}>
     <div className={styles.spinner}></div>
+      <p className={styles.spinnerText}>Organizing your pipeline...</p>
+      <p className={styles.spinnerSubtext}>Stay with us, precision takes a moment.</p>
   </div>
 )
 
-  }
-
-  if (error) {
-    return <p className={styles.message}>{error}</p>
   }
 
   return (

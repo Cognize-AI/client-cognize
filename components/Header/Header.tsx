@@ -60,6 +60,11 @@ const Header = () => {
     router.push('/')
   }
 
+  const handleTag = () => {
+    localStorage.removeItem('token')
+    router.push('/tags')
+  }
+
   const toggleMenu = () => {
     setShowMenu(!showMenu)
   }
@@ -99,7 +104,7 @@ const Header = () => {
 
             {showMenu && (
               <div className={styles.logoutmenu}>
-                <div className={styles.tagMenu}>
+                <div onClick={handleTag} className={styles.tagMenu}>
                   <div className={styles.setting}>
                     {/* <Image src="/images/settings.png" alt="Settings" width={16} height={16} /> */}
                     <Settings width={16} height={16} fill='#00020F' />
