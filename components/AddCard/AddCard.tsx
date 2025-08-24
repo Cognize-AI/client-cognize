@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from './AddCard.module.scss'
 import { useState, useRef, useEffect } from 'react'
 import { CardType } from '@/types'
-import { Add, AddImage, Checkmark, Mail, Phone } from '../icons'
+import { Add, AddImage, Checkmark, Delete, Edit, Mail, Phone } from '../icons'
 
 type Props = {
   listId: number
@@ -61,6 +61,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
   const [isLoadingTags, setIsLoadingTags] = useState(false)
+  const [tagSearchQuery, setTagSearchQuery] = useState('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const addTagContainerRef = useRef<HTMLDivElement>(null)
@@ -71,9 +72,12 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         setIsLoadingTags(true)
         try {
           const token = localStorage.getItem('token')
-          const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/tag`,
+            {
+              headers: { Authorization: `Bearer ${token}` }
+            }
+          )
           if (!res.ok) throw new Error('Failed to fetch tags')
           const data = await res.json()
           setAvailableTags(data.data.tags)
@@ -193,6 +197,10 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
     }
   }
 
+  const filteredTags = availableTags.filter(tag =>
+    tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
+  )
+
   return (
     <div className={styles.cardContainer}>
       {error && <p className={styles.error}>{error}</p>}
@@ -273,7 +281,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       <div className={styles.userTags}>
         {tags.map((tagName, idx) => {
           const tagObject = availableTags.find(t => t.name === tagName)
-          if (!tagObject) return null // Don't render tag if color isn't available
+          if (!tagObject) return null
 
           const color = tagObject.color
           return (
@@ -300,11 +308,18 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
           </div>
           {isTagSearchOpen && (
             <div className={styles.searchTag}>
+              <input
+                type='text'
+                placeholder='Search tags...'
+                className={styles.searchTagInput}
+                value={tagSearchQuery}
+                onChange={e => setTagSearchQuery(e.target.value)}
+              />
               <div className={styles.allTags}>
                 {isLoadingTags ? (
                   <p>Loading tags...</p>
                 ) : (
-                  availableTags?.map(tag => {
+                  filteredTags?.map(tag => {
                     const isSelected = tags.includes(tag.name)
                     return (
                       <div
@@ -317,8 +332,10 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
                             isSelected ? styles.checked : ''
                           }`}
                         >
-                          {isSelected && (
-                            <Checkmark width={12} height={12} fill='white' />
+                          {isSelected ? (
+                            <Checkmark width={24} height={24} fill='white' />
+                          ) : (
+                            <Checkmark width={24} height={24} fill='white' />
                           )}
                         </div>
                         <div
@@ -326,6 +343,18 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
                           style={{ backgroundColor: tag.color }}
                         >
                           <p className={styles.tagNameText}>{tag.name}</p>
+                          <Edit
+                            width={16}
+                            height={16}
+                            fill='white'
+                            fill-opacity='0.48'
+                          />
+                          <Delete
+                            width={16}
+                            height={16}
+                            fill='white'
+                            fill-opacity='0.48'
+                          />
                         </div>
                       </div>
                     )

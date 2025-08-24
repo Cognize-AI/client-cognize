@@ -49,6 +49,7 @@ const Card = ({
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
   const [isLoadingTags, setIsLoadingTags] = useState(false)
+  const [tagSearchQuery, setTagSearchQuery] = useState('')
 
   useEffect(() => {
     setEditedCard(card)
@@ -73,7 +74,6 @@ const Card = ({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showMenu, isTagSearchOpen])
 
-  // Fetches all available tags when the component first loads
   useEffect(() => {
     const fetchTags = async () => {
       setIsLoadingTags(true)
@@ -94,7 +94,7 @@ const Card = ({
       }
     }
     fetchTags()
-  }, []) // Empty array ensures this runs only once on mount
+  }, [])
 
   const handleImageError = () => setImageError(true)
 
@@ -248,6 +248,10 @@ const Card = ({
       alert('Failed to delete card.')
     }
   }
+
+  const filteredTags = availableTags.filter(tag =>
+    tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
+  )
 
   return (
     <div
@@ -433,22 +437,21 @@ const Card = ({
       {!isEditing && (
         <div className={styles.userTags}>
           {editedCard.tags?.map((tagName, index) => {
-            const tagObject = availableTags.find(t => t.name === tagName);
-            // Use a gray fallback color while tags are loading or if not found
-            const color = tagObject ? tagObject.color : '#808080';
+            const tagObject = availableTags.find(t => t.name === tagName)
+            const color = tagObject ? tagObject.color : '#808080'
 
             return (
               <div
                 key={index}
                 className={styles.userTag}
                 style={{
-                  color: '#FFFFFF',
-                  backgroundColor: color
+                  color: color,
+                  backgroundColor: `${color}0A`
                 }}
               >
                 {tagName}
               </div>
-            );
+            )
           })}
           <div
             className={styles.addTag}
@@ -463,15 +466,17 @@ const Card = ({
                 type='text'
                 placeholder='Search tags...'
                 className={styles.searchTagInput}
+                value={tagSearchQuery}
+                onChange={e => setTagSearchQuery(e.target.value)}
               />
               <div className={styles.allTags}>
                 {isLoadingTags ? (
                   <p>Loading tags...</p>
                 ) : (
-                  availableTags?.map(tag => {
+                  filteredTags?.map(tag => {
                     const isSelected = (editedCard.tags || []).includes(
                       tag.name
-                    );
+                    )
                     return (
                       <div key={tag.id} className={styles.allTag}>
                         <div
@@ -479,21 +484,18 @@ const Card = ({
                             isSelected ? styles.checked : ''
                           }`}
                           onClick={() => handleTagToggle(tag.name)}
-                        >
-                          {isSelected && (
-                            <Checkmark width={12} height={12} fill='white' />
-                          )}
+                        >{isSelected ? <Checkmark width={24} height={24} fill='white'/> : <Checkmark width={24} height={24} fill='white'/>}
                         </div>
                         <div
                           className={styles.tagName}
                           style={{ backgroundColor: tag.color }}
                         >
                           <p className={styles.tagNameText}>{tag.name}</p>
-                          <Edit width={16} height={16} fill='white' />
-                          <Delete width={16} height={16} fill='white' />
+                          <Edit width={16} height={16} fill='white' fill-opacity="0.48" />
+                          <Delete width={16} height={16} fill='white'  fill-opacity="0.48" />
                         </div>
                       </div>
-                    );
+                    )
                   })
                 )}
               </div>
@@ -502,7 +504,7 @@ const Card = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Card;
+export default Card
