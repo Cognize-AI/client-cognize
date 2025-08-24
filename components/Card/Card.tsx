@@ -10,21 +10,34 @@ type Props = {
   onDragStart: (list_id: number, card_id: number) => void
   onDragEnd: () => void
   onDragEnter: (listId: number, cardIndex: number) => void
-  list_id: number,
+  list_id: number
   index: number
+  onCardUpdated?: (updatedCard: CardType) => void
+  onCardDeleted?: (cardId: number) => void
 }
 
-const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Props) => {
+const Card = ({
+  card,
+  onDragStart,
+  onDragEnd,
+  onDragEnter,
+  index,
+  list_id,
+  onCardUpdated,
+  onCardDeleted
+}: Props) => {
   const [imageError, setImageError] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
-  const colors = [
-    '#16a34a',
-    '#f97316',
-    '#dc2626',
-    '#2563eb',
-    '#7c3aed',
-    '#d97706'
-  ]
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedCard, setEditedCard] = useState<CardType>(card)
+  const [uploading, setUploading] = useState(false)
+
+  const colors = ['#16a34a', '#f97316', '#dc2626', '#2563eb', '#7c3aed', '#d97706']
+
+  useEffect(() => {
+    setEditedCard(card)
+    setImageError(false)
+  }, [card])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -33,7 +46,6 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
         setShowMenu(false)
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showMenu])
@@ -47,133 +59,310 @@ const Card = ({ card, onDragStart, onDragEnd, onDragEnter, index, list_id }: Pro
     return colors[index]
   }
 
-  const handleImageError = () => {
-    setImageError(true)
+  const handleImageError = () => setImageError(true)
+
+  const toggleMenu = () => setShowMenu(!showMenu)
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setEditedCard(prev => ({ ...prev, [name]: value }))
   }
 
-  // if (!card || !card.name) {
-  //   return null
-  // }
-
-  const toggleMenu = () => {
-    setShowMenu(!showMenu)
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    }
   }
 
-  const handleEdit = () => {
-    console.log('Edit clicked')
+  const uploadToCloudinary = async (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!)
+
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: 'POST',
+          body: formData
+        }
+      )
+      const data = await response.json()
+      return data.secure_url
+    } catch (error) {
+      console.error('Image upload failed:', error)
+      throw error
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const imageUrl = await uploadToCloudinary(file)
+      setEditedCard(prev => ({ ...prev, image_url: imageUrl }))
+      setImageError(false)
+    } catch (error) {
+      console.error('Upload failed:', error)
+      alert('Failed to upload image.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleSave = async () => {
     setShowMenu(false)
+    setIsEditing(false)
+
+    if (
+      editedCard.name === card.name &&
+      editedCard.email === card.email &&
+      editedCard.phone === card.phone &&
+      editedCard.designation === card.designation &&
+      editedCard.image_url === card.image_url
+    ) {
+      return
+    }
+
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(editedCard)
+        }
+      )
+      if (!res.ok) throw new Error('Failed to update card')
+
+      const updated = await res.json()
+      onCardUpdated?.(updated.data)
+    } catch (error) {
+      console.error('Edit failed:', error)
+      alert('Failed to edit card.')
+    }
   }
 
-  const handleDelete = () => {
-    console.log('Delete clicked')
+  const handleDelete = async () => {
     setShowMenu(false)
+    if (!confirm('Are you sure you want to delete this card?')) return
+
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if (!res.ok) throw new Error('Failed to delete card')
+
+      onCardDeleted?.(card.id)
+    } catch (error) {
+      console.error('Delete failed:', error)
+      alert('Failed to delete card.')
+    }
   }
 
   return (
     <div
-      className={styles.cardContainer}
-      draggable
-      onDragStart={() => 
-        onDragStart(list_id, card.id)
-              
-      }
-      onDragEnter={() => onDragEnter(list_id, index)}
+      className={`${styles.cardContainer} ${isEditing ? styles.editing : ''}`}
+      draggable={!isEditing}
+      onDragStart={() => !isEditing && onDragStart(list_id, card.id)}
+      onDragEnter={() => !isEditing && onDragEnter(list_id, index)}
       onDragEnd={onDragEnd}
     >
       <div className={styles.userInfo}>
-        <div className={styles.avatar}> 
-          {card.image_url && !imageError ? (
-            <Image
-              src={card.image_url}
-              alt='Avatar'
-              width={40}
-              height={40}
-              className={styles.avatarImage}
-              onError={handleImageError}
-              quality={100}
-            />
+        <div className={styles.avatar}>
+          {isEditing ? (
+            <label htmlFor={`file-upload-${card.id}`} className={styles.avatarUpload}>
+              {uploading ? (
+                <div className={styles.uploadingText}>...</div>
+              ) : editedCard.image_url && !imageError ? (
+                <Image
+                  src={editedCard.image_url}
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                  className={styles.avatarImage}
+                  onError={handleImageError}
+                  quality={100}
+                />
+              ) : (
+                <AddImage width={24} height={24} fill="#BCBBB8" />
+              )}
+              <input
+                id={`file-upload-${card.id}`}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className={styles.hiddenInput}
+                disabled={uploading}
+              />
+            </label>
           ) : (
-            <AddImage width={24} height={24} fill="#BCBBB8" />
+            <>
+              {editedCard.image_url && !imageError ? (
+                <Image
+                  src={editedCard.image_url}
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                  className={styles.avatarImage}
+                  onError={handleImageError}
+                  quality={100}
+                />
+              ) : (
+                <AddImage width={24} height={24} fill="#BCBBB8" />
+              )}
+            </>
           )}
         </div>
-        <div className={styles.userDetails}>
-          <p className={styles.userName}>{card.name || <span className={styles.userNamePlaceholder}>name...</span>}</p>
-          <p className={styles.userTitle}>{card.designation || <span className={styles.userTitlePlaceholder}>professional exp...</span> }</p>
-        </div>
-        <div className={styles.userEdit} onClick={toggleMenu}>
-          {/* <Image src='/images/dots.png' alt='Edit' width={24} height={24} /> */}
-          <Dots width={24} height={24} fill='#3D3D3D' />
 
-          {/* {showMenu && (
-            <div className={styles.menu}>
-              <div className={styles.menuItem} onClick={handleEdit}>
-                <span className={styles.menuText}>Edit</span>
-              </div>
-              <div className={styles.menuItem} onClick={handleDelete}>
-                <span className={styles.menuTextDelete}>Delete</span>
-              </div>
-            </div>
-          )} */}
+        <div className={styles.userDetails}>
+          {isEditing ? (
+            <>
+              <input
+                type="text"
+                name="name"
+                value={editedCard.name || ''}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="name..."
+                className={styles.userName}
+              />
+              <input
+                type="text"
+                name="designation"
+                value={editedCard.designation || ''}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="professional exp..."
+                className={styles.userTitle}
+              />
+            </>
+          ) : (
+            <>
+              <p className={styles.userName}>
+                {editedCard.name || <span className={styles.userNamePlaceholder}>name...</span>}
+              </p>
+              <p className={styles.userTitle}>
+                {editedCard.designation || <span className={styles.userTitlePlaceholder}>professional exp...</span>}
+              </p>
+            </>
+          )}
+        </div>
+
+        <div className={styles.userEdit} onClick={toggleMenu}>
+          <Dots width={24} height={24} fill="#3D3D3D" />
+
           {showMenu && (
-              <div className={styles.userMenu}>
-                <div className={styles.editMenu} onClick={handleEdit}>
+            <div className={styles.userMenu}>
+              {!isEditing ? (
+                <div className={styles.editMenu} onClick={() => setIsEditing(true)}>
                   <div className={styles.edit}>
-                    <Edit width={16} height={16} fill='#00020F'/>
+                    <Edit width={16} height={16} fill="#00020F" />
                   </div>
                   <div className={styles.editText}>Edit</div>
                 </div>
-                <div onClick={handleDelete} className={styles.deleteButton} >
-                  <div className={styles.delete}>
-                    <Delete width={16} height={16} fill='#FB7285'/>
+              ) : (
+                <div className={styles.editMenu} onClick={handleSave}>
+                  <div className={styles.edit}>
+                    <Edit width={16} height={16} fill="#00020F" />
                   </div>
-                  <div className={styles.deleteText}>Delete</div>
+                  <div className={styles.editText}>Save</div>
                 </div>
+              )}
+              <div onClick={handleDelete} className={styles.deleteButton}>
+                <div className={styles.delete}>
+                  <Delete width={16} height={16} fill="#FB7285" />
+                </div>
+                <div className={styles.deleteText}>Delete</div>
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
 
       <div className={styles.cardContent}>
-        <div className={styles.userEmail}>
-          {/* <Image src='/images/email.png' alt='Email' width={16} height={12} /> */}
-          <Mail width={16} height={12} fill='#3D3D3D' />
-          <p className={styles.email}>{card.email || <span className={styles.emailPlaceholder}>email...</span> }</p>
-        </div>
-        <div className={styles.userContact}>
-          {/* <Image src='/images/phone.png' alt='Phone' width={16} height={16} /> */}
-          <Phone width={16} height={16} fill='#3D3D3D' />
-          <p className={styles.contact}>{card.phone || <span className={styles.contactPlaceholder}>phone...</span> }</p>
-        </div>
+        {isEditing ? (
+          <>
+            <div className={styles.userEmail}>
+              <Mail width={16} height={12} fill="#3D3D3D" />
+              <input
+                type="text"
+                name="email"
+                value={editedCard.email || ''}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="email..."
+                className={styles.email}
+              />
+            </div>
+            <div className={styles.userContact}>
+              <Phone width={16} height={16} fill="#3D3D3D" />
+              <input
+                type="text"
+                name="phone"
+                value={editedCard.phone || ''}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="phone..."
+                className={styles.contact}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.userEmail}>
+              <Mail width={16} height={12} fill="#3D3D3D" />
+              <p className={styles.email}>
+                {editedCard.email || <span className={styles.emailPlaceholder}>email...</span>}
+              </p>
+            </div>
+            <div className={styles.userContact}>
+              <Phone width={16} height={16} fill="#3D3D3D" />
+              <p className={styles.contact}>
+                {editedCard.phone || <span className={styles.contactPlaceholder}>phone...</span>}
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
-      <div className={styles.userTags}>
-        {card.tags?.map((tag, index) => {
-          const color = getTagColor(tag)
-          return (
-            <div
-              key={index}
-              className={styles.userTag}
-              style={{
-                color: color,
-                background: `${color}1A`
-              }}
-            >
-              {tag}
-            </div>
-          )
-        })}
-        <div className={styles.addTag}>
-          {/* <Image
-            src='/images/addTag.png'
-            alt='Tag'
-            width={16}
-            height={16}
-            className={styles.addTagIcon}
-          /> */}
-          <Add width={16} height={16} />
-          <p className={styles.addTagText}>Add tag...</p>
+      {!isEditing && (
+        <div className={styles.userTags}>
+          {editedCard.tags?.map((tag, index) => {
+            const color = getTagColor(tag)
+            return (
+              <div
+                key={index}
+                className={styles.userTag}
+                style={{
+                  color: color,
+                  background: `${color}1A`
+                }}
+              >
+                {tag}
+              </div>
+            )
+          })}
+          <div className={styles.addTag}>
+            <Add width={16} height={16} />
+            <p className={styles.addTagText}>Add tag...</p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
