@@ -10,8 +10,8 @@ import styles from "./AddInput.module.scss"
 type AddInputProps = {
   color: string
   createTag: () => void
-  name: string
-  setTagOpen: React.Dispatch<React.SetStateAction<boolean | string>>
+  name: string | number
+  setTagOpen: React.Dispatch<React.SetStateAction<boolean | string | number>>
   newTagData: { name: string; color: string }
   setNewTagData: React.Dispatch<React.SetStateAction<{ name: string; color: string }>>
 }

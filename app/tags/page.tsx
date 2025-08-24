@@ -16,8 +16,10 @@ const Page = () => {
   const groupedTags = useTagsStore((state) => state.groupedTags)
   const addTags = useTagsStore((state) => state.addTags)
 
-  const [tagOpen, setTagOpen] = useState<boolean | string>(false)
+  const [tagOpen, setTagOpen] = useState<boolean | string | number>(false)
   const [newTagData, setNewTagData] = useState({ name: '', color: '' })
+  const [tagEditing, setTagEditing] = useState<number | boolean | string>(false)
+  const [editTagData, setEditTagData] = useState({ name: '', color: '' })
 
   const createTag = async () => {
     axios_instance.post("/tag/create", { ...newTagData })
@@ -29,6 +31,39 @@ const Page = () => {
       .catch(_error => {
         setNewTagData({ name: '', color: '' })
         setTagOpen(false)
+        fetchTags()
+      });
+  }
+
+  const updateTag = async () => {
+    const payload = {
+      id: tagEditing,
+      name: editTagData.name
+    }
+
+    if (payload.id == 0 || !payload.name) {
+      return;
+    }
+
+    axios_instance.put(`/tag/`, payload)
+      .then(_response => {
+        fetchTags()
+        setTagEditing(false)
+        setEditTagData({ name: '', color: '' })
+      })
+      .catch(_error => {
+        fetchTags()
+        setTagEditing(false)
+        setEditTagData({ name: '', color: '' })
+      });
+  }
+
+  const deleteTag = async (id: number) => {
+    axios_instance.delete(`/tag/${id}`)
+      .then(_response => {
+        fetchTags()
+      })
+      .catch(_error => {
         fetchTags()
       });
   }
@@ -70,12 +105,23 @@ const Page = () => {
               <div className={styles.ta_gs_row}>
                 {
                   groupedTags[key]?.map((tag) => (
-                    <div className={styles.tag} style={{ background: key }} key={tag.id}>
+                    tagEditing === tag.id ? <AddInput
+                      key={tag.id}
+                      color={key}
+                      createTag={updateTag}
+                      name={editTagData.name}
+                      setNewTagData={setEditTagData}
+                      setTagOpen={setTagEditing}
+                      newTagData={editTagData}
+                    /> : <div className={styles.tag} style={{ background: key }} key={tag.id}>
                       <p>
                         {tag.name}
                       </p>
-                      <Pen className={styles.icons} width={16} height={16} fill='white' />
-                      <Trash className={styles.icons} width={16} height={16} fill='white' />
+                      <Pen onClick={() => {
+                        setEditTagData({ name: tag.name, color: key })
+                        setTagEditing(tag.id)
+                      }} className={styles.icons} width={16} height={16} fill='white' />
+                      <Trash onClick={() => deleteTag(tag.id)} className={styles.icons} width={16} height={16} fill='white' />
                     </div>
                   ))
                 }

@@ -2,7 +2,7 @@ import { devtools } from 'zustand/middleware'
 import { createStore } from 'zustand/vanilla'
 
 type Tag = {
-  id: string
+  id: number
   name: string
   color: string
 }
