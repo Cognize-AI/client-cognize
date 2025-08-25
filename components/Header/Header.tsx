@@ -5,41 +5,36 @@ import Image from 'next/image'
 import styles from './Header.module.scss'
 import { User } from '@/types'
 import { ArrowDown, Logout, Settings } from '../icons'
+import { useUserStore } from '@/provider/user-store-provider'
+import { axios_instance } from '@/lib/axios'
 
 const Header = () => {
   const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
+  const _user = useUserStore(state => state.user)
+  const logoutUser = useUserStore(state => state.logoutUser)
+
+  const [user, setUser] = useState<User | null>(_user)
   const [loading, setLoading] = useState(true)
   const [showMenu, setShowMenu] = useState(false)
 
   const pathname = usePathname();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        router.push('/')
-        return
-      }
-
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-
-        if (!response.ok) throw new Error('Failed to fetch user data')
-
-        const data = await response.json()
-        setUser(data)
-      } catch (error) {
+  const fetchUser = async () => {
+    axios_instance.get('/user/me')
+      .then(response => {
+        setUser(response.data?.data)
+      })
+      .catch(error => {
         console.error(error)
-        localStorage.removeItem('token')
+        logoutUser()
         router.push('/')
-      } finally {
+      })
+      .finally(() => {
         setLoading(false)
-      }
-    }
+      })
+  }
 
+  useEffect(() => {
     fetchUser()
   }, [router])
 
@@ -56,7 +51,7 @@ const Header = () => {
   }, [showMenu])
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
+    logoutUser()
     router.push('/')
   }
 
@@ -84,7 +79,7 @@ const Header = () => {
       <div className={styles.actions}>
         {loading ? (
           <p></p>
-        ) : user ? (
+        ) : user && user?.profilePicture ? (
           <>
             <div className={styles.profileArea} onClick={toggleMenu}>
               <Image

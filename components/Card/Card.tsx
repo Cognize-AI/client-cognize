@@ -100,9 +100,9 @@ const Card = ({
     }
   }
 
-  useEffect(() => {
-    fetchTags()
-  }, [])
+  // useEffect(() => {
+  //   fetchTags()
+  // }, [])
 
   const handleImageError = () => setImageError(true)
 

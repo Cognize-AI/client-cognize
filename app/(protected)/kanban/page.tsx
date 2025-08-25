@@ -27,7 +27,7 @@ const Page = () => {
   const fetchTags = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (!res.ok) throw new Error('Failed to fetch tags')
