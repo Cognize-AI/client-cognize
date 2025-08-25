@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Inter_Tight } from "next/font/google";
 import "./globals.scss";
-import { CounterStoreProvider } from '@/provider/counter-store-provider'
+import { CounterStoreProvider } from '@/provider/counter-store-provider';
 import HeaderWrapper from "@/components/HeaderWrapper";
 import { TagsStoreProvider } from "@/provider/tags-store-provider";
-
 
 const interTight = Inter_Tight({
   variable: "--font-inter-tight",
@@ -12,8 +11,47 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
-  title: "Cognize",
-  description: "Your client tracking solution",
+  title: "Cognize – Simple AI-powered CRM",
+  description:
+    "Cognize is a simple, AI-powered CRM for startups, freelancers, and small teams. Organize contacts, manage leads, and qualify opportunities with smart tags and a clean, modern interface.",
+  keywords: [
+    "AI contact manager",
+    "simple CRM tool",
+    "lightweight CRM for startups",
+    "lead management software",
+    "AI-powered CRM platform",
+    "contact organization tool",
+    "CRM for freelancers",
+    "CRM for solopreneurs",
+    "affordable CRM for small business",
+    "personal CRM for networking",
+  ],
+  icons: {
+    icon: "/favicon.svg",
+  },
+  openGraph: {
+    title: "Cognize: To know and understand your contacts.",
+    description:
+      "Cognize is a simple, AI-powered CRM for startups, freelancers, and small teams.",
+    url: "https://yourdomain.com",
+    siteName: "Cognize",
+    images: [
+      {
+        url: "https://yourdomain.com/og-image.png",
+        width: 1200,
+        height: 630, 
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cognize – Simple AI-powered CRM",
+    description:
+      "Cognize is a simple, AI-powered CRM for startups, freelancers, and small teams.",
+    images: ["https://yourdomain.com/og-image.png"],
+  },
 };
 
 export default function RootLayout({
