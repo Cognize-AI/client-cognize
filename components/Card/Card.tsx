@@ -343,7 +343,7 @@ const Card = ({
       {!isEditing && (
         <div className={styles.userTags}>
           {editedCard.tags?.map((tag, index) => {
-            const color = getTagColor(tag)
+            const color = tag.color
             return (
               <div
                 key={index}
@@ -353,7 +353,7 @@ const Card = ({
                   background: `${color}1A`
                 }}
               >
-                {tag}
+                {tag?.name}
               </div>
             )
           })}

@@ -18,7 +18,11 @@ export type CardType = {
   list_id: number;
   created_at: string;
   updated_at: string;
-  tags: string[];
+  tags: {
+    id: number;
+    name: string;
+    color: string
+  }[];
 };
 
 export type User = {
