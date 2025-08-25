@@ -55,6 +55,8 @@ const Card = ({
   const [uploading, setUploading] = useState(false)
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
   const [tagSearchQuery, setTagSearchQuery] = useState('')
+  const [isLoadingTags, setIsLoadingTags] = useState(false)
+  const [availableTags, setAvailableTags] = useState<Tag[]>([])
 
   useEffect(() => {
     setEditedCard(card)
@@ -264,7 +266,7 @@ const Card = ({
     }
   }
 
-  const filteredTags = tags?.filter(tag =>
+  const filteredTags = availableTags?.filter(tag =>
     tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
   )
 
@@ -405,8 +407,6 @@ const Card = ({
             </>
           )}
         </div>
-
-        {/* --- MODIFIED LINE --- */}
         <div
           className={styles.userEdit}
           onClick={isEditing ? handleSave : toggleMenu}
@@ -421,7 +421,6 @@ const Card = ({
             <div className={styles.userMenu}>
               <div
                 className={styles.editMenu}
-                // --- RECOMMENDED CHANGE: Close menu on click ---
                 onClick={() => {
                   setIsEditing(true)
                   setShowMenu(false)
@@ -497,7 +496,7 @@ const Card = ({
       <div className={styles.userTags}>
         {editedCard.tags?.map((tag, index) => {
           const tagName = getTagName(tag)
-          const tagObject = tags.find(t => t.name === tagName)
+          const tagObject = availableTags.find(t => t.name === tagName)
           const color = tagObject ? tagObject.color : '#808080'
 
           return (
@@ -505,7 +504,7 @@ const Card = ({
               key={`${card.id}-tag-${index}`}
               className={styles.userTag}
               style={{
-                color: "black",
+                color: 'black',
                 backgroundColor: `${color}`
               }}
             >
