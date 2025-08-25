@@ -3,7 +3,17 @@ import Image from 'next/image'
 import styles from './Card.module.scss'
 import { CardType } from '@/types'
 import { useEffect, useState } from 'react'
-import { Add, AddImage, Delete, Dots, Edit, Mail, Phone } from '../icons'
+import {
+  Add,
+  AddImage,
+  Checkmark,
+  Delete,
+  Dots,
+  Edit,
+  Mail,
+  Phone
+} from '../icons'
+import { axios_instance } from '@/lib/axios'
 
 type Props = {
   card: CardType
@@ -15,6 +25,14 @@ type Props = {
   onCardUpdated?: (updatedCard: CardType) => void
   onCardDeleted?: (cardId: number) => void
 }
+
+type Tag = {
+  id: number
+  name: string
+  color: string
+}
+
+type CardTag = string | { name: string } | unknown
 
 const Card = ({
   card,
@@ -31,8 +49,10 @@ const Card = ({
   const [isEditing, setIsEditing] = useState(false)
   const [editedCard, setEditedCard] = useState<CardType>(card)
   const [uploading, setUploading] = useState(false)
-
-  const colors = ['#16a34a', '#f97316', '#dc2626', '#2563eb', '#7c3aed', '#d97706']
+  const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
+  const [availableTags, setAvailableTags] = useState<Tag[]>([])
+  const [isLoadingTags, setIsLoadingTags] = useState(false)
+  const [tagSearchQuery, setTagSearchQuery] = useState('')
 
   useEffect(() => {
     setEditedCard(card)
@@ -45,23 +65,95 @@ const Card = ({
       if (showMenu && !target.closest(`.${styles.userEdit}`)) {
         setShowMenu(false)
       }
+      if (
+        isTagSearchOpen &&
+        !target.closest(`.${styles.addTag}`) &&
+        !target.closest(`.${styles.searchTag}`)
+      ) {
+        setIsTagSearchOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showMenu])
+  }, [showMenu, isTagSearchOpen])
 
-  const getTagColor = (tag: string) => {
-    let hash = 0
-    for (let i = 0; i < tag.length; i++) {
-      hash = tag.charCodeAt(i) + ((hash << 5) - hash)
+  const fetchTags = async () => {
+    setIsLoadingTags(true)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (!res.ok) throw new Error('Failed to fetch tags')
+      const data = await res.json()
+      setAvailableTags(data.data.tags)
+    } catch (error) {
+      console.error('Failed to fetch tags:', error)
+    } finally {
+      setIsLoadingTags(false)
     }
-    const index = Math.abs(hash % colors.length)
-    return colors[index]
   }
+
+  useEffect(() => {
+    fetchTags()
+  }, [])
 
   const handleImageError = () => setImageError(true)
 
   const toggleMenu = () => setShowMenu(!showMenu)
+
+  const getTagName = (cardTag: CardTag): string => {
+    if (typeof cardTag === 'string') return cardTag
+    if (cardTag && typeof cardTag === 'object' && 'name' in cardTag) {
+      return (cardTag as { name: string }).name
+    }
+    return String(cardTag)
+  }
+
+  const handleTagToggle = async (tagID: number, tagName: string) => {
+    const currentTags = editedCard.tags || []
+    const isSelected = currentTags.some((cardTag: CardTag) => {
+      return getTagName(cardTag) === tagName
+    })
+
+    if (isSelected) {
+      removeTagFromCard(
+        tagID,
+        card.id,
+        () => {
+          const newTags = currentTags.filter((cardTag: CardTag) => {
+            return getTagName(cardTag) !== tagName
+          })
+          const updatedCard = { ...editedCard, tags: newTags }
+          setEditedCard(updatedCard)
+          onCardUpdated?.(updatedCard)
+          fetchTags()
+        },
+        () => {
+          console.error('Failed to remove tag')
+        }
+      )
+    } else {
+      addTagToCard(
+        tagID,
+        card.id,
+        () => {
+          const updatedCard = {
+            ...editedCard,
+            tags: [...currentTags, tagName]
+          }
+          setEditedCard(updatedCard)
+          onCardUpdated?.(updatedCard)
+          fetchTags()
+        },
+        () => {
+          console.error('Failed to add tag')
+        }
+      )
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -75,40 +167,42 @@ const Card = ({
     }
   }
 
-  const uploadToCloudinary = async (file: File) => {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!)
-
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        {
-          method: 'POST',
-          body: formData
-        }
-      )
-      const data = await response.json()
-      return data.secure_url
-    } catch (error) {
-      console.error('Image upload failed:', error)
-      throw error
-    }
-  }
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     setUploading(true)
-    try {
-      const imageUrl = await uploadToCloudinary(file)
-      setEditedCard(prev => ({ ...prev, image_url: imageUrl }))
-      setImageError(false)
-    } catch (error) {
-      console.error('Upload failed:', error)
-      alert('Failed to upload image.')
-    } finally {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+
+    reader.onloadend = async () => {
+      try {
+        const base64data = reader.result
+        const token = localStorage.getItem('token')
+        const res = await fetch(`/api/upload`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ image: base64data })
+        })
+
+        if (!res.ok) throw new Error('Upload failed')
+        const data = await res.json()
+        if (!data.url) throw new Error('Upload response did not contain a URL')
+
+        setEditedCard(prev => ({ ...prev, image_url: data.url }))
+        setImageError(false)
+      } catch (error) {
+        console.error('Upload failed:', error)
+      } finally {
+        setUploading(false)
+      }
+    }
+
+    reader.onerror = () => {
+      console.error('File reading failed')
       setUploading(false)
     }
   }
@@ -122,7 +216,8 @@ const Card = ({
       editedCard.email === card.email &&
       editedCard.phone === card.phone &&
       editedCard.designation === card.designation &&
-      editedCard.image_url === card.image_url
+      editedCard.image_url === card.image_url &&
+      JSON.stringify(editedCard.tags) === JSON.stringify(card.tags)
     ) {
       return
     }
@@ -146,17 +241,15 @@ const Card = ({
       onCardUpdated?.(updated.data)
     } catch (error) {
       console.error('Edit failed:', error)
-      alert('Failed to edit card.')
     }
   }
 
   const handleDelete = async () => {
     setShowMenu(false)
-    if (!confirm('Are you sure you want to delete this card?')) return
 
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch(
+      await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`,
         {
           method: 'DELETE',
@@ -165,13 +258,55 @@ const Card = ({
           }
         }
       )
-      if (!res.ok) throw new Error('Failed to delete card')
 
       onCardDeleted?.(card.id)
     } catch (error) {
       console.error('Delete failed:', error)
-      alert('Failed to delete card.')
     }
+  }
+
+  const filteredTags = availableTags?.filter(tag =>
+    tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
+  )
+
+  const addTagToCard = (
+    tagID: number,
+    cardID: number,
+    onSuccess: () => void,
+    onError: () => void
+  ) => {
+    if (!tagID || !cardID) return
+
+    axios_instance
+      .post('/tag/add-to-card', {
+        tag_id: tagID,
+        card_id: cardID
+      })
+      .then(() => onSuccess())
+      .catch(err => {
+        console.error('Add Tag Error:', err?.response?.data || err)
+        onError()
+      })
+  }
+
+  const removeTagFromCard = (
+    tagID: number,
+    cardID: number,
+    onSuccess: () => void,
+    onError: () => void
+  ) => {
+    if (!tagID || !cardID) return
+
+    axios_instance
+      .post(`/tag/remove-from-card`, {
+        tag_id: tagID,
+        card_id: cardID
+      })
+      .then(() => onSuccess())
+      .catch(err => {
+        console.error('Remove Tag Error:', err?.response?.data || err)
+        onError()
+      })
   }
 
   return (
@@ -185,13 +320,16 @@ const Card = ({
       <div className={styles.userInfo}>
         <div className={styles.avatar}>
           {isEditing ? (
-            <label htmlFor={`file-upload-${card.id}`} className={styles.avatarUpload}>
+            <label
+              htmlFor={`file-upload-${card.id}`}
+              className={styles.avatarUpload}
+            >
               {uploading ? (
                 <div className={styles.uploadingText}>...</div>
               ) : editedCard.image_url && !imageError ? (
                 <Image
                   src={editedCard.image_url}
-                  alt="Avatar"
+                  alt='Avatar'
                   width={40}
                   height={40}
                   className={styles.avatarImage}
@@ -199,12 +337,12 @@ const Card = ({
                   quality={100}
                 />
               ) : (
-                <AddImage width={24} height={24} fill="#BCBBB8" />
+                <AddImage width={24} height={24} fill='#BCBBB8' />
               )}
               <input
                 id={`file-upload-${card.id}`}
-                type="file"
-                accept="image/*"
+                type='file'
+                accept='image/*'
                 onChange={handleImageUpload}
                 className={styles.hiddenInput}
                 disabled={uploading}
@@ -215,7 +353,7 @@ const Card = ({
               {editedCard.image_url && !imageError ? (
                 <Image
                   src={editedCard.image_url}
-                  alt="Avatar"
+                  alt='Avatar'
                   width={40}
                   height={40}
                   className={styles.avatarImage}
@@ -223,7 +361,7 @@ const Card = ({
                   quality={100}
                 />
               ) : (
-                <AddImage width={24} height={24} fill="#BCBBB8" />
+                <AddImage width={24} height={24} fill='#BCBBB8' />
               )}
             </>
           )}
@@ -233,59 +371,67 @@ const Card = ({
           {isEditing ? (
             <>
               <input
-                type="text"
-                name="name"
+                type='text'
+                name='name'
                 value={editedCard.name || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="name..."
+                placeholder='name...'
                 className={styles.userName}
               />
               <input
-                type="text"
-                name="designation"
+                type='text'
+                name='designation'
                 value={editedCard.designation || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="professional exp..."
+                placeholder='professional exp...'
                 className={styles.userTitle}
               />
             </>
           ) : (
             <>
               <p className={styles.userName}>
-                {editedCard.name || <span className={styles.userNamePlaceholder}>name...</span>}
+                {editedCard.name || (
+                  <span className={styles.userNamePlaceholder}>name...</span>
+                )}
               </p>
               <p className={styles.userTitle}>
-                {editedCard.designation || <span className={styles.userTitlePlaceholder}>professional exp...</span>}
+                {editedCard.designation || (
+                  <span className={styles.userTitlePlaceholder}>
+                    professional exp...
+                  </span>
+                )}
               </p>
             </>
           )}
         </div>
 
         <div className={styles.userEdit} onClick={toggleMenu}>
-          <Dots width={24} height={24} fill="#3D3D3D" />
-
+          <Dots width={24} height={24} fill='#3D3D3D' />
           {showMenu && (
             <div className={styles.userMenu}>
               {!isEditing ? (
-                <div className={styles.editMenu} onClick={() => setIsEditing(true)}>
+                <div
+                  className={styles.editMenu}
+                  onClick={() => setIsEditing(true)}
+                >
                   <div className={styles.edit}>
-                    <Edit width={16} height={16} fill="#00020F" />
+                    <Edit width={16} height={16} fill='#00020F' />
                   </div>
                   <div className={styles.editText}>Edit</div>
                 </div>
               ) : (
                 <div className={styles.editMenu} onClick={handleSave}>
                   <div className={styles.edit}>
-                    <Edit width={16} height={16} fill="#00020F" />
+                    <Edit width={16} height={16} fill='#00020F' />
                   </div>
                   <div className={styles.editText}>Save</div>
                 </div>
               )}
               <div onClick={handleDelete} className={styles.deleteButton}>
                 <div className={styles.delete}>
-                  <Delete width={16} height={16} fill="#FB7285" />
+                  <Delete width={16} height={16} fill='#FB7285' />
                 </div>
                 <div className={styles.deleteText}>Delete</div>
               </div>
@@ -298,26 +444,26 @@ const Card = ({
         {isEditing ? (
           <>
             <div className={styles.userEmail}>
-              <Mail width={16} height={12} fill="#3D3D3D" />
+              <Mail width={16} height={12} fill='#3D3D3D' />
               <input
-                type="text"
-                name="email"
+                type='text'
+                name='email'
                 value={editedCard.email || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="email..."
+                placeholder='email...'
                 className={styles.email}
               />
             </div>
             <div className={styles.userContact}>
-              <Phone width={16} height={16} fill="#3D3D3D" />
+              <Phone width={16} height={16} fill='#3D3D3D' />
               <input
-                type="text"
-                name="phone"
+                type='text'
+                name='phone'
                 value={editedCard.phone || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="phone..."
+                placeholder='phone...'
                 className={styles.contact}
               />
             </div>
@@ -325,41 +471,108 @@ const Card = ({
         ) : (
           <>
             <div className={styles.userEmail}>
-              <Mail width={16} height={12} fill="#3D3D3D" />
+              <Mail width={16} height={12} fill='#3D3D3D' />
               <p className={styles.email}>
-                {editedCard.email || <span className={styles.emailPlaceholder}>email...</span>}
+                {editedCard.email || (
+                  <span className={styles.emailPlaceholder}>email...</span>
+                )}
               </p>
             </div>
             <div className={styles.userContact}>
-              <Phone width={16} height={16} fill="#3D3D3D" />
+              <Phone width={16} height={16} fill='#3D3D3D' />
               <p className={styles.contact}>
-                {editedCard.phone || <span className={styles.contactPlaceholder}>phone...</span>}
+                {editedCard.phone || (
+                  <span className={styles.contactPlaceholder}>phone...</span>
+                )}
               </p>
             </div>
           </>
         )}
       </div>
 
-      {!isEditing && (
-        <div className={styles.userTags}>
-          {editedCard.tags?.map((tag, index) => {
-            const color = getTagColor(tag)
-            return (
-              <div
-                key={index}
-                className={styles.userTag}
-                style={{
-                  color: color,
-                  background: `${color}1A`
-                }}
-              >
-                {tag}
-              </div>
-            )
-          })}
-          <div className={styles.addTag}>
-            <Add width={16} height={16} />
-            <p className={styles.addTagText}>Add tag...</p>
+      <div className={styles.userTags}>
+        {editedCard.tags?.map((tag, index) => {
+          const tagName = getTagName(tag)
+          const tagObject = availableTags.find(t => t.name === tagName)
+          const color = tagObject ? tagObject.color : '#808080'
+
+          return (
+            <div
+              key={`${card.id}-tag-${index}`}
+              className={styles.userTag}
+              style={{
+                color: color,
+                backgroundColor: `${color}0A`
+              }}
+            >
+              {tagName}
+            </div>
+          )
+        })}
+        <div
+          className={styles.addTag}
+          onClick={() => setIsTagSearchOpen(!isTagSearchOpen)}
+        >
+          <Add width={16} height={16} />
+          <p className={styles.addTagText}>Add tag...</p>
+        </div>
+      </div>
+
+      {isTagSearchOpen && (
+        <div className={styles.searchTag}>
+          <input
+            type='text'
+            placeholder='Search tags...'
+            className={styles.searchTagInput}
+            value={tagSearchQuery}
+            onChange={e => setTagSearchQuery(e.target.value)}
+          />
+          <div className={styles.allTags}>
+            {isLoadingTags ? (
+              <p>Loading tags...</p>
+            ) : (
+              filteredTags?.map(tag => {
+                const currentTags = editedCard.tags || []
+                const isSelected = currentTags.some((cardTag: CardTag) => {
+                  return getTagName(cardTag) === tag.name
+                })
+
+                return (
+                  <div key={tag.id} className={styles.allTag}>
+                    <div
+                      className={`${styles.checkbox} ${
+                        isSelected ? styles.checked : ''
+                      }`}
+                      onClick={() => handleTagToggle(tag.id, tag.name)}
+                    >
+                      {isSelected ? (
+                        <Checkmark width={24} height={24} fill='white' />
+                      ) : (
+                        <Checkmark width={24} height={24} fill='white' />
+                      )}
+                    </div>
+                    <div
+                      className={styles.tagName}
+                      style={{ backgroundColor: tag.color }}
+                    >
+                      <p className={styles.tagNameText}>{tag.name}</p>
+                      <Edit
+                        width={16}
+                        height={16}
+                        fill='white'
+                        fillOpacity='0.48'
+                      />
+                      <Delete
+                        width={16}
+                        height={16}
+                        fill='white'
+                        fillOpacity='0.48'
+                      />
+                    </div>
+                  </div>
+                )
+              })
+            )}
           </div>
         </div>
       )}
