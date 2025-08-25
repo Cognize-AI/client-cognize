@@ -6,20 +6,30 @@ import AddCard from '../AddCard/AddCard'
 import { CardType, ListType } from '@/types'
 import { AddUser } from '../icons'
 
+type Tag = {
+  id: number
+  name: string
+  color: string
+}
+
 type Props = {
   list: ListType
+  tags: Tag[]
   onCardAdded: (newCard: CardType) => void
   onDragStart: (list_id: number, card_id: number) => void
   onDragEnd: () => void
   onDragEnter: (listId: number, cardIndex: number) => void
+  onTagUpdate: () => void
 }
 
 const List = ({
   list,
+  tags,
   onCardAdded,
   onDragStart,
   onDragEnd,
-  onDragEnter
+  onDragEnter,
+  onTagUpdate
 }: Props) => {
   const [showAddUser, setShowAddUser] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -27,6 +37,12 @@ const List = ({
   const handleNewCard = (newCard: CardType) => {
     onCardAdded(newCard)
     setShowAddUser(false)
+  }
+
+  const handleCardUpdated = (updatedCard: CardType) => {
+  }
+
+  const handleCardDeleted = (cardId: number) => {
   }
 
   const filteredCards = (list.cards || []).filter(
@@ -55,14 +71,6 @@ const List = ({
           {`${list.name} (${filteredCards.length})`}
         </p>
         <div className={styles.listActions}>
-          {/* <Image
-            src='/images/addUser.png'
-            alt='Add User'
-            width={16}
-            height={16}
-            onClick={() => setShowAddUser(prev => !prev)}
-            style={{ cursor: 'pointer' }}
-          /> */}
           <AddUser
             width={24}
             height={24}
@@ -89,6 +97,7 @@ const List = ({
         {showAddUser && (
           <AddCard
             listId={list.id}
+            tags={tags}
             onCardAdded={handleNewCard}
             onCancel={() => setShowAddUser(false)}
           />
@@ -98,11 +107,15 @@ const List = ({
           <Card
             key={card.id}
             card={card}
+            tags={tags}
             index={idx}
             list_id={list.id}
             onDragStart={onDragStart}
             onDragEnter={onDragEnter}
             onDragEnd={onDragEnd}
+            onCardUpdated={handleCardUpdated}
+            onCardDeleted={handleCardDeleted}
+            onTagUpdate={onTagUpdate}
           />
         ))}
       </div>

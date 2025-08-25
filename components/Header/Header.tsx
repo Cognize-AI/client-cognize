@@ -83,7 +83,7 @@ const Header = () => {
 
       <div className={styles.actions}>
         {loading ? (
-          <p>Loading...</p>
+          <p></p>
         ) : user ? (
           <>
             <div className={styles.profileArea} onClick={toggleMenu}>
