@@ -35,8 +35,6 @@ const Page = () => {
         list_id: listId
       }
 
-      console.log('Sending payload to server:', payload)
-
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/move`,
         {

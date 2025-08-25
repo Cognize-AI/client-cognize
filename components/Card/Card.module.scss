@@ -13,22 +13,23 @@
   flex-shrink: 0;
   cursor: grab;
   border-radius: 0.75rem;
+  border: 1px transparent;
 
   &:hover {
-    border: 1px solid var(--Colors-blue-1, #194eff);
+    // border: 1px solid var(--Colors-blue-1, #194eff);
     background: var(--bg-colors-opaque, #fff);
   }
   // border: 1px solid var(--border-colors-light, #e2e8f0) !important;
 
   &:has(.searchTag) {
     z-index: 50;
-border: 1px solid var(--Colors-blue-1, #194EFF);
-background: var(--bg-colors-opaque, #FFF);
+    border: 1px solid var(--Colors-blue-1, #194EFF); // Add this line
+    background: var(--bg-colors-opaque, #FFF);
   }
 
   &:active {
     cursor: grabbing;
-    border: 1px solid var(--Colors-blue-1, #194eff);
+    // border: 1px solid var(--Colors-blue-1, #194eff);
     background: var(--bg-colors-opaque, #fff);
   }
 

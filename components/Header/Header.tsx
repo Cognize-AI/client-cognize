@@ -61,7 +61,6 @@ const Header = () => {
   }
 
   const handleTag = () => {
-    localStorage.removeItem('token')
     router.push('/tags')
   }
 
