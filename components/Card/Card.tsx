@@ -81,7 +81,7 @@ const Card = ({
     setIsLoadingTags(true)
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
