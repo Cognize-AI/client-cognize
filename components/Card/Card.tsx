@@ -301,7 +301,7 @@ const Card = ({
               className={styles.avatarUpload}
             >
               {uploading ? (
-                <div className={styles.uploadingText}>...</div>
+                <div className={styles.uploadingText}></div>
               ) : editedCard.image_url && !imageError ? (
                 <Image
                   src={editedCard.image_url}
@@ -425,7 +425,7 @@ const Card = ({
         {isEditing ? (
           <>
             <div className={styles.userEmail}>
-              <Mail width={16} height={12} fill='#3D3D3D' />
+              <Mail width={16} height={16} fill='#3D3D3D' />
               <input
                 type='text'
                 name='email'
@@ -482,8 +482,8 @@ const Card = ({
               key={`${card.id}-tag-${index}`}
               className={styles.userTag}
               style={{
-                color: color,
-                backgroundColor: `${color}0A`
+                color: "black",
+                backgroundColor: `${color}`
               }}
             >
               {tagName}
@@ -524,9 +524,9 @@ const Card = ({
                     onClick={() => handleTagToggle(tag.id, tag.name)}
                   >
                     {isSelected ? (
-                      <Checkmark width={12} height={12} fill='white' />
+                      <Checkmark width={16} height={16} fill='white' />
                     ) : (
-                      <Checkmark width={12} height={12} fill='white' />
+                      <Checkmark width={16} height={16} fill='white' />
                     )}
                   </div>
                   <div
