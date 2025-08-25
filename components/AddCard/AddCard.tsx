@@ -7,6 +7,7 @@ import { Add, AddImage, Checkmark, Delete, Edit, Mail, Phone } from '../icons'
 
 type Props = {
   listId: number
+  tags?: Tag[]
   onCardAdded: (newCard: CardType) => void
   onCancel: () => void
 }
@@ -48,48 +49,21 @@ const uploadToCloudinary = async (file: File): Promise<string> => {
   })
 }
 
-const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
+const AddCard = ({ listId, tags = [], onCardAdded, onCancel }: Props) => {
   const [name, setName] = useState('')
   const [title, setTitle] = useState('')
   const [email, setEmail] = useState('')
   const [contact, setContact] = useState('')
-  const [tags, setTags] = useState<string[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
-  const [availableTags, setAvailableTags] = useState<Tag[]>([])
-  const [isLoadingTags, setIsLoadingTags] = useState(false)
   const [tagSearchQuery, setTagSearchQuery] = useState('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const addTagContainerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      if (isTagSearchOpen && availableTags.length === 0) {
-        setIsLoadingTags(true)
-        try {
-          const token = localStorage.getItem('token')
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/tag`,
-            {
-              headers: { Authorization: `Bearer ${token}` }
-            }
-          )
-          if (!res.ok) throw new Error('Failed to fetch tags')
-          const data = await res.json()
-          setAvailableTags(data.data.tags)
-        } catch (error) {
-          console.error('Failed to fetch tags:', error)
-        } finally {
-          setIsLoadingTags(false)
-        }
-      }
-    }
-    fetchTags()
-  }, [isTagSearchOpen, availableTags.length])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -119,7 +93,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
   }
 
   const handleTagToggle = (tagName: string) => {
-    setTags(prevTags =>
+    setSelectedTags(prevTags =>
       prevTags.includes(tagName)
         ? prevTags.filter(t => t !== tagName)
         : [...prevTags, tagName]
@@ -156,7 +130,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
             phone: contact.trim() || null,
             image_url: uploadedUrl || null,
             list_id: listId,
-            tags
+            tags: selectedTags
           })
         }
       )
@@ -175,7 +149,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
         phone: contact.trim() || null,
         image_url: uploadedUrl || null,
         list_id: listId,
-        tags: tags,
+        tags: selectedTags,
         ...jsonResponse.data
       }
 
@@ -185,7 +159,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       setTitle('')
       setEmail('')
       setContact('')
-      setTags([])
+      setSelectedTags([])
       setImageFile(null)
       setImageUrl(null)
       onCancel()
@@ -197,7 +171,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
     }
   }
 
-  const filteredTags = availableTags.filter(tag =>
+  const filteredTags = (tags || []).filter(tag =>
     tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
   )
 
@@ -250,6 +224,7 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
             width={24}
             height={24}
             fill='#194EFF'
+            style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
           />
         </div>
       </div>
@@ -279,8 +254,8 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
       </div>
 
       <div className={styles.userTags}>
-        {tags.map((tagName, idx) => {
-          const tagObject = availableTags.find(t => t.name === tagName)
+        {selectedTags.map((tagName, idx) => {
+          const tagObject = tags.find(t => t.name === tagName)
           if (!tagObject) return null
 
           const color = tagObject.color
@@ -316,11 +291,9 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
                 onChange={e => setTagSearchQuery(e.target.value)}
               />
               <div className={styles.allTags}>
-                {isLoadingTags ? (
-                  <p>Loading tags...</p>
-                ) : (
-                  filteredTags?.map(tag => {
-                    const isSelected = tags.includes(tag.name)
+                {filteredTags.length > 0 ? (
+                  filteredTags.map(tag => {
+                    const isSelected = selectedTags.includes(tag.name)
                     return (
                       <div
                         key={tag.id}
@@ -333,9 +306,9 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
                           }`}
                         >
                           {isSelected ? (
-                            <Checkmark width={24} height={24} fill='white' />
+                            <Checkmark width={12} height={12} fill='white' />
                           ) : (
-                            <Checkmark width={24} height={24} fill='white' />
+                            <Checkmark width={12} height={12} fill='white' />
                           )}
                         </div>
                         <div
@@ -343,22 +316,13 @@ const AddCard = ({ listId, onCardAdded, onCancel }: Props) => {
                           style={{ backgroundColor: tag.color }}
                         >
                           <p className={styles.tagNameText}>{tag.name}</p>
-                          <Edit
-                            width={16}
-                            height={16}
-                            fill='white'
-                            fill-opacity='0.48'
-                          />
-                          <Delete
-                            width={16}
-                            height={16}
-                            fill='white'
-                            fill-opacity='0.48'
-                          />
+                          
                         </div>
                       </div>
                     )
                   })
+                ) : (
+                  <p></p>
                 )}
               </div>
             </div>

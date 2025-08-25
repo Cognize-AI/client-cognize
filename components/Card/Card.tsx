@@ -17,6 +17,7 @@ import { axios_instance } from '@/lib/axios'
 
 type Props = {
   card: CardType
+  tags: Tag[]
   onDragStart: (list_id: number, card_id: number) => void
   onDragEnd: () => void
   onDragEnter: (listId: number, cardIndex: number) => void
@@ -24,6 +25,7 @@ type Props = {
   index: number
   onCardUpdated?: (updatedCard: CardType) => void
   onCardDeleted?: (cardId: number) => void
+  onTagUpdate?: () => void
 }
 
 type Tag = {
@@ -36,13 +38,15 @@ type CardTag = string | { name: string } | unknown
 
 const Card = ({
   card,
+  tags,
   onDragStart,
   onDragEnd,
   onDragEnter,
   index,
   list_id,
   onCardUpdated,
-  onCardDeleted
+  onCardDeleted,
+  onTagUpdate
 }: Props) => {
   const [imageError, setImageError] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
@@ -50,8 +54,6 @@ const Card = ({
   const [editedCard, setEditedCard] = useState<CardType>(card)
   const [uploading, setUploading] = useState(false)
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
-  const [availableTags, setAvailableTags] = useState<Tag[]>([])
-  const [isLoadingTags, setIsLoadingTags] = useState(false)
   const [tagSearchQuery, setTagSearchQuery] = useState('')
 
   useEffect(() => {
@@ -76,29 +78,6 @@ const Card = ({
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showMenu, isTagSearchOpen])
-
-  const fetchTags = async () => {
-    setIsLoadingTags(true)
-    try {
-      const token = localStorage.getItem('token')
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (!res.ok) throw new Error('Failed to fetch tags')
-      const data = await res.json()
-      setAvailableTags(data.data.tags)
-    } catch (error) {
-      console.error('Failed to fetch tags:', error)
-    } finally {
-      setIsLoadingTags(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchTags()
-  }, [])
 
   const handleImageError = () => setImageError(true)
 
@@ -129,7 +108,7 @@ const Card = ({
           const updatedCard = { ...editedCard, tags: newTags }
           setEditedCard(updatedCard)
           onCardUpdated?.(updatedCard)
-          fetchTags()
+          onTagUpdate?.()
         },
         () => {
           console.error('Failed to remove tag')
@@ -146,7 +125,7 @@ const Card = ({
           }
           setEditedCard(updatedCard)
           onCardUpdated?.(updatedCard)
-          fetchTags()
+          onTagUpdate?.()
         },
         () => {
           console.error('Failed to add tag')
@@ -249,15 +228,12 @@ const Card = ({
 
     try {
       const token = localStorage.getItem('token')
-      await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
 
       onCardDeleted?.(card.id)
     } catch (error) {
@@ -265,7 +241,7 @@ const Card = ({
     }
   }
 
-  const filteredTags = availableTags?.filter(tag =>
+  const filteredTags = tags?.filter(tag =>
     tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
   )
 
@@ -407,28 +383,33 @@ const Card = ({
           )}
         </div>
 
-        <div className={styles.userEdit} onClick={toggleMenu}>
-          <Dots width={24} height={24} fill='#3D3D3D' />
-          {showMenu && (
+        {/* --- MODIFIED LINE --- */}
+        <div
+          className={styles.userEdit}
+          onClick={isEditing ? handleSave : toggleMenu}
+        >
+          {!isEditing ? (
+            <Dots width={24} height={24} fill='#3D3D3D' />
+          ) : (
+            <Checkmark width={24} height={24} fill='#194EFF' />
+          )}
+
+          {showMenu && !isEditing && (
             <div className={styles.userMenu}>
-              {!isEditing ? (
-                <div
-                  className={styles.editMenu}
-                  onClick={() => setIsEditing(true)}
-                >
-                  <div className={styles.edit}>
-                    <Edit width={16} height={16} fill='#00020F' />
-                  </div>
-                  <div className={styles.editText}>Edit</div>
+              <div
+                className={styles.editMenu}
+                // --- RECOMMENDED CHANGE: Close menu on click ---
+                onClick={() => {
+                  setIsEditing(true)
+                  setShowMenu(false)
+                }}
+              >
+                <div className={styles.edit}>
+                  <Edit width={16} height={16} fill='#00020F' />
                 </div>
-              ) : (
-                <div className={styles.editMenu} onClick={handleSave}>
-                  <div className={styles.edit}>
-                    <Edit width={16} height={16} fill='#00020F' />
-                  </div>
-                  <div className={styles.editText}>Save</div>
-                </div>
-              )}
+                <div className={styles.editText}>Edit</div>
+              </div>
+
               <div onClick={handleDelete} className={styles.deleteButton}>
                 <div className={styles.delete}>
                   <Delete width={16} height={16} fill='#FB7285' />
@@ -493,7 +474,7 @@ const Card = ({
       <div className={styles.userTags}>
         {editedCard.tags?.map((tag, index) => {
           const tagName = getTagName(tag)
-          const tagObject = availableTags.find(t => t.name === tagName)
+          const tagObject = tags.find(t => t.name === tagName)
           const color = tagObject ? tagObject.color : '#808080'
 
           return (
@@ -528,51 +509,35 @@ const Card = ({
             onChange={e => setTagSearchQuery(e.target.value)}
           />
           <div className={styles.allTags}>
-            {isLoadingTags ? (
-              <p>Loading tags...</p>
-            ) : (
-              filteredTags?.map(tag => {
-                const currentTags = editedCard.tags || []
-                const isSelected = currentTags.some((cardTag: CardTag) => {
-                  return getTagName(cardTag) === tag.name
-                })
-
-                return (
-                  <div key={tag.id} className={styles.allTag}>
-                    <div
-                      className={`${styles.checkbox} ${
-                        isSelected ? styles.checked : ''
-                      }`}
-                      onClick={() => handleTagToggle(tag.id, tag.name)}
-                    >
-                      {isSelected ? (
-                        <Checkmark width={24} height={24} fill='white' />
-                      ) : (
-                        <Checkmark width={24} height={24} fill='white' />
-                      )}
-                    </div>
-                    <div
-                      className={styles.tagName}
-                      style={{ backgroundColor: tag.color }}
-                    >
-                      <p className={styles.tagNameText}>{tag.name}</p>
-                      <Edit
-                        width={16}
-                        height={16}
-                        fill='white'
-                        fillOpacity='0.48'
-                      />
-                      <Delete
-                        width={16}
-                        height={16}
-                        fill='white'
-                        fillOpacity='0.48'
-                      />
-                    </div>
-                  </div>
-                )
+            {filteredTags?.map(tag => {
+              const currentTags = editedCard.tags || []
+              const isSelected = currentTags.some((cardTag: CardTag) => {
+                return getTagName(cardTag) === tag.name
               })
-            )}
+
+              return (
+                <div key={tag.id} className={styles.allTag}>
+                  <div
+                    className={`${styles.checkbox} ${
+                      isSelected ? styles.checked : ''
+                    }`}
+                    onClick={() => handleTagToggle(tag.id, tag.name)}
+                  >
+                    {isSelected ? (
+                      <Checkmark width={12} height={12} fill='white' />
+                    ) : (
+                      <Checkmark width={12} height={12} fill='white' />
+                    )}
+                  </div>
+                  <div
+                    className={styles.tagName}
+                    style={{ backgroundColor: tag.color }}
+                  >
+                    <p className={styles.tagNameText}>{tag.name}</p>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       )}
