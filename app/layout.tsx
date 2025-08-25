@@ -4,6 +4,7 @@ import "./globals.scss";
 import { CounterStoreProvider } from '@/provider/counter-store-provider'
 import HeaderWrapper from "@/components/HeaderWrapper";
 import { TagsStoreProvider } from "@/provider/tags-store-provider";
+import { UserStoreProvider } from "@/provider/user-store-provider";
 
 
 const interTight = Inter_Tight({
@@ -24,12 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${interTight.variable}`}>
-        <HeaderWrapper />
-        <TagsStoreProvider>
-          <CounterStoreProvider>
-            {children}
-          </CounterStoreProvider>
-        </TagsStoreProvider>
+        <UserStoreProvider>
+          <HeaderWrapper />
+          <TagsStoreProvider>
+            <CounterStoreProvider>
+              {children}
+            </CounterStoreProvider>
+          </TagsStoreProvider>
+        </UserStoreProvider>
       </body>
     </html>
   );
