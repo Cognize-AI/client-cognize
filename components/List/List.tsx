@@ -3,19 +3,15 @@ import { useState } from 'react'
 import styles from './List.module.scss'
 import Card from '../Card/Card'
 import AddCard from '../AddCard/AddCard'
-import { CardType, ListType } from '@/types'
+import { CardType, ListType, Tag } from '@/types'
 import { AddUser } from '../icons'
-
-type Tag = {
-  id: number
-  name: string
-  color: string
-}
 
 type Props = {
   list: ListType
   tags: Tag[]
   onCardAdded: (newCard: CardType) => void
+  onCardUpdated: (updatedCard: CardType) => void
+  onCardDeleted: (listId: number, cardId: number) => void
   onDragStart: (list_id: number, card_id: number) => void
   onDragEnd: () => void
   onDragEnter: (listId: number, cardIndex: number) => void
@@ -26,23 +22,27 @@ const List = ({
   list,
   tags,
   onCardAdded,
+  onCardUpdated,
+  onCardDeleted,
   onDragStart,
   onDragEnd,
   onDragEnter,
   onTagUpdate
 }: Props) => {
-  const [showAddUser, setShowAddUser] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [showAddUser, setShowAddUser] = useState<boolean>(false)
+  const [searchTerm, setSearchTerm] = useState<string>('')
 
-  const handleNewCard = (newCard: CardType) => {
+  const handleNewCard = (newCard: CardType): void => {
     onCardAdded(newCard)
     setShowAddUser(false)
   }
 
-  const handleCardUpdated = (updatedCard: CardType) => {
+  const handleCardUpdated = (updatedCard: CardType): void => {
+    onCardUpdated(updatedCard)
   }
 
-  const handleCardDeleted = (cardId: number) => {
+  const handleCardDeleted = (cardId: number): void => {
+    onCardDeleted(list.id, cardId)
   }
 
   const filteredCards = (list.cards || []).filter(
@@ -107,7 +107,7 @@ const List = ({
           <Card
             key={card.id}
             card={card}
-            tags={tags}
+            availableTags={tags}
             index={idx}
             list_id={list.id}
             onDragStart={onDragStart}

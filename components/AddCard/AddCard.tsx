@@ -50,23 +50,23 @@ const uploadToCloudinary = async (file: File): Promise<string> => {
 }
 
 const AddCard = ({ listId, tags = [], onCardAdded, onCancel }: Props) => {
-  const [name, setName] = useState('')
-  const [title, setTitle] = useState('')
-  const [email, setEmail] = useState('')
-  const [contact, setContact] = useState('')
+  const [name, setName] = useState<string>('')
+  const [title, setTitle] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [contact, setContact] = useState<string>('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
-  const [tagSearchQuery, setTagSearchQuery] = useState('')
+  const [isTagSearchOpen, setIsTagSearchOpen] = useState<boolean>(false)
+  const [tagSearchQuery, setTagSearchQuery] = useState<string>('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const addTagContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (
         isTagSearchOpen &&
         addTagContainerRef.current &&
@@ -79,7 +79,7 @@ const AddCard = ({ listId, tags = [], onCardAdded, onCancel }: Props) => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isTagSearchOpen])
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const files = e.target.files
     if (files && files.length > 0) {
       const file = files[0]
@@ -88,11 +88,11 @@ const AddCard = ({ listId, tags = [], onCardAdded, onCancel }: Props) => {
     }
   }
 
-  const handleImageClick = () => {
+  const handleImageClick = (): void => {
     fileInputRef.current?.click()
   }
 
-  const handleTagToggle = (tagName: string) => {
+  const handleTagToggle = (tagName: string): void => {
     setSelectedTags(prevTags =>
       prevTags.includes(tagName)
         ? prevTags.filter(t => t !== tagName)
@@ -100,7 +100,7 @@ const AddCard = ({ listId, tags = [], onCardAdded, onCancel }: Props) => {
     )
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     if (email && !email.includes('@')) {
       setError('Please enter a valid email.')
       return
@@ -316,7 +316,6 @@ const AddCard = ({ listId, tags = [], onCardAdded, onCancel }: Props) => {
                           style={{ backgroundColor: tag.color }}
                         >
                           <p className={styles.tagNameText}>{tag.name}</p>
-                          
                         </div>
                       </div>
                     )

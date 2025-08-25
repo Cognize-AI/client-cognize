@@ -2,29 +2,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { List } from '@/components'
-import { CardType, ListType } from '@/types'
+import { CardType, ListType, Tag } from '@/types'
 import styles from './page.module.scss'
 import { useTagsStore } from '@/provider/tags-store-provider'
 
-type Tag = {
-  id: number
-  name: string
-  color: string
-}
-
 const Page = () => {
   const [lists, setLists] = useState<ListType[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  
   const tags = useTagsStore(state => state.tags)
   const addTags = useTagsStore(state => state.addTags)
+  
   const dragItem = useRef<{ listId: number; cardId: number } | null>(null)
-  const dragOverItem = useRef<{ listId: number; cardIndex: number } | null>(
-    null
-  )
+  const dragOverItem = useRef<{ listId: number; cardIndex: number } | null>(null)
   const router = useRouter()
 
-  const fetchTags = async () => {
+  const fetchTags = async (): Promise<void> => {
     try {
       const token = localStorage.getItem('token')
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
@@ -38,7 +32,7 @@ const Page = () => {
     }
   }
 
-  const fetchLists = async () => {
+  const fetchLists = async (): Promise<void> => {
     try {
       const token = localStorage.getItem('token')
       if (!token) {
@@ -70,9 +64,14 @@ const Page = () => {
       } else {
         const json = await res.json()
         const listsWithCards = (json.data.lists || []).map(
-          (list: ListType) => ({
+          (list: any) => ({
             ...list,
-            cards: list.cards || []
+            cards: (list.cards || []).map((card: any) => ({
+              ...card,
+              tags: Array.isArray(card.tags) ? card.tags.map((tag: any) => 
+                typeof tag === 'string' ? tag : tag.name
+              ) : []
+            }))
           })
         )
         setLists(listsWithCards)
@@ -88,13 +87,13 @@ const Page = () => {
   }
 
   useEffect(() => {
-    const initializeData = async () => {
+    const initializeData = async (): Promise<void> => {
       await Promise.all([fetchLists(), fetchTags()])
     }
     initializeData()
   }, [router])
 
-  const handleCardAdded = (newCard: CardType) => {
+  const handleCardAdded = (newCard: CardType): void => {
     setLists(prevLists =>
       prevLists.map(list => {
         if (String(list.id) === String(newCard.list_id)) {
@@ -108,24 +107,52 @@ const Page = () => {
     )
   }
 
-  const handleTagUpdate = () => {
+  const handleCardUpdated = (updatedCard: CardType): void => {
+    setLists(prevLists =>
+      prevLists.map(list => ({
+        ...list,
+        cards: (list.cards || []).map(card =>
+          card.id === updatedCard.id ? updatedCard : card
+        )
+      }))
+    )
+  }
+
+  const handleCardDeleted = (listId: number, cardId: number): void => {
+    setLists(prevLists =>
+      prevLists.map(list => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            cards: (list.cards || []).filter(card => card.id !== cardId)
+          }
+        }
+        return list
+      })
+    )
+  }
+
+  const handleTagUpdate = (): void => {
     fetchTags()
   }
 
-  const handleDragStart = (listId: number, cardId: number) => {
+  const handleDragStart = (listId: number, cardId: number): void => {
     dragItem.current = { listId, cardId }
   }
 
-  const handleDragEnter = (listId: number, cardIndex: number) => {
+  const handleDragEnter = (listId: number, cardIndex: number): void => {
     dragOverItem.current = { listId, cardIndex }
   }
 
-  const handleDragEnd = async () => {
+  const handleDragEnd = async (): Promise<void> => {
     if (!dragItem.current || !dragOverItem.current) return
+    
     const { listId: fromListId, cardId } = dragItem.current
     const { listId: toListId, cardIndex } = dragOverItem.current
+    
     const originalLists = JSON.parse(JSON.stringify(lists))
     let draggedCard: CardType | undefined
+    
     const updatedLists = lists
       .map(list => {
         if (list.id === fromListId) {
@@ -142,20 +169,48 @@ const Page = () => {
         }
         return list
       })
+    
     setLists(updatedLists)
+    
     dragItem.current = null
     dragOverItem.current = null
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/move`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          card_id: cardId,
+          new_list_id: toListId,
+          new_position: cardIndex,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save card position.')
+      }
+    } catch (error) {
+      console.error('Drag and drop failed:', error)
+      setLists(originalLists)
+    }
   }
 
   if (loading) {
     return (
       <div className={styles.spinnerWrapper}>
-        <div className={styles.spinnerOuter}>
-        </div>
+        <div className={styles.spinnerOuter}></div>
         <p className={styles.spinnerText}>Organizing your pipeline...</p>
         <p className={styles.spinnerSubtext}>Stay with us, precision takes a moment.</p>
       </div>
     )
+  }
+
+  if (error) {
+    return <div className={styles.errorState}>{error}</div>
   }
 
   return (
@@ -167,6 +222,8 @@ const Page = () => {
             list={list}
             tags={tags}
             onCardAdded={handleCardAdded}
+            onCardUpdated={handleCardUpdated}
+            onCardDeleted={handleCardDeleted}
             onDragStart={handleDragStart}
             onDragEnter={handleDragEnter}
             onDragEnd={handleDragEnd}

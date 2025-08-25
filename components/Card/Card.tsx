@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import styles from './Card.module.scss'
-import { CardType } from '@/types'
+import { CardType, Tag } from '@/types'
 import { useEffect, useState } from 'react'
 import {
   Add,
@@ -14,31 +14,24 @@ import {
   Phone
 } from '../icons'
 import { axios_instance } from '@/lib/axios'
+import { AxiosError } from 'axios'
 
 type Props = {
   card: CardType
-  tags: Tag[]
+  availableTags: Tag[]
   onDragStart: (list_id: number, card_id: number) => void
   onDragEnd: () => void
   onDragEnter: (listId: number, cardIndex: number) => void
   list_id: number
   index: number
   onCardUpdated?: (updatedCard: CardType) => void
-  onCardDeleted?: (cardId: number) => void
+  onCardDeleted?: (listId: number, cardId: number) => void
   onTagUpdate?: () => void
 }
 
-type Tag = {
-  id: number
-  name: string
-  color: string
-}
-
-type CardTag = string | { name: string } | unknown
-
 const Card = ({
   card,
-  tags,
+  availableTags,
   onDragStart,
   onDragEnd,
   onDragEnter,
@@ -48,15 +41,13 @@ const Card = ({
   onCardDeleted,
   onTagUpdate
 }: Props) => {
-  const [imageError, setImageError] = useState(false)
-  const [showMenu, setShowMenu] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  const [imageError, setImageError] = useState<boolean>(false)
+  const [showMenu, setShowMenu] = useState<boolean>(false)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
   const [editedCard, setEditedCard] = useState<CardType>(card)
-  const [uploading, setUploading] = useState(false)
-  const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
-  const [tagSearchQuery, setTagSearchQuery] = useState('')
-  const [isLoadingTags, setIsLoadingTags] = useState(false)
-  const [availableTags, setAvailableTags] = useState<Tag[]>([])
+  const [uploading, setUploading] = useState<boolean>(false)
+  const [isTagSearchOpen, setIsTagSearchOpen] = useState<boolean>(false)
+  const [tagSearchQuery, setTagSearchQuery] = useState<string>('')
 
   useEffect(() => {
     setEditedCard(card)
@@ -64,7 +55,7 @@ const Card = ({
   }, [card])
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       const target = event.target as Element
       if (showMenu && !target.closest(`.${styles.userEdit}`)) {
         setShowMenu(false)
@@ -81,97 +72,47 @@ const Card = ({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showMenu, isTagSearchOpen])
 
-  const fetchTags = async () => {
-    setIsLoadingTags(true)
-    try {
-      const token = localStorage.getItem('token')
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (!res.ok) throw new Error('Failed to fetch tags')
-      const data = await res.json()
-      setAvailableTags(data.data.tags)
-    } catch (error) {
-      console.error('Failed to fetch tags:', error)
-    } finally {
-      setIsLoadingTags(false)
-    }
-  }
+  const handleImageError = (): void => setImageError(true)
 
-  // useEffect(() => {
-  //   fetchTags()
-  // }, [])
+  const toggleMenu = (): void => setShowMenu(!showMenu)
 
-  const handleImageError = () => setImageError(true)
-
-  const toggleMenu = () => setShowMenu(!showMenu)
-
-  const getTagName = (cardTag: CardTag): string => {
-    if (typeof cardTag === 'string') return cardTag
-    if (cardTag && typeof cardTag === 'object' && 'name' in cardTag) {
-      return (cardTag as { name: string }).name
-    }
-    return String(cardTag)
-  }
-
-  const handleTagToggle = async (tagID: number, tagName: string) => {
+  const handleTagToggle = async (tagID: number, tagName: string): Promise<void> => {
     const currentTags = editedCard.tags || []
-    const isSelected = currentTags.some((cardTag: CardTag) => {
-      return getTagName(cardTag) === tagName
-    })
+    const isSelected = currentTags.includes(tagName)
 
-    if (isSelected) {
-      removeTagFromCard(
-        tagID,
-        card.id,
-        () => {
-          const newTags = currentTags.filter((cardTag: CardTag) => {
-            return getTagName(cardTag) !== tagName
-          })
-          const updatedCard = { ...editedCard, tags: newTags }
-          setEditedCard(updatedCard)
-          onCardUpdated?.(updatedCard)
-          onTagUpdate?.()
-        },
-        () => {
-          console.error('Failed to remove tag')
-        }
-      )
-    } else {
-      addTagToCard(
-        tagID,
-        card.id,
-        () => {
-          const updatedCard = {
-            ...editedCard,
-            tags: [...currentTags, tagName]
-          }
-          setEditedCard(updatedCard)
-          onCardUpdated?.(updatedCard)
-          onTagUpdate?.()
-        },
-        () => {
-          console.error('Failed to add tag')
-        }
-      )
+    try {
+      if (isSelected) {
+        await removeTagFromCard(tagID, card.id)
+        const newTags = currentTags.filter(tag => tag !== tagName)
+        const updatedCard = { ...editedCard, tags: newTags }
+        setEditedCard(updatedCard)
+        onCardUpdated?.(updatedCard)
+      } else {
+        await addTagToCard(tagID, card.id)
+        const newTags = [...currentTags, tagName]
+        const updatedCard = { ...editedCard, tags: newTags }
+        setEditedCard(updatedCard)
+        onCardUpdated?.(updatedCard)
+      }
+      onTagUpdate?.()
+    } catch (error) {
+      console.error('Tag toggle failed:', error)
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target
     setEditedCard(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       e.preventDefault()
       handleSave()
     }
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -211,18 +152,11 @@ const Card = ({
     }
   }
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     setShowMenu(false)
     setIsEditing(false)
 
-    if (
-      editedCard.name === card.name &&
-      editedCard.email === card.email &&
-      editedCard.phone === card.phone &&
-      editedCard.designation === card.designation &&
-      editedCard.image_url === card.image_url &&
-      JSON.stringify(editedCard.tags) === JSON.stringify(card.tags)
-    ) {
+    if (JSON.stringify(editedCard) === JSON.stringify(card)) {
       return
     }
 
@@ -245,12 +179,12 @@ const Card = ({
       onCardUpdated?.(updated.data)
     } catch (error) {
       console.error('Edit failed:', error)
+      setEditedCard(card)
     }
   }
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     setShowMenu(false)
-
     try {
       const token = localStorage.getItem('token')
       await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`, {
@@ -259,8 +193,7 @@ const Card = ({
           Authorization: `Bearer ${token}`
         }
       })
-
-      onCardDeleted?.(card.id)
+      onCardDeleted?.(list_id, card.id)
     } catch (error) {
       console.error('Delete failed:', error)
     }
@@ -270,44 +203,30 @@ const Card = ({
     tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
   )
 
-  const addTagToCard = (
-    tagID: number,
-    cardID: number,
-    onSuccess: () => void,
-    onError: () => void
-  ) => {
-    if (!tagID || !cardID) return
-
-    axios_instance
-      .post('/tag/add-to-card', {
-        tag_id: tagID,
-        card_id: cardID
+  const addTagToCard = async (tagID: number, cardID: number): Promise<void> => {
+    try {
+      await axios_instance.post('/tag/add-to-card', { 
+        tag_id: tagID, 
+        card_id: cardID 
       })
-      .then(() => onSuccess())
-      .catch(err => {
-        console.error('Add Tag Error:', err?.response?.data || err)
-        onError()
-      })
+    } catch (err) {
+      const error = err as AxiosError
+      console.error('Add Tag Error:', error?.response?.data || error)
+      throw err
+    }
   }
 
-  const removeTagFromCard = (
-    tagID: number,
-    cardID: number,
-    onSuccess: () => void,
-    onError: () => void
-  ) => {
-    if (!tagID || !cardID) return
-
-    axios_instance
-      .post(`/tag/remove-from-card`, {
-        tag_id: tagID,
-        card_id: cardID
+  const removeTagFromCard = async (tagID: number, cardID: number): Promise<void> => {
+    try {
+      await axios_instance.post('/tag/remove-from-card', { 
+        tag_id: tagID, 
+        card_id: cardID 
       })
-      .then(() => onSuccess())
-      .catch(err => {
-        console.error('Remove Tag Error:', err?.response?.data || err)
-        onError()
-      })
+    } catch (err) {
+      const error = err as AxiosError
+      console.error('Remove Tag Error:', error?.response?.data || error)
+      throw err
+    }
   }
 
   return (
@@ -362,7 +281,9 @@ const Card = ({
                   quality={100}
                 />
               ) : (
-                <AddImage width={24} height={24} fill='#BCBBB8' />
+                <div className={styles.avatarPlaceholder}>
+                  {editedCard.name?.charAt(0).toUpperCase()}
+                </div>
               )}
             </>
           )}
@@ -377,8 +298,9 @@ const Card = ({
                 value={editedCard.name || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder='name...'
+                placeholder='Name...'
                 className={styles.userName}
+                autoFocus
               />
               <input
                 type='text'
@@ -386,7 +308,7 @@ const Card = ({
                 value={editedCard.designation || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder='professional exp...'
+                placeholder='Professional experience...'
                 className={styles.userTitle}
               />
             </>
@@ -394,13 +316,13 @@ const Card = ({
             <>
               <p className={styles.userName}>
                 {editedCard.name || (
-                  <span className={styles.userNamePlaceholder}>name...</span>
+                  <span className={styles.placeholder}>Name...</span>
                 )}
               </p>
               <p className={styles.userTitle}>
                 {editedCard.designation || (
-                  <span className={styles.userTitlePlaceholder}>
-                    professional exp...
+                  <span className={styles.placeholder}>
+                    Professional experience...
                   </span>
                 )}
               </p>
@@ -411,10 +333,10 @@ const Card = ({
           className={styles.userEdit}
           onClick={isEditing ? handleSave : toggleMenu}
         >
-          {!isEditing ? (
-            <Dots width={24} height={24} fill='#3D3D3D' />
-          ) : (
+          {isEditing ? (
             <Checkmark width={24} height={24} fill='#194EFF' />
+          ) : (
+            <Dots width={24} height={24} fill='#3D3D3D' />
           )}
 
           {showMenu && !isEditing && (
@@ -426,16 +348,12 @@ const Card = ({
                   setShowMenu(false)
                 }}
               >
-                <div className={styles.edit}>
-                  <Edit width={16} height={16} fill='#00020F' />
-                </div>
+                <Edit width={16} height={16} fill='#00020F' />
                 <div className={styles.editText}>Edit</div>
               </div>
 
               <div onClick={handleDelete} className={styles.deleteButton}>
-                <div className={styles.delete}>
-                  <Delete width={16} height={16} fill='#FB7285' />
-                </div>
+                <Delete width={16} height={16} fill='#FB7285' />
                 <div className={styles.deleteText}>Delete</div>
               </div>
             </div>
@@ -446,46 +364,46 @@ const Card = ({
       <div className={styles.cardContent}>
         {isEditing ? (
           <>
-            <div className={styles.userEmail}>
+            <div className={styles.inputGroup}>
               <Mail width={16} height={16} fill='#3D3D3D' />
               <input
-                type='text'
+                type='email'
                 name='email'
                 value={editedCard.email || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder='email...'
-                className={styles.email}
+                placeholder='Email...'
+                className={styles.contactInput}
               />
             </div>
-            <div className={styles.userContact}>
+            <div className={styles.inputGroup}>
               <Phone width={16} height={16} fill='#3D3D3D' />
               <input
-                type='text'
+                type='tel'
                 name='phone'
                 value={editedCard.phone || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder='phone...'
-                className={styles.contact}
+                placeholder='Phone...'
+                className={styles.contactInput}
               />
             </div>
           </>
         ) : (
           <>
-            <div className={styles.userEmail}>
+            <div className={styles.contactInfo}>
               <Mail width={16} height={12} fill='#3D3D3D' />
               <p className={styles.email}>
                 {editedCard.email || (
-                  <span className={styles.emailPlaceholder}>email...</span>
+                  <span className={styles.placeholder}>Email...</span>
                 )}
               </p>
             </div>
-            <div className={styles.userContact}>
+            <div className={styles.contactInfo}>
               <Phone width={16} height={16} fill='#3D3D3D' />
               <p className={styles.contact}>
                 {editedCard.phone || (
-                  <span className={styles.contactPlaceholder}>phone...</span>
+                  <span className={styles.placeholder}>Phone...</span>
                 )}
               </p>
             </div>
@@ -494,8 +412,9 @@ const Card = ({
       </div>
 
       <div className={styles.userTags}>
-        {editedCard.tags?.map((tag, index) => {
-          const tagName = getTagName(tag)
+        {editedCard.tags && editedCard.tags.length > 0 && editedCard.tags.map((tagName, index) => {
+          if (typeof tagName !== 'string') return null
+          
           const tagObject = availableTags.find(t => t.name === tagName)
           const color = tagObject ? tagObject.color : '#808080'
 
@@ -503,10 +422,7 @@ const Card = ({
             <div
               key={`${card.id}-tag-${index}`}
               className={styles.userTag}
-              style={{
-                color: 'black',
-                backgroundColor: `${color}`
-              }}
+              style={{ backgroundColor: color }}
             >
               {tagName}
             </div>
@@ -517,7 +433,7 @@ const Card = ({
           onClick={() => setIsTagSearchOpen(!isTagSearchOpen)}
         >
           <Add width={16} height={16} />
-          <p className={styles.addTagText}>Add tag...</p>
+          <p className={styles.addTagText}>Add tag</p>
         </div>
       </div>
 
@@ -529,27 +445,19 @@ const Card = ({
             className={styles.searchTagInput}
             value={tagSearchQuery}
             onChange={e => setTagSearchQuery(e.target.value)}
+            autoFocus
           />
           <div className={styles.allTags}>
-            {filteredTags?.map(tag => {
-              const currentTags = editedCard.tags || []
-              const isSelected = currentTags.some((cardTag: CardTag) => {
-                return getTagName(cardTag) === tag.name
-              })
-
+            {filteredTags && filteredTags.length > 0 && filteredTags.map(tag => {
+              const isSelected = (editedCard.tags || []).includes(tag.name)
               return (
-                <div key={tag.id} className={styles.allTag}>
+                <div key={tag.id} className={styles.allTag} onClick={() => handleTagToggle(tag.id, tag.name)}>
                   <div
                     className={`${styles.checkbox} ${
                       isSelected ? styles.checked : ''
                     }`}
-                    onClick={() => handleTagToggle(tag.id, tag.name)}
                   >
-                    {isSelected ? (
-                      <Checkmark width={16} height={16} fill='white' />
-                    ) : (
-                      <Checkmark width={16} height={16} fill='white' />
-                    )}
+                    {isSelected && <Checkmark width={16} height={16} fill='white' />}
                   </div>
                   <div
                     className={styles.tagName}

@@ -27,3 +27,9 @@ export type User = {
   email: string;
   profilePicture: string;
 };
+
+export type Tag = {
+  id: number;
+  name: string;
+  color: string;
+};
