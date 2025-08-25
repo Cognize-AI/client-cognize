@@ -79,6 +79,29 @@ const Card = ({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showMenu, isTagSearchOpen])
 
+  const fetchTags = async () => {
+    setIsLoadingTags(true)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (!res.ok) throw new Error('Failed to fetch tags')
+      const data = await res.json()
+      setAvailableTags(data.data.tags)
+    } catch (error) {
+      console.error('Failed to fetch tags:', error)
+    } finally {
+      setIsLoadingTags(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchTags()
+  }, [])
+
   const handleImageError = () => setImageError(true)
 
   const toggleMenu = () => setShowMenu(!showMenu)
