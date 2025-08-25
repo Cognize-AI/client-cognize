@@ -9,6 +9,7 @@
   border-radius: 0.75rem;
   background: var(--bg-colors-opaque, #fff);
   position: relative;
+  z-index: 1500;
   // transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   cursor: grab;
@@ -379,7 +380,9 @@
         line-height: normal;
       }
     }
-    .searchTag {
+    
+  }
+  .searchTag {
       display: flex;
       width: 15.5rem;
       padding: 0.75rem;
@@ -394,7 +397,7 @@
       position: absolute;
       left: 0;
       top: calc(100% + 0.5rem);
-      z-index: 100; // Increased z-index to ensure it's on top
+      z-index: 2000; // Increased z-index to ensure it's on top
 
       .searchTagInput {
         display: flex;
@@ -483,5 +486,4 @@
         }
       }
     }
-  }
 }

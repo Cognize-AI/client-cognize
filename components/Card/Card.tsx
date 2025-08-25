@@ -32,6 +32,8 @@ type Tag = {
   color: string
 }
 
+type CardTag = string | { name: string } | unknown
+
 const Card = ({
   card,
   onDragStart,
@@ -102,12 +104,18 @@ const Card = ({
 
   const toggleMenu = () => setShowMenu(!showMenu)
 
+  const getTagName = (cardTag: CardTag): string => {
+    if (typeof cardTag === 'string') return cardTag
+    if (cardTag && typeof cardTag === 'object' && 'name' in cardTag) {
+      return (cardTag as { name: string }).name
+    }
+    return String(cardTag)
+  }
+
   const handleTagToggle = async (tagID: number, tagName: string) => {
     const currentTags = editedCard.tags || []
-    const isSelected = currentTags.some(cardTag => {
-      const cardTagName =
-        typeof cardTag === 'string' ? cardTag : cardTag?.name || String(cardTag)
-      return cardTagName === tagName
+    const isSelected = currentTags.some((cardTag: CardTag) => {
+      return getTagName(cardTag) === tagName
     })
 
     if (isSelected) {
@@ -115,12 +123,8 @@ const Card = ({
         tagID,
         card.id,
         () => {
-          const newTags = currentTags.filter(cardTag => {
-            const cardTagName =
-              typeof cardTag === 'string'
-                ? cardTag
-                : cardTag?.name || String(cardTag)
-            return cardTagName !== tagName
+          const newTags = currentTags.filter((cardTag: CardTag) => {
+            return getTagName(cardTag) !== tagName
           })
           const updatedCard = { ...editedCard, tags: newTags }
           setEditedCard(updatedCard)
@@ -245,7 +249,7 @@ const Card = ({
 
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch(
+      await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`,
         {
           method: 'DELETE',
@@ -254,7 +258,6 @@ const Card = ({
           }
         }
       )
-      if (!res.ok) throw new Error('Failed to delete card')
 
       onCardDeleted?.(card.id)
     } catch (error) {
@@ -279,7 +282,7 @@ const Card = ({
         tag_id: tagID,
         card_id: cardID
       })
-      .then(res => onSuccess())
+      .then(() => onSuccess())
       .catch(err => {
         console.error('Add Tag Error:', err?.response?.data || err)
         onError()
@@ -299,7 +302,7 @@ const Card = ({
         tag_id: tagID,
         card_id: cardID
       })
-      .then(res => onSuccess())
+      .then(() => onSuccess())
       .catch(err => {
         console.error('Remove Tag Error:', err?.response?.data || err)
         onError()
@@ -489,8 +492,7 @@ const Card = ({
 
       <div className={styles.userTags}>
         {editedCard.tags?.map((tag, index) => {
-          const tagName =
-            typeof tag === 'string' ? tag : tag?.name || String(tag)
+          const tagName = getTagName(tag)
           const tagObject = availableTags.find(t => t.name === tagName)
           const color = tagObject ? tagObject.color : '#808080'
 
@@ -514,69 +516,66 @@ const Card = ({
           <Add width={16} height={16} />
           <p className={styles.addTagText}>Add tag...</p>
         </div>
-        {isTagSearchOpen && (
-          <div className={styles.searchTag}>
-            <input
-              type='text'
-              placeholder='Search tags...'
-              className={styles.searchTagInput}
-              value={tagSearchQuery}
-              onChange={e => setTagSearchQuery(e.target.value)}
-            />
-            <div className={styles.allTags}>
-              {isLoadingTags ? (
-                <p>Loading tags...</p>
-              ) : (
-                filteredTags?.map(tag => {
-                  const currentTags = editedCard.tags || []
-                  const isSelected = currentTags.some(cardTag => {
-                    const cardTagName =
-                      typeof cardTag === 'string'
-                        ? cardTag
-                        : cardTag?.name || String(cardTag)
-                    return cardTagName === tag.name
-                  })
-
-                  return (
-                    <div key={tag.id} className={styles.allTag}>
-                      <div
-                        className={`${styles.checkbox} ${
-                          isSelected ? styles.checked : ''
-                        }`}
-                        onClick={() => handleTagToggle(tag.id, tag.name)}
-                      >
-                        {isSelected ? (
-                          <Checkmark width={24} height={24} fill='white' />
-                        ) : (
-                          <Checkmark width={24} height={24} fill='white' />
-                        )}
-                      </div>
-                      <div
-                        className={styles.tagName}
-                        style={{ backgroundColor: tag.color }}
-                      >
-                        <p className={styles.tagNameText}>{tag.name}</p>
-                        <Edit
-                          width={16}
-                          height={16}
-                          fill='white'
-                          fillOpacity='0.48'
-                        />
-                        <Delete
-                          width={16}
-                          height={16}
-                          fill='white'
-                          fillOpacity='0.48'
-                        />
-                      </div>
-                    </div>
-                  )
-                })
-              )}
-            </div>
-          </div>
-        )}
       </div>
+
+      {isTagSearchOpen && (
+        <div className={styles.searchTag}>
+          <input
+            type='text'
+            placeholder='Search tags...'
+            className={styles.searchTagInput}
+            value={tagSearchQuery}
+            onChange={e => setTagSearchQuery(e.target.value)}
+          />
+          <div className={styles.allTags}>
+            {isLoadingTags ? (
+              <p>Loading tags...</p>
+            ) : (
+              filteredTags?.map(tag => {
+                const currentTags = editedCard.tags || []
+                const isSelected = currentTags.some((cardTag: CardTag) => {
+                  return getTagName(cardTag) === tag.name
+                })
+
+                return (
+                  <div key={tag.id} className={styles.allTag}>
+                    <div
+                      className={`${styles.checkbox} ${
+                        isSelected ? styles.checked : ''
+                      }`}
+                      onClick={() => handleTagToggle(tag.id, tag.name)}
+                    >
+                      {isSelected ? (
+                        <Checkmark width={24} height={24} fill='white' />
+                      ) : (
+                        <Checkmark width={24} height={24} fill='white' />
+                      )}
+                    </div>
+                    <div
+                      className={styles.tagName}
+                      style={{ backgroundColor: tag.color }}
+                    >
+                      <p className={styles.tagNameText}>{tag.name}</p>
+                      <Edit
+                        width={16}
+                        height={16}
+                        fill='white'
+                        fillOpacity='0.48'
+                      />
+                      <Delete
+                        width={16}
+                        height={16}
+                        fill='white'
+                        fillOpacity='0.48'
+                      />
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
