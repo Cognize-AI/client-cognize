@@ -9,12 +9,11 @@
   border-radius: 0.75rem;
   background: var(--bg-colors-opaque, #fff);
   position: relative;
-  z-index: 1500;
   // transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   cursor: grab;
   border-radius: 0.75rem;
-  border: 1px transparent;
+  border: 1px solid transparent;
 
   &:hover {
     // border: 1px solid var(--Colors-blue-1, #194eff);
@@ -23,7 +22,7 @@
   // border: 1px solid var(--border-colors-light, #e2e8f0) !important;
 
   &:has(.searchTag) {
-    z-index: 50;
+    // z-index: 50;
     border: 1px solid var(--Colors-blue-1, #194EFF); // Add this line
     background: var(--bg-colors-opaque, #FFF);
   }
@@ -397,7 +396,12 @@
       position: absolute;
       left: 0;
       top: calc(100% + 0.5rem);
-      z-index: 2000; // Increased z-index to ensure it's on top
+      z-index: 2000;
+      transform: translate(60%, -37%);
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
 
       .searchTagInput {
         display: flex;
