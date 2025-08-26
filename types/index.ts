@@ -27,3 +27,31 @@ export type User = {
   email: string;
   profilePicture: string;
 };
+
+export type Tag = {
+  id: number;
+  name: string;
+  color: string;
+}
+
+export type Card = {
+  id: number;
+  name: string;
+  designation: string;
+  email: string;
+  phone: string;
+  image_url: string;
+  list_id: number;
+  created_at: string;
+  updated_at: string;
+  tags: Tag[];
+}
+
+export type List = {
+  id: number;
+  name: string;
+  color: string;
+  created_at: string;
+  updated_at: string;
+  cards: Card[];
+}
