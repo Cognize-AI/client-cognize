@@ -53,7 +53,7 @@ const Card = ({
   onCardUpdated,
   onCardDeleted,
   onTagUpdate,
-  setIsTagModalOpen,
+  setIsTagModalOpen
 }: Props) => {
   const [imageError, setImageError] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
@@ -66,9 +66,11 @@ const Card = ({
   const [availableTags, setAvailableTags] = useState<Tag[]>(tags)
 
   useEffect(() => {
-    setEditedCard(card)
+    if (!isEditing) {
+      setEditedCard(card)
+    }
     setImageError(false)
-  }, [card])
+  }, [card, isEditing])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,30 +90,7 @@ const Card = ({
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showMenu, isTagSearchOpen])
-
-  // const fetchTags = async () => {
-  //   setIsLoadingTags(true)
-  //   try {
-  //     const token = localStorage.getItem('token')
-  //     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`
-  //       }
-  //     })
-  //     if (!res.ok) throw new Error('Failed to fetch tags')
-  //     const data = await res.json()
-  //     setAvailableTags(data.data.tags)
-  //   } catch (error) {
-  //     console.error('Failed to fetch tags:', error)
-  //   } finally {
-  //     setIsLoadingTags(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchTags()
-  // }, [])
+  }, [showMenu, isTagSearchOpen, setIsTagModalOpen])
 
   const handleImageError = () => setImageError(true)
 
@@ -121,7 +100,11 @@ const Card = ({
     return cardTag.name
   }
 
-  const handleTagToggle = async (tagID: number, tagName: string, tagColor: string) => {
+  const handleTagToggle = async (
+    tagID: number,
+    tagName: string,
+    tagColor: string
+  ) => {
     const currentTags = editedCard.tags || []
     const isSelected = currentTags.some((cardTag: CardTag) => {
       return getTagName(cardTag) === tagName
@@ -172,7 +155,9 @@ const Card = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      handleSave()
+      if (!uploading) {
+        handleSave()
+      }
     }
   }
 
@@ -217,8 +202,11 @@ const Card = ({
   }
 
   const handleSave = async () => {
+    if (uploading) {
+      return
+    }
+
     setShowMenu(false)
-    setIsEditing(false)
 
     if (
       editedCard.name === card.name &&
@@ -228,6 +216,7 @@ const Card = ({
       editedCard.image_url === card.image_url &&
       JSON.stringify(editedCard.tags) === JSON.stringify(card.tags)
     ) {
+      setIsEditing(false)
       return
     }
 
@@ -241,15 +230,33 @@ const Card = ({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify(editedCard)
+          body: JSON.stringify({
+            name: editedCard.name,
+            email: editedCard.email,
+            phone: editedCard.phone,
+            designation: editedCard.designation,
+            image_url: editedCard.image_url,
+            list_id: editedCard.list_id
+          })
         }
       )
       if (!res.ok) throw new Error('Failed to update card')
 
-      const updated = await res.json()
-      onCardUpdated?.(updated.data)
+      const response = await res.json()
+      
+      const updatedCard = {
+        ...editedCard,
+        id: card.id,
+        list_id: card.list_id,
+        tags: editedCard.tags || card.tags || []
+      }
+      
+      onCardUpdated?.(updatedCard)
+      setIsEditing(false)
+      
     } catch (error) {
       console.error('Edit failed:', error)
+      setEditedCard(card)
     }
   }
 
@@ -384,6 +391,7 @@ const Card = ({
                 onKeyDown={handleKeyDown}
                 placeholder='name...'
                 className={styles.userName}
+                disabled={uploading}
               />
               <input
                 type='text'
@@ -393,6 +401,7 @@ const Card = ({
                 onKeyDown={handleKeyDown}
                 placeholder='professional exp...'
                 className={styles.userTitle}
+                disabled={uploading}
               />
             </>
           ) : (
@@ -414,12 +423,20 @@ const Card = ({
         </div>
         <div
           className={styles.userEdit}
-          onClick={isEditing ? handleSave : toggleMenu}
+          onClick={isEditing && !uploading ? handleSave : toggleMenu}
+          style={{
+            opacity: isEditing && uploading ? 0.5 : 1,
+            cursor: isEditing && uploading ? 'not-allowed' : 'pointer'
+          }}
         >
           {!isEditing ? (
             <Dots width={24} height={24} fill='#3D3D3D' />
           ) : (
-            <Checkmark width={24} height={24} fill='#194EFF' />
+            <Checkmark 
+              width={24} 
+              height={24} 
+              fill={uploading ? '#BCBBB8' : '#194EFF'} 
+            />
           )}
 
           {showMenu && !isEditing && (
@@ -461,6 +478,7 @@ const Card = ({
                 onKeyDown={handleKeyDown}
                 placeholder='email...'
                 className={styles.email}
+                disabled={uploading}
               />
             </div>
             <div className={styles.userContact}>
@@ -473,6 +491,7 @@ const Card = ({
                 onKeyDown={handleKeyDown}
                 placeholder='phone...'
                 className={styles.contact}
+                disabled={uploading}
               />
             </div>
           </>
@@ -518,10 +537,14 @@ const Card = ({
         <div
           className={styles.addTag}
           onClick={() => {
-            setIsTagSearchOpen(prev => {
-              setIsTagModalOpen(!prev)
-              return !prev
-            })
+            if (!uploading) {
+              setIsTagSearchOpen(prev => !prev)
+              setIsTagModalOpen(prev => !prev)
+            }
+          }}
+          style={{
+            opacity: uploading ? 0.5 : 1,
+            cursor: uploading ? 'not-allowed' : 'pointer'
           }}
         >
           <Add width={16} height={16} />
@@ -529,7 +552,7 @@ const Card = ({
         </div>
       </div>
 
-      {isTagSearchOpen && (
+      {isTagSearchOpen && !uploading && (
         <div className={styles.searchTag}>
           <input
             type='text'
@@ -553,11 +576,7 @@ const Card = ({
                     }`}
                     onClick={() => handleTagToggle(tag.id, tag.name, tag.color)}
                   >
-                    {isSelected ? (
-                      <Checkmark width={16} height={16} fill='white' />
-                    ) : (
-                      <Checkmark width={16} height={16} fill='white' />
-                    )}
+                    <Checkmark width={16} height={16} fill='white' />
                   </div>
                   <div
                     className={styles.tagName}

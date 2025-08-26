@@ -14,12 +14,12 @@ const Layout = ({ children }: Props) => {
 
   useEffect(() => {
     if (!token) {
-      router.push('/') // ✅ safe client-side redirect
+      router.push('/') 
     }
   }, [token, router])
 
   if (!token) {
-    return null // or a loading spinner
+    return null
   }
 
   return <>{children}</>
