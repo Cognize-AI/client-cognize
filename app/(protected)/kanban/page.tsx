@@ -19,9 +19,7 @@ const Page = () => {
   const tags = useTagsStore(state => state.tags)
   const addTags = useTagsStore(state => state.addTags)
   const dragItem = useRef<{ listId: number; cardId: number } | null>(null)
-  const dragOverItem = useRef<{ listId: number; cardIndex: number } | null>(
-    null
-  )
+  const dragOverItem = useRef<{ listId: number; cardIndex: number } | null>(null)
   const router = useRouter()
 
   const fetchTags = async () => {
@@ -114,35 +112,133 @@ const Page = () => {
 
   const handleDragStart = (listId: number, cardId: number) => {
     dragItem.current = { listId, cardId }
+    console.log('Drag started:', { listId, cardId })
   }
 
   const handleDragEnter = (listId: number, cardIndex: number) => {
     dragOverItem.current = { listId, cardIndex }
+    console.log('Drag entered:', { listId, cardIndex })
   }
 
   const handleDragEnd = async () => {
-    if (!dragItem.current || !dragOverItem.current) return
+    if (!dragItem.current || !dragOverItem.current) {
+      console.log('Missing drag references')
+      return
+    }
+
     const { listId: fromListId, cardId } = dragItem.current
     const { listId: toListId, cardIndex } = dragOverItem.current
+
+    console.log('Drag end:', { fromListId, toListId, cardId, cardIndex })
+
+    const sourceList = lists.find(list => list.id === fromListId)
+    const draggedCard = sourceList?.cards.find(c => c.id === cardId)
+    
+    if (!draggedCard) {
+      console.error('Card not found in source list:', { cardId, fromListId })
+      setError('Card not found. Please refresh and try again.')
+      dragItem.current = null
+      dragOverItem.current = null
+      return
+    }
+
+    console.log('Found card to move:', draggedCard)
+
+    if (fromListId === toListId) {
+      const currentIndex = sourceList?.cards.findIndex(c => c.id === cardId) || 0
+      if (currentIndex === cardIndex) {
+        console.log('Same position, skipping')
+        dragItem.current = null
+        dragOverItem.current = null
+        return
+      }
+    }
+
     const originalLists = JSON.parse(JSON.stringify(lists))
-    let draggedCard: CardType | undefined
+
+    const targetList = lists.find(list => list.id === toListId)
+    const targetCards = targetList?.cards || []
+    
+    let prevCard = 0
+    let nextCard = 0
+    
+    if (cardIndex > 0) {
+      prevCard = targetCards[cardIndex - 1]?.id || 0
+    }
+    
+    if (cardIndex < targetCards.length) {
+      nextCard = targetCards[cardIndex]?.id || 0
+    }
+
+    console.log('Move payload calculation:', {
+      targetCards: targetCards.map(c => ({ id: c.id, name: c.name })),
+      cardIndex,
+      prevCard,
+      nextCard,
+      currCard: draggedCard.id
+    })
+
     const updatedLists = lists
       .map(list => {
         if (list.id === fromListId) {
-          draggedCard = list.cards.find(c => c.id === cardId)
           return { ...list, cards: list.cards.filter(c => c.id !== cardId) }
         }
         return list
       })
       .map(list => {
-        if (list.id === toListId && draggedCard) {
+        if (list.id === toListId) {
           const newCards = [...list.cards]
-          newCards.splice(cardIndex, 0, draggedCard)
+          newCards.splice(cardIndex, 0, { ...draggedCard, list_id: toListId })
           return { ...list, cards: newCards }
         }
         return list
       })
+
     setLists(updatedLists)
+    try {
+      const token = localStorage.getItem('token')
+      const payload = {
+        prev_card: Number(prevCard),
+        curr_card: Number(draggedCard.id),
+        next_card: Number(nextCard),
+        list_id: Number(toListId)
+      }
+      
+      console.log('Calling /card/move API with payload:', payload)
+      
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/move`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        }
+      )
+
+      console.log('API Response status:', response.status)
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        const errorText = errorData ? JSON.stringify(errorData) : await response.text()
+        console.error('API Error response:', errorData || errorText)
+        throw new Error(`Failed to move card: ${response.status} - ${errorText}`)
+      }
+
+      const result = await response.json()
+      console.log('Card moved successfully:', result)
+
+    } catch (error) {
+      console.error('Failed to move card:', error)
+      
+      setLists(originalLists)
+      
+      const errorMessage = error instanceof Error ? error.message : 'Failed to move card'
+      setError(errorMessage)
+      setTimeout(() => setError(null), 5000)
+    }
     dragItem.current = null
     dragOverItem.current = null
   }
@@ -150,8 +246,7 @@ const Page = () => {
   if (loading) {
     return (
       <div className={styles.spinnerWrapper}>
-        <div className={styles.spinnerOuter}>
-        </div>
+        <div className={styles.spinnerOuter}></div>
         <p className={styles.spinnerText}>Organizing your pipeline...</p>
         <p className={styles.spinnerSubtext}>Stay with us, precision takes a moment.</p>
       </div>
@@ -160,6 +255,11 @@ const Page = () => {
 
   return (
     <div className={styles.kanbanPage}>
+      {error && (
+        <div className={styles.errorMessage}>
+          {error}
+        </div>
+      )}
       <div className={styles.kanbanLists}>
         {lists.map(list => (
           <List
