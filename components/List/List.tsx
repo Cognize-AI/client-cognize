@@ -12,10 +12,13 @@ type Tag = {
   color: string
 }
 
+// Props are updated to receive handlers from the parent page
 type Props = {
   list: ListType
   tags: Tag[]
   onCardAdded: (newCard: CardType) => void
+  onCardUpdated: (updatedCard: CardType) => void
+  onCardDeleted: (listId: number, cardId: number) => void
   onDragStart: (list_id: number, card_id: number) => void
   onDragEnd: () => void
   onDragEnter: (listId: number, cardIndex: number) => void
@@ -26,6 +29,8 @@ const List = ({
   list,
   tags,
   onCardAdded,
+  onCardUpdated,
+  onCardDeleted,
   onDragStart,
   onDragEnd,
   onDragEnter,
@@ -40,10 +45,14 @@ const List = ({
     setShowAddUser(false)
   }
 
+  // ✅ Implemented: This function now calls the prop passed from the parent
   const handleCardUpdated = (updatedCard: CardType) => {
+    onCardUpdated(updatedCard)
   }
 
+  // ✅ Implemented: This function now calls the prop passed from the parent
   const handleCardDeleted = (cardId: number) => {
+    onCardDeleted(list.id, cardId)
   }
 
   const filteredCards = (list.cards || []).filter(
@@ -94,9 +103,12 @@ const List = ({
         />
       </div>
 
-      <div className={styles.listItemsContainer} style={{
-        overflowY: isTagModalOpen ? "unset" : "auto",
-      }}>
+      <div
+        className={styles.listItemsContainer}
+        style={{
+          overflowY: isTagModalOpen ? 'unset' : 'auto'
+        }}
+      >
         {showAddUser && (
           <AddCard
             listId={list.id}

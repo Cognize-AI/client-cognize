@@ -75,7 +75,6 @@ const Page = () => {
         addTags(response.data?.data?.tags)
       })
       .catch(error => {
-        // Handle error
       });
   }
 
