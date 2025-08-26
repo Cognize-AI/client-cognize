@@ -1,6 +1,14 @@
 import { devtools } from 'zustand/middleware'
 import { createStore } from 'zustand/vanilla'
 
+const defaultColors = [
+  "#F8BBD0",
+  "#B2EBF2",
+  "#FFF9C4",
+  "#BBDEFB",
+  "#FFE0B2"
+]
+
 type Tag = {
   id: number
   name: string
@@ -18,9 +26,23 @@ export type TagsActions = {
 
 export type TagsStore = TagsState & TagsActions
 
+const defaultGroupedTags = {
+  "#A78BFA": [],
+  "#FCA5A5": [],
+  "#34D399": [],
+  "#60A5FA": [],
+  "#FBBF24": []
+}
+
 export const defaultInitState: TagsState = {
   tags: [],
-  groupedTags: {}
+  groupedTags: {
+    "#A78BFA": [],
+    "#FCA5A5": [],
+    "#34D399": [],
+    "#60A5FA": [],
+    "#FBBF24": []
+  }
 }
 
 export const createTagStore = (
@@ -29,7 +51,13 @@ export const createTagStore = (
   return createStore<TagsStore>()(devtools((set) => ({
     ...initState,
     addTags: (tags: Tag[]) => set((state) => {
-      state.groupedTags = {}
+      state.groupedTags = {
+        "#A78BFA": [],
+        "#FCA5A5": [],
+        "#34D399": [],
+        "#60A5FA": [],
+        "#FBBF24": []
+      }
       tags.forEach((tag) => {
         if (!state.groupedTags[tag.color]) {
           state.groupedTags[tag.color] = []
