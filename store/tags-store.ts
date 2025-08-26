@@ -26,13 +26,13 @@ export type TagsActions = {
 
 export type TagsStore = TagsState & TagsActions
 
-const defaultGroupedTags = {
-  "#A78BFA": [],
-  "#FCA5A5": [],
-  "#34D399": [],
-  "#60A5FA": [],
-  "#FBBF24": []
-}
+// const defaultGroupedTags = {
+//   "#A78BFA": [],
+//   "#FCA5A5": [],
+//   "#34D399": [],
+//   "#60A5FA": [],
+//   "#FBBF24": []
+// }
 
 export const defaultInitState: TagsState = {
   tags: [],
