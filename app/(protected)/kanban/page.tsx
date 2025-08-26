@@ -109,7 +109,7 @@ const Page = () => {
   }
 
   const handleTagUpdate = () => {
-    fetchTags()
+    Promise.all([fetchTags(), fetchLists()])
   }
 
   const handleDragStart = (listId: number, cardId: number) => {

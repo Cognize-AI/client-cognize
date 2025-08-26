@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import styles from './Card.module.scss'
 import { CardType } from '@/types'
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import {
   Add,
   AddImage,
@@ -26,6 +26,8 @@ type Props = {
   onCardUpdated?: (updatedCard: CardType) => void
   onCardDeleted?: (cardId: number) => void
   onTagUpdate?: () => void
+  isTagModalOpen: boolean
+  setIsTagModalOpen: Dispatch<SetStateAction<boolean>>
 }
 
 type Tag = {
@@ -34,7 +36,11 @@ type Tag = {
   color: string
 }
 
-type CardTag = string | { name: string } | unknown
+type CardTag = {
+  id: number
+  name: string
+  color: string
+}
 
 const Card = ({
   card,
@@ -46,7 +52,8 @@ const Card = ({
   list_id,
   onCardUpdated,
   onCardDeleted,
-  onTagUpdate
+  onTagUpdate,
+  setIsTagModalOpen,
 }: Props) => {
   const [imageError, setImageError] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
@@ -56,7 +63,7 @@ const Card = ({
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
   const [tagSearchQuery, setTagSearchQuery] = useState('')
   const [isLoadingTags, setIsLoadingTags] = useState(false)
-  const [availableTags, setAvailableTags] = useState<Tag[]>([])
+  const [availableTags, setAvailableTags] = useState<Tag[]>(tags)
 
   useEffect(() => {
     setEditedCard(card)
@@ -68,6 +75,7 @@ const Card = ({
       const target = event.target as Element
       if (showMenu && !target.closest(`.${styles.userEdit}`)) {
         setShowMenu(false)
+        setIsTagModalOpen(false)
       }
       if (
         isTagSearchOpen &&
@@ -75,30 +83,31 @@ const Card = ({
         !target.closest(`.${styles.searchTag}`)
       ) {
         setIsTagSearchOpen(false)
+        setIsTagModalOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showMenu, isTagSearchOpen])
 
-  const fetchTags = async () => {
-    setIsLoadingTags(true)
-    try {
-      const token = localStorage.getItem('token')
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (!res.ok) throw new Error('Failed to fetch tags')
-      const data = await res.json()
-      setAvailableTags(data.data.tags)
-    } catch (error) {
-      console.error('Failed to fetch tags:', error)
-    } finally {
-      setIsLoadingTags(false)
-    }
-  }
+  // const fetchTags = async () => {
+  //   setIsLoadingTags(true)
+  //   try {
+  //     const token = localStorage.getItem('token')
+  //     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     })
+  //     if (!res.ok) throw new Error('Failed to fetch tags')
+  //     const data = await res.json()
+  //     setAvailableTags(data.data.tags)
+  //   } catch (error) {
+  //     console.error('Failed to fetch tags:', error)
+  //   } finally {
+  //     setIsLoadingTags(false)
+  //   }
+  // }
 
   // useEffect(() => {
   //   fetchTags()
@@ -109,14 +118,10 @@ const Card = ({
   const toggleMenu = () => setShowMenu(!showMenu)
 
   const getTagName = (cardTag: CardTag): string => {
-    if (typeof cardTag === 'string') return cardTag
-    if (cardTag && typeof cardTag === 'object' && 'name' in cardTag) {
-      return (cardTag as { name: string }).name
-    }
-    return String(cardTag)
+    return cardTag.name
   }
 
-  const handleTagToggle = async (tagID: number, tagName: string) => {
+  const handleTagToggle = async (tagID: number, tagName: string, tagColor: string) => {
     const currentTags = editedCard.tags || []
     const isSelected = currentTags.some((cardTag: CardTag) => {
       return getTagName(cardTag) === tagName
@@ -146,7 +151,7 @@ const Card = ({
         () => {
           const updatedCard = {
             ...editedCard,
-            tags: [...currentTags, tagName]
+            tags: [...currentTags, { id: tagID, name: tagName, color: tagColor }]
           }
           setEditedCard(updatedCard)
           onCardUpdated?.(updatedCard)
@@ -495,9 +500,7 @@ const Card = ({
 
       <div className={styles.userTags}>
         {editedCard.tags?.map((tag, index) => {
-          const tagName = getTagName(tag)
-          const tagObject = availableTags.find(t => t.name === tagName)
-          const color = tagObject ? tagObject.color : '#808080'
+          const tagName = tag.name
 
           return (
             <div
@@ -505,7 +508,7 @@ const Card = ({
               className={styles.userTag}
               style={{
                 color: 'black',
-                backgroundColor: `${color}`
+                backgroundColor: `${tag?.color}`
               }}
             >
               {tagName}
@@ -514,7 +517,12 @@ const Card = ({
         })}
         <div
           className={styles.addTag}
-          onClick={() => setIsTagSearchOpen(!isTagSearchOpen)}
+          onClick={() => {
+            setIsTagSearchOpen(prev => {
+              setIsTagModalOpen(!prev)
+              return !prev
+            })
+          }}
         >
           <Add width={16} height={16} />
           <p className={styles.addTagText}>Add tag...</p>
@@ -543,7 +551,7 @@ const Card = ({
                     className={`${styles.checkbox} ${
                       isSelected ? styles.checked : ''
                     }`}
-                    onClick={() => handleTagToggle(tag.id, tag.name)}
+                    onClick={() => handleTagToggle(tag.id, tag.name, tag.color)}
                   >
                     {isSelected ? (
                       <Checkmark width={16} height={16} fill='white' />

@@ -32,6 +32,7 @@ const List = ({
   onTagUpdate
 }: Props) => {
   const [showAddUser, setShowAddUser] = useState(false)
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
 
   const handleNewCard = (newCard: CardType) => {
@@ -93,7 +94,9 @@ const List = ({
         />
       </div>
 
-      <div className={styles.listItemsContainer}>
+      <div className={styles.listItemsContainer} style={{
+        overflowY: isTagModalOpen ? "unset" : "auto",
+      }}>
         {showAddUser && (
           <AddCard
             listId={list.id}
@@ -116,6 +119,8 @@ const List = ({
             onCardUpdated={handleCardUpdated}
             onCardDeleted={handleCardDeleted}
             onTagUpdate={onTagUpdate}
+            isTagModalOpen={isTagModalOpen}
+            setIsTagModalOpen={setIsTagModalOpen}
           />
         ))}
       </div>
