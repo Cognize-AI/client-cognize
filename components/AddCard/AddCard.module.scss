@@ -8,6 +8,8 @@
   gap: 1rem;
   border-radius: 0.75rem;
   background: var(--bg-colors-opaque, #fff);
+  
+  border: 1px solid #194eff;
   position: relative;
 
   &:has(.searchTag) {
@@ -108,7 +110,7 @@
       transition: background-color 0.2s ease;
 
       &:hover {
-        background-color: rgba(0, 0, 0, 0.04);
+        background-color: rgba(25, 78, 255, 0.08);
       }
     }
   }
