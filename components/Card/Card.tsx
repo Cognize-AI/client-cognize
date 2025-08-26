@@ -245,7 +245,7 @@ const Card = ({
               className={styles.avatarUpload}
             >
               {uploading ? (
-                <div className={styles.uploadingText}></div>
+                <div className={styles.uploadingText}>Uploading...</div>
               ) : editedCard.image_url && !imageError ? (
                 <Image
                   src={editedCard.image_url}
@@ -257,7 +257,7 @@ const Card = ({
                   quality={100}
                 />
               ) : (
-                <AddImage width={24} height={24} fill='#BCBBB8' />
+                <AddImage width={24} height={24} fill='#194EFF' />
               )}
               <input
                 id={`file-upload-${card.id}`}
@@ -282,7 +282,7 @@ const Card = ({
                 />
               ) : (
                 <div className={styles.avatarPlaceholder}>
-                  {editedCard.name?.charAt(0).toUpperCase()}
+                  <AddImage width={24} height={24} fill='#194EFF' />
                 </div>
               )}
             </>

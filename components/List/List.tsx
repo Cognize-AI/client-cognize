@@ -51,6 +51,24 @@ const List = ({
       (card.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    onDragEnd()
+  }
+
+  const handleDragEnterList = (e: React.DragEvent) => {
+    e.preventDefault()
+    // If list is empty, set drop position to 0
+    if (filteredCards.length === 0) {
+      onDragEnter(list.id, 0)
+    }
+  }
+
   return (
     <div
       className={styles.listItem}
@@ -58,13 +76,9 @@ const List = ({
         borderTop: `6px solid ${list.color}`,
         backgroundColor: `${list.color}04`
       }}
-      onDragOver={e => e.preventDefault()}
-      onDrop={onDragEnd}
-      onDragEnter={() => {
-        if (filteredCards.length === 0) {
-          onDragEnter(list.id, 0)
-        }
-      }}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      onDragEnter={handleDragEnterList}
     >
       <div className={styles.listHeader}>
         <p className={styles.listTitle}>
@@ -118,6 +132,18 @@ const List = ({
             onTagUpdate={onTagUpdate}
           />
         ))}
+
+        {/* Drop zone for empty list or bottom of list */}
+        {filteredCards.length === 0 && (
+          <div 
+            className={styles.emptyDropZone}
+            onDragEnter={(e) => {
+              e.preventDefault()
+              onDragEnter(list.id, 0)
+            }}
+          >
+          </div>
+        )}
       </div>
     </div>
   )
