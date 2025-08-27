@@ -6,6 +6,9 @@ type Props = {}
 
 const page = (props: Props) => {
   const router = useRouter()
+
+  
+
   return (
     <div className={styles.main}>
       <div className={styles.top_row}>

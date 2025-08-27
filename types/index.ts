@@ -25,6 +25,10 @@ export type CardType = {
   }[];
 };
 
+export type SelectedCard = CardType & {
+  list_name: string; 
+}
+
 export type User = {
   id: number;
   name: string;
