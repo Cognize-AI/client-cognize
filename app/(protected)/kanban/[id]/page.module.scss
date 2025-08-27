@@ -1,0 +1,200 @@
+.main {
+    gap: 1.5rem;
+    height: calc(100vh - 130px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-top: 2rem;
+    width: 100%;
+
+    .top_row {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+
+        .btn_back {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+
+            p {
+                color: var(--Colors-blue-1, #194eff);
+                font-size: 1rem;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+            }
+        }
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        flex: 1 0 0;
+        align-self: stretch;
+        border-radius: 0.75rem;
+        background: var(--bg-colors-opaque, #fff);
+
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.25rem;
+            align-self: stretch;
+
+            .user {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 0.5rem;
+                flex: 1 0 0;
+
+                .avatar {
+                    width: 3rem;
+                    height: 3rem;
+                    aspect-ratio: 1/1;
+                    border-radius: 1250000rem;
+                    border: 1px solid black;
+                    // background: url(<path-to-image>) lightgray 50% / cover no-repeat;
+                }
+
+                .userDetails {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: flex-start;
+                    gap: 0.5rem;
+                    flex: 1 0 0;
+
+                    .name {
+                        align-self: stretch;
+                        color: var(--text-colors-primary-dark, #00020f);
+                        font-family: "Inter Tight";
+                        font-size: 1.25rem;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: normal;
+                    }
+
+                    .designation {
+                        align-self: stretch;
+                        color: var(--text-colors-secondary-dark, #3d3d3d);
+                        font-family: "Inter Tight";
+                        font-size: 1rem;
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: normal;
+                    }
+                }
+            }
+
+            .actions {
+                display: flex;
+                width: 16.625rem;
+                justify-content: space-between;
+                align-items: center;
+
+                .icons {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 0.25rem;
+
+                    .actionIcons {
+                        display: flex;
+                        width: 2.5rem;
+                        height: 2.5rem;
+                        padding: 0.5rem;
+                        justify-content: center;
+                        align-items: center;
+                        border-radius: 0.75rem;
+                        background: var(--bg-colors-grey-light, #f9fbff);
+                    }
+
+                    .actionTitle {
+                        color: var(--text-colors-secondary-dark, #3d3d3d);
+                        text-align: center;
+                        font-family: "Inter Tight";
+                        font-size: 0.75rem;
+                        font-style: normal;
+                        font-weight: 500;
+                        line-height: normal;
+                    }
+                }
+            }
+        }
+
+        .tags {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            align-self: stretch;
+
+            .tag {
+                display: flex;
+                padding: 0.5rem;
+                justify-content: center;
+                align-items: center;
+                gap: 0.5rem;
+                border-radius: 0.5rem;
+                background: var(--Colors-green-1, #75c699);
+
+                .tagTitle {
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 1;
+                    overflow: hidden;
+                    color: var(--text-colors-primary-dark, #00020f);
+                    text-overflow: ellipsis;
+                    font-family: "Inter Tight";
+                    font-size: 1rem;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: normal;
+                }
+            }
+
+            .addTag {
+                display: flex;
+                padding: 0.25rem 0.5rem;
+                justify-content: center;
+                align-items: center;
+                gap: 0.25rem;
+                border-radius: 0.25rem;
+                cursor: pointer;
+
+                .add {
+                    color: var(--Colors-blue-1, #194eff);
+                    font-family: "Inter Tight";
+                    font-size: 0.875rem;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: normal;
+                }
+            }
+        }
+
+        .cardDetails {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            flex: 1 0 0;
+            align-self: stretch;
+
+            .details {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                flex: 1 0 0;
+                align-self: stretch;
+                border-radius: 1rem;
+                border-top: 4px solid var(--bg-colors-grey-accentured, #dfe5f3);
+                background: var(--bg-colors-grey-light, #f9fbff);
+            }
+        }
+    }
+}

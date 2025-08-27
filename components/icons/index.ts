@@ -13,6 +13,7 @@ export { default as Mail } from './Mail';
 export { default as Pen } from './Pen';
 export { default as Phone } from './Phone';
 export { default as Settings } from './Settings';
+export { default as Streak } from './Streak';
 export { default as Tag } from './Tag';
 export { default as Tick } from './Tick';
 export { default as Trash } from './Trash';
