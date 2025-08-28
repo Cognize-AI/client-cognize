@@ -67,12 +67,12 @@ const Header = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <p className={styles.heading}>
-          {pathname == "/tags" && "My Tags"}
           {pathname == "/kanban" && "My Contacts"}
+          {pathname == "/tags" && "Tags Management"}
         </p>
         <p className={styles.subheading}>
           {pathname == "/kanban" && "List of people for communication"}
-          {pathname == "/tags" && "Manage your tags"}
+          {pathname == "/tags" && "Create view and manage all your tags"}
         </p>
       </div>
 

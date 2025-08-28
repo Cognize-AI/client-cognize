@@ -6,11 +6,11 @@ import { CardType, ListType } from '@/types'
 import styles from './page.module.scss'
 import { useTagsStore } from '@/provider/tags-store-provider'
 
-type Tag = {
-  id: number
-  name: string
-  color: string
-}
+// type Tag = {
+//   id: number
+//   name: string
+//   color: string
+// }
 
 const Page = () => {
   const [lists, setLists] = useState<ListType[]>([])
@@ -240,7 +240,7 @@ const Page = () => {
         )
       }
 
-      const result = await response.json()
+      // const result = await response.json()
     } catch (error) {
       console.error('Failed to move card:', error)
 

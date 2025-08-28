@@ -3,9 +3,12 @@ import { axios_instance } from '@/lib/axios'
 import styles from './page.module.scss'
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
+import { useUserStore } from '@/provider/user-store-provider'
 
 const Page = () => {
   const hasVerified = useRef(false)
+
+  const setUserToken = useUserStore(state => state.setUserToken)
 
   useEffect(() => {
     const verifyGoogleSignIn = async () => {
@@ -17,7 +20,8 @@ const Page = () => {
         const token = response.data?.data?.token
         const redirectUrl = response.data?.data?.redirect_url
 
-        if (token) localStorage.setItem('token', token)
+        // if (token) localStorage.setItem('token', token)
+        setUserToken(response?.data?.data)
         window.location.href = redirectUrl ?? '/kanban'
       } catch (error) {
         console.error('Error verifying Google sign-in:', error)

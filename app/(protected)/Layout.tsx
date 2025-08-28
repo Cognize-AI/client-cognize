@@ -1,8 +1,14 @@
 'use client'
 
-import { useUserStore } from '@/provider/user-store-provider'
 import React, { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+
+import { useUserStore } from '@/provider/user-store-provider'
+
+import Sidebar from '@/components/Sidebar/Sidebar'
+
+import styles from "./layout.module.scss"
+import HeaderWrapper from '@/components/HeaderWrapper'
 
 type Props = {
   children: React.ReactNode
@@ -11,6 +17,7 @@ type Props = {
 const Layout = ({ children }: Props) => {
   const token = useUserStore(state => state.token)
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (!token) {
@@ -22,7 +29,13 @@ const Layout = ({ children }: Props) => {
     return null
   }
 
-  return <>{children}</>
+  return <div className={styles.main}>
+    <Sidebar />
+    <div className={styles.main_page}>
+      {['/kanban', '/tags']?.includes(pathname) && <HeaderWrapper />}
+      {children}
+    </div>
+  </div>
 }
 
 export default Layout

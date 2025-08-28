@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from './AddCard.module.scss'
 import { useState, useRef, useEffect } from 'react'
 import { CardType } from '@/types'
-import { Add, AddImage, Checkmark, Delete, Edit, Mail, Phone } from '../icons'
+import { Add, AddImage, Checkmark, Mail, Phone } from '../icons'
 
 type Props = {
   listId: number

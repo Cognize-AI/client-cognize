@@ -1,13 +1,10 @@
 'use client'
 import { Add, ArrowLeft, Dots, Mail, Phone, Streak } from '@/components/icons'
-import { useRouter } from 'next/navigation'
 import styles from './page.module.scss'
-type Props = {}
+import { useRouter } from 'next/navigation'
 
-const page = (props: Props) => {
+const Page = () => {
   const router = useRouter()
-
-  
 
   return (
     <div className={styles.main}>
@@ -107,4 +104,4 @@ const page = (props: Props) => {
   )
 }
 
-export default page
+export default Page

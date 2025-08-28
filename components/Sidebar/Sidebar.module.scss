@@ -1,0 +1,80 @@
+.sidebar {
+  display: flex;
+  width: 15.5rem;
+  padding: 1.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2.5rem;
+  flex-shrink: 0;
+  align-self: stretch;
+  border-right: 1px solid var(--border-colors-regular, #E2E8F0);
+
+  .actions {
+    margin-top: -14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1 0 0;
+    align-self: stretch;
+
+    .link {
+      display: flex;
+      padding: 0.5rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      align-self: stretch;
+      text-decoration: none !important;
+
+      p {
+        color: var(--text-colors-secondary-dark, #3D3D3D);
+        font-size: 1.125rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        flex: 1 0 0;
+      }
+
+      &.active {
+        background: var(--Brand-8, rgba(25, 78, 255, 0.08));
+
+        p {
+          color: var(--Brand, #194EFF);
+        }
+      }
+    }
+  }
+
+  .pfp {
+    display: flex;
+    height: 3rem;
+    padding: 0.5rem 0.75rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    align-self: stretch;
+    border-radius: 1250000rem;
+    border: 1px solid var(--border-colors-light, #F2F6FC);
+
+    .img {
+      border-radius: 1250000rem;
+    }
+
+    p {
+      overflow: hidden;
+      color: var(--text-colors-primary-dark, #00020F);
+      font-feature-settings: 'liga' off, 'clig' off;
+      text-overflow: ellipsis;
+      font-family: "Inter Tight";
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      flex: 1 0 0;
+    }
+  }
+}

@@ -23,12 +23,12 @@ const Page = () => {
 
   const createTag = async () => {
     axios_instance.post("/tag/create", { ...newTagData })
-      .then(_response => {
+      .then(() => {
         setNewTagData({ name: '', color: '' })
         setTagOpen(false)
         fetchTags()
       })
-      .catch(_error => {
+      .catch(() => {
         setNewTagData({ name: '', color: '' })
         setTagOpen(false)
         fetchTags()
@@ -46,12 +46,12 @@ const Page = () => {
     }
 
     axios_instance.put(`/tag/`, payload)
-      .then(_response => {
+      .then(() => {
         fetchTags()
         setTagEditing(false)
         setEditTagData({ name: '', color: '' })
       })
-      .catch(_error => {
+      .catch(() => {
         fetchTags()
         setTagEditing(false)
         setEditTagData({ name: '', color: '' })
@@ -60,10 +60,10 @@ const Page = () => {
 
   const deleteTag = async (id: number) => {
     axios_instance.delete(`/tag/${id}`)
-      .then(_response => {
+      .then(() => {
         fetchTags()
       })
-      .catch(_error => {
+      .catch(() => {
         fetchTags()
       });
   }

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter_Tight } from 'next/font/google'
 import './globals.scss'
-import HeaderWrapper from '@/components/HeaderWrapper'
 import { TagsStoreProvider } from '@/provider/tags-store-provider'
 import { UserStoreProvider } from '@/provider/user-store-provider'
 import { CardStoreProvider } from '@/provider/card-store-provider'
@@ -64,7 +63,7 @@ export default function RootLayout ({
     <html lang='en'>
       <body className={`${interTight.variable}`}>
         <UserStoreProvider>
-          <HeaderWrapper />
+          {/* <HeaderWrapper /> */}
           <TagsStoreProvider>
               <CardStoreProvider>
                 {children}

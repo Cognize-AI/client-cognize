@@ -62,8 +62,8 @@ const Card = ({
   const [uploading, setUploading] = useState(false)
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
   const [tagSearchQuery, setTagSearchQuery] = useState('')
-  const [isLoadingTags, setIsLoadingTags] = useState(false)
-  const [availableTags, setAvailableTags] = useState<Tag[]>(tags)
+  // const [isLoadingTags, setIsLoadingTags] = useState(false)
+  // const [availableTags, setAvailableTags] = useState<Tag[]>(tags)
 
   useEffect(() => {
     if (!isEditing) {
@@ -242,7 +242,7 @@ const Card = ({
       )
       if (!res.ok) throw new Error('Failed to update card')
 
-      const response = await res.json()
+      // const response = await res.json()
       
       const updatedCard = {
         ...editedCard,
@@ -278,7 +278,7 @@ const Card = ({
     }
   }
 
-  const filteredTags = availableTags?.filter(tag =>
+  const filteredTags = tags?.filter(tag =>
     tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
   )
 
