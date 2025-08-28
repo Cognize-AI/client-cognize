@@ -26,14 +26,21 @@
       gap: 0.5rem;
       align-self: stretch;
       text-decoration: none !important;
+      border-radius: 0.5rem;
+      color: #3D3D3D;
 
       p {
-        color: var(--text-colors-secondary-dark, #3D3D3D);
+        // color: var(--text-colors-secondary-dark, #3D3D3D);
         font-size: 1.125rem;
         font-style: normal;
         font-weight: 400;
         line-height: normal;
         flex: 1 0 0;
+      }
+
+      &:hover {
+        background: #F9FBFF;
+        color: black;
       }
 
       &.active {

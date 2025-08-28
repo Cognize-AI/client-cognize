@@ -25,7 +25,7 @@ export const CardStoreProvider = ({
   )
 }
 
-export const useListStore = <T,>(
+export const useCardStore = <T,>(
   selector: (state: CardStore) => T,
 ): T => {
   const cardStoreContext = useContext(CardStoreContext)

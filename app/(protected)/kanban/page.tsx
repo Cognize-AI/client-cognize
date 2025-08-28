@@ -5,6 +5,7 @@ import { List } from '@/components'
 import { CardType, ListType } from '@/types'
 import styles from './page.module.scss'
 import { useTagsStore } from '@/provider/tags-store-provider'
+import { useCardStore } from '@/provider/card-store-provider'
 
 // type Tag = {
 //   id: number
@@ -13,6 +14,8 @@ import { useTagsStore } from '@/provider/tags-store-provider'
 // }
 
 const Page = () => {
+  const setSelectedCardId = useCardStore(state => state.setSelectedCardId)
+
   const [lists, setLists] = useState<ListType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -132,6 +135,11 @@ const Page = () => {
         return list
       })
     )
+  }
+
+  const handleCardClick = (cardId: number) => {
+    setSelectedCardId(cardId)
+    router.push(`/kanban/${cardId}`)
   }
 
   const handleTagUpdate = () => {
@@ -283,6 +291,7 @@ const Page = () => {
             onDragEnter={handleDragEnter}
             onDragEnd={handleDragEnd}
             onTagUpdate={handleTagUpdate}
+            onCardClick={handleCardClick}
           />
         ))}
       </div>

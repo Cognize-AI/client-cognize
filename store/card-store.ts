@@ -1,14 +1,14 @@
-import { SelectedCard } from "@/types"
+import { CardByIdData } from "@/types"
 import { createStore } from "zustand"
 import { devtools } from "zustand/middleware"
 
 export type CardState = {
   selectedCardId: number | null
-	selectedCard: SelectedCard | null
+	selectedCard: CardByIdData | null
 }
 
 export type CardActions = {
-	setSelectedCard: (card: SelectedCard) => void
+	setSelectedCard: (card: CardByIdData) => void
 	setSelectedCardId: (cardId: number) => void
 }
 
@@ -17,7 +17,7 @@ export type CardStore = CardState & CardActions
 export const defaultInitState:  CardStore = {
 	selectedCardId: null,
 	selectedCard: null,
-	setSelectedCard: (card: SelectedCard) => {},
+	setSelectedCard: (card: CardByIdData) => {},
 	setSelectedCardId: (cardId: number) => {},
 
 }
@@ -27,7 +27,7 @@ export const createCardStore = (
 ) => {
 	return createStore<CardStore>()(devtools((set) => ({
 		...initState,
-		setSelectedCard: (card: SelectedCard) => set({ selectedCard: card }),
+		setSelectedCard: (card: CardByIdData) => set({ selectedCard: card }),
 		setSelectedCardId: (cardId: number) => set({ selectedCardId: cardId }),
 	})))
 }

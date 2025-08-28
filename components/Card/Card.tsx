@@ -1,8 +1,8 @@
-'use client'
-import Image from 'next/image'
-import styles from './Card.module.scss'
-import { CardType } from '@/types'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+'use client';
+import Image from 'next/image';
+import styles from './Card.module.scss';
+import { CardType } from '@/types';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {
   Add,
   AddImage,
@@ -12,35 +12,27 @@ import {
   Edit,
   Mail,
   Phone
-} from '../icons'
-import { axios_instance } from '@/lib/axios'
+} from '../icons';
+import { axios_instance } from '@/lib/axios';
+
+type Tag = { id: number; name: string; color: string };
+type CardTag = Tag;
 
 type Props = {
-  card: CardType
-  tags: Tag[]
-  onDragStart: (list_id: number, card_id: number) => void
-  onDragEnd: () => void
-  onDragEnter: (listId: number, cardIndex: number) => void
-  list_id: number
-  index: number
-  onCardUpdated?: (updatedCard: CardType) => void
-  onCardDeleted?: (cardId: number) => void
-  onTagUpdate?: () => void
-  isTagModalOpen: boolean
-  setIsTagModalOpen: Dispatch<SetStateAction<boolean>>
-}
-
-type Tag = {
-  id: number
-  name: string
-  color: string
-}
-
-type CardTag = {
-  id: number
-  name: string
-  color: string
-}
+  card: CardType;
+  tags: Tag[];
+  onDragStart: (list_id: number, card_id: number) => void;
+  onDragEnd: () => void;
+  onDragEnter: (listId: number, cardIndex: number) => void;
+  list_id: number;
+  index: number;
+  onCardUpdated?: (updatedCard: CardType) => void;
+  onCardDeleted?: (cardId: number) => void;
+  onTagUpdate?: () => void;
+  isTagModalOpen: boolean;
+  setIsTagModalOpen: Dispatch<SetStateAction<boolean>>;
+  onClick: () => void;
+};
 
 const Card = ({
   card,
@@ -53,80 +45,110 @@ const Card = ({
   onCardUpdated,
   onCardDeleted,
   onTagUpdate,
-  setIsTagModalOpen
+  setIsTagModalOpen,
+  onClick
 }: Props) => {
-  const [imageError, setImageError] = useState(false)
-  const [showMenu, setShowMenu] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedCard, setEditedCard] = useState<CardType>(card)
-  const [uploading, setUploading] = useState(false)
-  const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
-  const [tagSearchQuery, setTagSearchQuery] = useState('')
-  // const [isLoadingTags, setIsLoadingTags] = useState(false)
-  // const [availableTags, setAvailableTags] = useState<Tag[]>(tags)
+  const [imageError, setImageError] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedCard, setEditedCard] = useState<CardType>(card);
+  const [uploading, setUploading] = useState(false);
+  const [isTagSearchOpen, setIsTagSearchOpen] = useState(false);
+  const [tagSearchQuery, setTagSearchQuery] = useState('');
 
   useEffect(() => {
-    if (!isEditing) {
-      setEditedCard(card)
-    }
-    setImageError(false)
-  }, [card, isEditing])
+    if (!isEditing) setEditedCard(card);
+    setImageError(false);
+  }, [card, isEditing]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element
+      const target = event.target as Element;
       if (showMenu && !target.closest(`.${styles.userEdit}`)) {
-        setShowMenu(false)
-        setIsTagModalOpen(false)
+        setShowMenu(false);
+        setIsTagModalOpen(false);
       }
       if (
         isTagSearchOpen &&
         !target.closest(`.${styles.addTag}`) &&
         !target.closest(`.${styles.searchTag}`)
       ) {
-        setIsTagSearchOpen(false)
-        setIsTagModalOpen(false)
+        setIsTagSearchOpen(false);
+        setIsTagModalOpen(false);
       }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMenu, isTagSearchOpen, setIsTagModalOpen]);
+
+  const getTagName = (tag: CardTag) => tag.name;
+  const handleImageError = () => setImageError(true);
+  const toggleMenu = () => setShowMenu(prev => !prev);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditedCard(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!uploading) handleSave();
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showMenu, isTagSearchOpen, setIsTagModalOpen])
+  };
 
-  const handleImageError = () => setImageError(true)
+  const addTagToCard = (
+    tagID: number,
+    cardID: number,
+    onSuccess: () => void,
+    onError: () => void
+  ) => {
+    if (!tagID || !cardID) return;
+    axios_instance
+      .post('/tag/add-to-card', { tag_id: tagID, card_id: cardID })
+      .then(onSuccess)
+      .catch(err => {
+        console.error('Add Tag Error:', err?.response?.data || err);
+        onError();
+      });
+  };
 
-  const toggleMenu = () => setShowMenu(!showMenu)
+  const removeTagFromCard = (
+    tagID: number,
+    cardID: number,
+    onSuccess: () => void,
+    onError: () => void
+  ) => {
+    if (!tagID || !cardID) return;
+    axios_instance
+      .post('/tag/remove-from-card', { tag_id: tagID, card_id: cardID })
+      .then(onSuccess)
+      .catch(err => {
+        console.error('Remove Tag Error:', err?.response?.data || err);
+        onError();
+      });
+  };
 
-  const getTagName = (cardTag: CardTag): string => {
-    return cardTag.name
-  }
-
-  const handleTagToggle = async (
+  const handleTagToggle = (
     tagID: number,
     tagName: string,
     tagColor: string
   ) => {
-    const currentTags = editedCard.tags || []
-    const isSelected = currentTags.some((cardTag: CardTag) => {
-      return getTagName(cardTag) === tagName
-    })
-
+    const currentTags = editedCard.tags || [];
+    const isSelected = currentTags.some(t => getTagName(t) === tagName);
     if (isSelected) {
       removeTagFromCard(
         tagID,
         card.id,
         () => {
-          const newTags = currentTags.filter((cardTag: CardTag) => {
-            return getTagName(cardTag) !== tagName
-          })
-          const updatedCard = { ...editedCard, tags: newTags }
-          setEditedCard(updatedCard)
-          onCardUpdated?.(updatedCard)
-          onTagUpdate?.()
+          const newTags = currentTags.filter(t => getTagName(t) !== tagName);
+          const updatedCard = { ...editedCard, tags: newTags };
+          setEditedCard(updatedCard);
+          onCardUpdated?.(updatedCard);
+          onTagUpdate?.();
         },
-        () => {
-          console.error('Failed to remove tag')
-        }
-      )
+        () => console.error('Failed to remove tag')
+      );
     } else {
       addTagToCard(
         tagID,
@@ -135,93 +157,67 @@ const Card = ({
           const updatedCard = {
             ...editedCard,
             tags: [...currentTags, { id: tagID, name: tagName, color: tagColor }]
-          }
-          setEditedCard(updatedCard)
-          onCardUpdated?.(updatedCard)
-          onTagUpdate?.()
+          };
+          setEditedCard(updatedCard);
+          onCardUpdated?.(updatedCard);
+          onTagUpdate?.();
         },
-        () => {
-          console.error('Failed to add tag')
-        }
-      )
+        () => console.error('Failed to add tag')
+      );
     }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setEditedCard(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      if (!uploading) {
-        handleSave()
-      }
-    }
-  }
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploading(true)
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
     reader.onloadend = async () => {
       try {
-        const base64data = reader.result
-        const token = localStorage.getItem('token')
-        const res = await fetch(`/api/upload`, {
+        const base64data = reader.result;
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/upload', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({ image: base64data })
-        })
-
-        if (!res.ok) throw new Error('Upload failed')
-        const data = await res.json()
-        if (!data.url) throw new Error('Upload response did not contain a URL')
-
-        setEditedCard(prev => ({ ...prev, image_url: data.url }))
-        setImageError(false)
-      } catch (error) {
-        console.error('Upload failed:', error)
+        });
+        if (!res.ok) throw new Error('Upload failed');
+        const data = await res.json();
+        if (!data.url) throw new Error('Upload response did not contain a URL');
+        setEditedCard(prev => ({ ...prev, image_url: data.url }));
+        setImageError(false);
+      } catch (err) {
+        console.error('Upload failed:', err);
       } finally {
-        setUploading(false)
+        setUploading(false);
       }
-    }
-
+    };
     reader.onerror = () => {
-      console.error('File reading failed')
-      setUploading(false)
-    }
-  }
+      console.error('File reading failed');
+      setUploading(false);
+    };
+  };
 
   const handleSave = async () => {
-    if (uploading) {
-      return
-    }
-
-    setShowMenu(false)
-
-    if (
+    if (uploading) return;
+    setShowMenu(false);
+    const unchanged =
       editedCard.name === card.name &&
       editedCard.email === card.email &&
       editedCard.phone === card.phone &&
       editedCard.designation === card.designation &&
       editedCard.image_url === card.image_url &&
-      JSON.stringify(editedCard.tags) === JSON.stringify(card.tags)
-    ) {
-      setIsEditing(false)
-      return
+      JSON.stringify(editedCard.tags) === JSON.stringify(card.tags);
+    if (unchanged) {
+      setIsEditing(false);
+      return;
     }
-
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('token');
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`,
         {
@@ -239,88 +235,39 @@ const Card = ({
             list_id: editedCard.list_id
           })
         }
-      )
-      if (!res.ok) throw new Error('Failed to update card')
-
-      // const response = await res.json()
-      
+      );
+      if (!res.ok) throw new Error('Failed to update card');
       const updatedCard = {
         ...editedCard,
         id: card.id,
         list_id: card.list_id,
         tags: editedCard.tags || card.tags || []
-      }
-      
-      onCardUpdated?.(updatedCard)
-      setIsEditing(false)
-      
-    } catch (error) {
-      console.error('Edit failed:', error)
-      setEditedCard(card)
+      };
+      onCardUpdated?.(updatedCard);
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Edit failed:', err);
+      setEditedCard(card);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    setShowMenu(false)
-
+    setShowMenu(false);
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('token');
       await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/${card.id}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
-      onCardDeleted?.(card.id)
-    } catch (error) {
-      console.error('Delete failed:', error)
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      onCardDeleted?.(card.id);
+    } catch (err) {
+      console.error('Delete failed:', err);
     }
-  }
+  };
 
-  const filteredTags = tags?.filter(tag =>
-    tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
-  )
-
-  const addTagToCard = (
-    tagID: number,
-    cardID: number,
-    onSuccess: () => void,
-    onError: () => void
-  ) => {
-    if (!tagID || !cardID) return
-
-    axios_instance
-      .post('/tag/add-to-card', {
-        tag_id: tagID,
-        card_id: cardID
-      })
-      .then(() => onSuccess())
-      .catch(err => {
-        console.error('Add Tag Error:', err?.response?.data || err)
-        onError()
-      })
-  }
-
-  const removeTagFromCard = (
-    tagID: number,
-    cardID: number,
-    onSuccess: () => void,
-    onError: () => void
-  ) => {
-    if (!tagID || !cardID) return
-
-    axios_instance
-      .post(`/tag/remove-from-card`, {
-        tag_id: tagID,
-        card_id: cardID
-      })
-      .then(() => onSuccess())
-      .catch(err => {
-        console.error('Remove Tag Error:', err?.response?.data || err)
-        onError()
-      })
-  }
+  const filteredTags = tags?.filter(t =>
+    t.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
+  );
 
   return (
     <div
@@ -329,6 +276,7 @@ const Card = ({
       onDragStart={() => !isEditing && onDragStart(list_id, card.id)}
       onDragEnter={() => !isEditing && onDragEnter(list_id, index)}
       onDragEnd={onDragEnd}
+      onClick={isEditing ? undefined : onClick}
     >
       <div className={styles.userInfo}>
         <div className={styles.avatar}>
@@ -342,7 +290,7 @@ const Card = ({
               ) : editedCard.image_url && !imageError ? (
                 <Image
                   src={editedCard.image_url}
-                  alt='Avatar'
+                  alt="Avatar"
                   width={40}
                   height={40}
                   className={styles.avatarImage}
@@ -350,33 +298,29 @@ const Card = ({
                   quality={100}
                 />
               ) : (
-                <AddImage width={24} height={24} fill='#BCBBB8' />
+                <AddImage width={24} height={24} fill="#BCBBB8" />
               )}
               <input
                 id={`file-upload-${card.id}`}
-                type='file'
-                accept='image/*'
+                type="file"
+                accept="image/*"
                 onChange={handleImageUpload}
                 className={styles.hiddenInput}
                 disabled={uploading}
               />
             </label>
+          ) : editedCard.image_url && !imageError ? (
+            <Image
+              src={editedCard.image_url}
+              alt="Avatar"
+              width={40}
+              height={40}
+              className={styles.avatarImage}
+              onError={handleImageError}
+              quality={100}
+            />
           ) : (
-            <>
-              {editedCard.image_url && !imageError ? (
-                <Image
-                  src={editedCard.image_url}
-                  alt='Avatar'
-                  width={40}
-                  height={40}
-                  className={styles.avatarImage}
-                  onError={handleImageError}
-                  quality={100}
-                />
-              ) : (
-                <AddImage width={24} height={24} fill='#BCBBB8' />
-              )}
-            </>
+            <AddImage width={24} height={24} fill="#BCBBB8" />
           )}
         </div>
 
@@ -384,23 +328,21 @@ const Card = ({
           {isEditing ? (
             <>
               <input
-                type='text'
-                name='name'
+                name="name"
+                placeholder="name..."
+                className={styles.userName}
                 value={editedCard.name || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder='name...'
-                className={styles.userName}
                 disabled={uploading}
               />
               <input
-                type='text'
-                name='designation'
+                name="designation"
+                placeholder="professional exp..."
+                className={styles.userTitle}
                 value={editedCard.designation || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder='professional exp...'
-                className={styles.userTitle}
                 disabled={uploading}
               />
             </>
@@ -421,42 +363,60 @@ const Card = ({
             </>
           )}
         </div>
+
         <div
           className={styles.userEdit}
-          onClick={isEditing && !uploading ? handleSave : toggleMenu}
+          onClick={e => {
+            e.stopPropagation();
+            if (isEditing && !uploading) {
+              handleSave();
+            } else if (!isEditing) {
+              toggleMenu();
+            }
+          }}
           style={{
             opacity: isEditing && uploading ? 0.5 : 1,
             cursor: isEditing && uploading ? 'not-allowed' : 'pointer'
           }}
         >
           {!isEditing ? (
-            <Dots width={24} height={24} fill='#3D3D3D' />
+            <Dots width={24} height={24} fill="#3D3D3D" />
           ) : (
-            <Checkmark 
-              width={24} 
-              height={24} 
-              fill={uploading ? '#BCBBB8' : '#194EFF'} 
+            <Checkmark
+              width={24}
+              height={24}
+              fill={uploading ? '#BCBBB8' : '#194EFF'}
             />
           )}
 
           {showMenu && !isEditing && (
-            <div className={styles.userMenu}>
+            <div
+              className={styles.userMenu}
+              onClick={e => e.stopPropagation()}
+            >
               <div
                 className={styles.editMenu}
-                onClick={() => {
-                  setIsEditing(true)
-                  setShowMenu(false)
+                onClick={e => {
+                  e.stopPropagation();
+                  setIsEditing(true);
+                  setShowMenu(false);
                 }}
               >
                 <div className={styles.edit}>
-                  <Edit width={16} height={16} fill='#00020F' />
+                  <Edit width={16} height={16} fill="#00020F" />
                 </div>
                 <div className={styles.editText}>Edit</div>
               </div>
 
-              <div onClick={handleDelete} className={styles.deleteButton}>
+              <div
+                className={styles.deleteButton}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleDelete();
+                }}
+              >
                 <div className={styles.delete}>
-                  <Delete width={16} height={16} fill='#FB7285' />
+                  <Delete width={16} height={16} fill="#FB7285" />
                 </div>
                 <div className={styles.deleteText}>Delete</div>
               </div>
@@ -469,28 +429,26 @@ const Card = ({
         {isEditing ? (
           <>
             <div className={styles.userEmail}>
-              <Mail width={16} height={16} fill='#3D3D3D' />
+              <Mail width={16} height={16} fill="#3D3D3D" />
               <input
-                type='text'
-                name='email'
+                name="email"
+                placeholder="email..."
+                className={styles.email}
                 value={editedCard.email || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder='email...'
-                className={styles.email}
                 disabled={uploading}
               />
             </div>
             <div className={styles.userContact}>
-              <Phone width={16} height={16} fill='#3D3D3D' />
+              <Phone width={16} height={16} fill="#3D3D3D" />
               <input
-                type='text'
-                name='phone'
+                name="phone"
+                placeholder="phone..."
+                className={styles.contact}
                 value={editedCard.phone || ''}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder='phone...'
-                className={styles.contact}
                 disabled={uploading}
               />
             </div>
@@ -498,7 +456,7 @@ const Card = ({
         ) : (
           <>
             <div className={styles.userEmail}>
-              <Mail width={16} height={12} fill='#3D3D3D' />
+              <Mail width={16} height={12} fill="#3D3D3D" />
               <p className={styles.email}>
                 {editedCard.email || (
                   <span className={styles.emailPlaceholder}>email...</span>
@@ -506,7 +464,7 @@ const Card = ({
               </p>
             </div>
             <div className={styles.userContact}>
-              <Phone width={16} height={16} fill='#3D3D3D' />
+              <Phone width={16} height={16} fill="#3D3D3D" />
               <p className={styles.contact}>
                 {editedCard.phone || (
                   <span className={styles.contactPlaceholder}>phone...</span>
@@ -518,28 +476,23 @@ const Card = ({
       </div>
 
       <div className={styles.userTags}>
-        {editedCard.tags?.map((tag, index) => {
-          const tagName = tag.name
+        {editedCard.tags?.map((tag, i) => (
+          <div
+            key={`${card.id}-tag-${i}`}
+            className={styles.userTag}
+            style={{ color: 'black', backgroundColor: tag.color }}
+          >
+            {tag.name}
+          </div>
+        ))}
 
-          return (
-            <div
-              key={`${card.id}-tag-${index}`}
-              className={styles.userTag}
-              style={{
-                color: 'black',
-                backgroundColor: `${tag?.color}`
-              }}
-            >
-              {tagName}
-            </div>
-          )
-        })}
         <div
           className={styles.addTag}
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
             if (!uploading) {
-              setIsTagSearchOpen(prev => !prev)
-              setIsTagModalOpen(prev => !prev)
+              setIsTagSearchOpen(prev => !prev);
+              setIsTagModalOpen(prev => !prev);
             }
           }}
           style={{
@@ -553,20 +506,23 @@ const Card = ({
       </div>
 
       {isTagSearchOpen && !uploading && (
-        <div className={styles.searchTag}>
+        <div
+          className={styles.searchTag}
+          onClick={e => e.stopPropagation()}
+        >
           <input
-            type='text'
-            placeholder='Search tags...'
+            type="text"
+            placeholder="Search tags..."
             className={styles.searchTagInput}
             value={tagSearchQuery}
             onChange={e => setTagSearchQuery(e.target.value)}
           />
           <div className={styles.allTags}>
             {filteredTags?.map(tag => {
-              const currentTags = editedCard.tags || []
-              const isSelected = currentTags.some((cardTag: CardTag) => {
-                return getTagName(cardTag) === tag.name
-              })
+              const currentTags = editedCard.tags || [];
+              const isSelected = currentTags.some(
+                t => getTagName(t) === tag.name
+              );
 
               return (
                 <div key={tag.id} className={styles.allTag}>
@@ -574,9 +530,12 @@ const Card = ({
                     className={`${styles.checkbox} ${
                       isSelected ? styles.checked : ''
                     }`}
-                    onClick={() => handleTagToggle(tag.id, tag.name, tag.color)}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleTagToggle(tag.id, tag.name, tag.color);
+                    }}
                   >
-                    <Checkmark width={16} height={16} fill='white' />
+                    <Checkmark width={16} height={16} fill="white" />
                   </div>
                   <div
                     className={styles.tagName}
@@ -585,13 +544,13 @@ const Card = ({
                     <p className={styles.tagNameText}>{tag.name}</p>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Card
+export default Card;

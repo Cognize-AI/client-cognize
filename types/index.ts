@@ -63,3 +63,37 @@ export type List = {
   updated_at: string;
   cards: Card[];
 }
+
+export interface CardByIdData {
+  id: number
+  name: string
+  designation: string
+  email: string
+  phone: string
+  image_url: string
+  ListID: number
+  CardOrder: number
+  tags: {
+    id: number
+    name: string
+    color: string
+  }[]
+  list_name: string
+  company: {
+    name: string
+    role: string
+    location: string
+    phone: string
+    email: string
+  }
+  additional_contact: {
+    name: string
+    value: string
+    data_type: string
+  }[]
+  additional_company: {
+    name: string
+    value: string
+    data_type: string
+  }[]
+}
