@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -19,6 +27,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "example.com",
       },
     ],
   },
