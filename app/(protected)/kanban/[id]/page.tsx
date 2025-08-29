@@ -157,39 +157,55 @@ const Page = () => {
           </div>
           <div className={styles.actions}>
             <div className={styles.icons} onClick={handleMailClick}>
-              <Mail
-                width={24}
-                height={24}
-                fill='#194EFF'
-                className={styles.actionIcons}
-              />
+              <div className={styles.icon_wrapper}>
+                <div className={styles.icon_unif}>
+                  <Mail
+                    width={20}
+                    height={16}
+                    fill='#194EFF'
+                    className={styles.actionIcons}
+                  />
+                </div>
+              </div>
               <p className={styles.actionTitle}>Email</p>
             </div>
             <div className={styles.icons}>
-              <Phone
-                width={24}
-                height={24}
-                fill='#194EFF'
-                className={styles.actionIcons}
-              />
+              <div className={styles.icon_wrapper}>
+                <div className={styles.icon_unif}>
+                  <Phone
+                    width={24}
+                    height={24}
+                    fill='#194EFF'
+                    className={styles.actionIcons}
+                  />
+                </div>
+              </div>
               <p className={styles.actionTitle}>Phone</p>
             </div>
             <div className={styles.icons}>
-              <Streak
-                width={24}
-                height={24}
-                fill='#194EFF'
-                className={styles.actionIcons}
-              />
+              <div className={styles.icon_wrapper}>
+                <div className={styles.icon_unif}>
+                  <Streak
+                    width={24}
+                    height={24}
+                    fill='#194EFF'
+                    className={styles.actionIcons}
+                  />
+                </div>
+              </div>
               <p className={styles.actionTitle}>Enrich</p>
             </div>
             <div className={styles.icons}>
-              <Dots
-                width={24}
-                height={24}
-                fill='#194EFF'
-                className={styles.actionIcons}
-              />
+              <div className={styles.icon_wrapper}>
+                <div className={styles.icon_unif}>
+                  <Dots
+                    width={24}
+                    height={24}
+                    fill='#194EFF'
+                    className={styles.actionIcons}
+                  />
+                </div>
+              </div>
               <p className={styles.actionTitle}>More</p>
             </div>
           </div>
@@ -396,7 +412,16 @@ const Page = () => {
                   <input
                     className={styles.input}
                     value={contact.value}
-                    readOnly
+                    placeholder={`Add ${contact.name.toLowerCase()}`}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setSelectedCard({
+                        ...selectedCard,
+                        additional_company: selectedCard.additional_company.map((c) =>
+                          c.name === contact.name ? { ...c, value: newValue } : c
+                        ),
+                      });
+                    }}
                   />
                 </div>
               ))}

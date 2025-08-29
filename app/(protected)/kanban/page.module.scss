@@ -14,8 +14,13 @@
   flex: 1 0 0;
   align-self: stretch;
   height: calc(100vh - 180px);
-  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: auto;
   width: 100%;
+
+  &::-webkit-scrollbar {
+    width: 0px;
+  }
 }
 
 .spinnerWrapper {

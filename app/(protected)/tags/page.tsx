@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation'
 import { axios_instance } from '@/lib/axios'
 import { useTagsStore } from '@/provider/tags-store-provider'
 
-import { Add, ArrowLeft, Pen, Tag, Trash } from '@/components/icons'
+import { Add, ArrowLeft, Pen, Tag as TagIcon, Trash } from '@/components/icons'
 import AddInput from '@/components/AddInput/AddInput'
 
 import styles from './page.module.scss'
+import Tag from '@/components/Tag/Tag'
 
 const Page = () => {
   const router = useRouter();
@@ -99,7 +100,7 @@ const Page = () => {
           Object.keys(groupedTags)?.map((key) => {
             return <div className={styles.tag_row} key={key} style={{ background: key + "14" }}>
               <div className={styles.icon} style={{ background: key + "1F" }}>
-                <Tag width={24} height={24} fill='#00020F' />
+                <TagIcon width={24} height={24} fill='#00020F' />
               </div>
               <div className={styles.ta_gs_row}>
                 {
@@ -112,16 +113,17 @@ const Page = () => {
                       setNewTagData={setEditTagData}
                       setTagOpen={setTagEditing}
                       newTagData={editTagData}
-                    /> : <div className={styles.tag} style={{ background: key }} key={tag.id}>
-                      <p>
-                        {tag.name}
-                      </p>
-                      <Pen onClick={() => {
-                        setEditTagData({ name: tag.name, color: key })
-                        setTagEditing(tag.id)
-                      }} className={styles.icons} width={16} height={16} fill='white' />
-                      <Trash onClick={() => deleteTag(tag.id)} className={styles.icons} width={16} height={16} fill='white' />
-                    </div>
+                    /> : <Tag id={tag.id} name={tag.name} color={key} setEditTagData={setEditTagData} setTagEditing={setTagEditing} deleteTag={deleteTag} />
+                    // <div className={styles.tag} style={{ background: key }} key={tag.id}>
+                    //   <p>
+                    //     {tag.name}
+                    //   </p>
+                    //   <Pen onClick={() => {
+                    //     setEditTagData({ name: tag.name, color: key })
+                    //     setTagEditing(tag.id)
+                    //   }} className={styles.icons} width={16} height={16} fill='white' />
+                    //   <Trash onClick={() => deleteTag(tag.id)} className={styles.icons} width={16} height={16} fill='white' />
+                    // </div>
                   ))
                 }
                 {!(tagOpen && tagOpen === key) && <div onClick={() => {

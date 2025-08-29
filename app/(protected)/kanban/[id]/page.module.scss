@@ -1,5 +1,5 @@
 .main {
-    display: flex; 
+    display: flex;
     flex-direction: column;
     gap: 1.5rem;
     width: 100%;
@@ -14,6 +14,7 @@
         align-items: center;
         gap: 0.25rem;
         cursor: pointer;
+
         p {
             color: var(--Colors-blue-1, #194eff);
             font-size: 1rem;
@@ -53,6 +54,7 @@
             border-radius: 50%;
             object-fit: cover;
         }
+
         .userDetails {
             display: flex;
             flex-direction: column;
@@ -64,6 +66,7 @@
                 font-weight: 500;
                 color: var(--text-colors-primary-dark, #00020f);
             }
+
             .designation {
                 font-size: 1rem;
                 font-weight: 400;
@@ -74,9 +77,9 @@
 
     .actions {
         display: flex;
+        width: 16.625rem;
         justify-content: space-between;
         align-items: center;
-        gap: 0.5rem;
 
         .icons {
             display: flex;
@@ -84,19 +87,36 @@
             justify-content: center;
             align-items: center;
             gap: 0.25rem;
-            min-width: 50px;
             cursor: pointer;
 
-            .actionIcons {
+            .icon_wrapper {
                 display: flex;
-                width: 2.5rem;
-                height: 2.5rem;
                 padding: 0.5rem;
                 justify-content: center;
                 align-items: center;
                 border-radius: 0.75rem;
-                background: var(--bg-colors-grey-light, #f9fbff);
+                background: var(--bg-colors-grey-light, #F9FBFF);
+
+                .icon_unif {
+                    width: 1.5rem;
+                    height: 1.5rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
             }
+
+            .actionIcons {
+                display: flex;
+                // width: 2.5rem;
+                // height: 2.5rem;
+                // padding: 0.5rem;
+                justify-content: center;
+                align-items: center;
+                // border-radius: 0.75rem;
+                // background: var(--bg-colors-grey-light, #f9fbff);
+            }
+
             .actionTitle {
                 text-align: center;
                 font-size: 0.75rem;
@@ -120,6 +140,7 @@
         height: 1.5rem;
         background: var(--border-colors-regular, #e2e8f0);
     }
+
     .tag {
         display: flex;
         padding: 0.5rem;
@@ -180,15 +201,18 @@
             padding: 1rem;
             justify-content: space-between;
             align-items: center;
+
             .detailTitle {
                 font-weight: 500;
             }
+
             .addNote {
                 display: flex;
                 padding: 0.25rem 0.5rem;
                 align-items: center;
                 gap: 0.25rem;
                 cursor: pointer;
+
                 .add {
                     color: var(--Colors-blue-1, #194eff);
                     font-size: 0.875rem;
@@ -206,6 +230,7 @@
             overflow: scroll;
 
             scrollbar-width: none;
+
             &::-webkit-scrollbar {
                 display: none;
             }
@@ -224,7 +249,7 @@
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                width: 7rem;
+                min-width: 6rem;
 
                 .fieldTitle {
                     white-space: nowrap;
@@ -234,6 +259,7 @@
                     font-size: 0.875rem;
                 }
             }
+
             .tag {
                 display: flex;
                 padding: 0.5rem;
@@ -259,7 +285,8 @@
                 font-size: 1rem;
                 font-style: normal;
                 font-weight: 400;
-                line-height: 1.3125rem; /* 131.25% */
+                line-height: 1.3125rem;
+                /* 131.25% */
                 width: 100%;
                 border: none;
                 outline: none;
@@ -316,7 +343,8 @@
                     font-size: 1rem;
                     font-style: normal;
                     font-weight: 400;
-                    line-height: 1.5rem; /* 150% */
+                    line-height: 1.5rem;
+                    /* 150% */
                 }
 
                 .noteOptions {
@@ -325,6 +353,7 @@
                     align-items: center;
                     gap: 0.5rem;
                     align-self: stretch;
+
                     .date {
                         flex: 1 0 0;
                         color: var(--gray-gray-500, #57534e);
@@ -332,7 +361,8 @@
                         font-size: 0.875rem;
                         font-style: normal;
                         font-weight: 400;
-                        line-height: 1.5rem; /* 171.429% */
+                        line-height: 1.5rem;
+                        /* 171.429% */
                     }
 
                     // .options{
@@ -356,11 +386,13 @@
                     resize: none;
 
                     scrollbar-width: none;
+
                     &::-webkit-scrollbar {
                         display: none;
                     }
                 }
             }
+
             .saveContainer {
                 display: flex;
                 align-items: center;
@@ -381,7 +413,8 @@
                         font-size: 1rem;
                         font-style: normal;
                         font-weight: 400;
-                        line-height: 1.5rem; /* 150% */
+                        line-height: 1.5rem;
+                        /* 150% */
                     }
                 }
             }
@@ -393,6 +426,7 @@
             align-items: center;
             gap: 0.25rem;
             cursor: pointer;
+
             .add {
                 color: var(--Colors-blue-1, #194eff);
                 font-size: 0.875rem;

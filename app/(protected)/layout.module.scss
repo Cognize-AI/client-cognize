@@ -6,7 +6,7 @@
   overflow: hidden;
 
   .main_page {
-    width: 100%;
+    max-width: calc(100vw - 248px);
     height: 100%;
     display: flex;
     padding: 1.5rem;
