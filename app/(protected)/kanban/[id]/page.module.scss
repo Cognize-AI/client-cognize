@@ -222,12 +222,12 @@
 
         .form {
             display: flex;
-            padding: 0 0.75rem 0.75rem;
+            padding: 0 0.75rem;
             flex-direction: column;
             gap: 0.5rem;
-            flex: 1;
-            padding: 0rem 0.75rem;
+            flex: 1 0 0;
             overflow: scroll;
+            align-self: stretch;
 
             scrollbar-width: none;
 
@@ -238,12 +238,12 @@
 
         .row {
             display: flex;
-            min-height: 3rem;
+            min-height: 4rem;
             align-items: center;
             gap: 0.75rem;
             border-radius: 0.75rem;
             background: var(--bg-colors-opaque, #fff);
-            padding: 0 1rem;
+            padding: 0.75rem;
 
             .field {
                 display: flex;

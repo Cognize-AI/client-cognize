@@ -26,6 +26,7 @@ import { useCardStore } from '@/provider/card-store-provider'
 import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { CompanyData } from '@/types'
+import Field from '@/ui/form/Field/Field'
 
 
 const Page = () => {
@@ -59,15 +60,12 @@ const Page = () => {
       })
   }, [id, setSelectedCard])
 
-  useEffect(() => {
-    fetchCard()
-  }, [fetchCard])
-
   const handleMailClick = () => {
     if (selectedCard?.email) {
       window.location.href = `mailto:${selectedCard.email}`
     }
   }
+
   const handleSaveNewField = (type: 'CONTACT' | 'COMPANY') => {
     const fieldName =
       type === 'CONTACT' ? newContactFieldName : newCompanyFieldName
@@ -111,6 +109,45 @@ const Page = () => {
         console.error('Error saving new field:', error)
       })
   }
+
+  const handleCardUpdate = () => {
+    if (!selectedCard) {
+      return
+    }
+    const data = {
+      id: selectedCard.id,
+      name: selectedCard.name,
+      designation: selectedCard.designation,
+      email: selectedCard.email,
+      phone: selectedCard.phone,
+      image_url: selectedCard.image_url,
+      location: selectedCard.location,
+      company_name: selectedCard.company.name,
+      company_role: selectedCard.company.role,
+      company_location: selectedCard.company.location,
+      company_phone: selectedCard.company.phone,
+      company_email: selectedCard.company.email
+    }
+
+    axios_instance.put(`/card/details/${selectedCard.id}`, data).then(response => {
+      fetchCard()
+    })
+  }
+
+  const handleContactCustomFieldUpdate = (card_id: number, field_def_id: number, value: string) => {
+    if (!card_id || !field_def_id) {
+      return
+    }
+
+    axios_instance.post('/field/field-value', {
+      field_id: field_def_id,
+      card_id: card_id,
+      value: value
+    }).then(() => {
+      fetchCard()
+    })
+  }
+
   const companyFields = [
     { key: 'name', label: 'Company', placeholder: 'Add company', Icon: Suitcase },
     { key: 'role', label: 'Role', placeholder: 'Add role', Icon: People },
@@ -119,10 +156,14 @@ const Page = () => {
     { key: 'email', label: 'Email', placeholder: 'Add email', Icon: Email2 }
   ]
 
+  useEffect(() => {
+    fetchCard()
+  }, [fetchCard])
+
+
   if (!selectedCard) {
     return <div>Loading...</div>
   }
-
   return (
     <>
       <div className={styles.container}>
@@ -250,60 +291,62 @@ const Page = () => {
               </div>
             </div>
             <div className={styles.form}>
-              <div className={styles.row}>
-                <div className={styles.field}>
+              <Field
+                label="Location"
+                placeholder='Add location'
+                value={selectedCard?.location}
+                onChange={(value) => {
+                  setSelectedCard({
+                    ...selectedCard,
+                    location: value,
+                  });
+                }}
+                onEnter={() => {
+                  handleCardUpdate()
+                }}
+                labelIcon={
                   <Location
                     stroke='#3D3D3D'
                     width={20}
                     height={20}
                     fill='none'
                   />
-                  <p className={styles.fieldTitle}>Location</p>
-                </div>
-                <input
-                  className={styles.input}
-                  placeholder='Add location'
-                  type='text'
-                />
-              </div>
-              <div className={styles.row}>
-                <div className={styles.field}>
+                }
+              />
+              <Field
+                label="Phone"
+                placeholder='Add Phone'
+                value={selectedCard?.phone}
+                onChange={(value) => {
+                  setSelectedCard({
+                    ...selectedCard,
+                    phone: value,
+                  });
+                }}
+                onEnter={() => {
+                  handleCardUpdate()
+                }}
+                labelIcon={
                   <Phone2 stroke='#3D3D3D' width={20} height={20} fill='none' />
-                  <p className={styles.fieldTitle}>Phone</p>
-                </div>
-                {selectedCard?.phone ? (
-                  <input
-                    className={styles.input}
-                    value={selectedCard.phone}
-                    readOnly
-                  />
-                ) : (
-                  <input
-                    className={styles.input}
-                    placeholder='Add phone'
-                    type='text'
-                  />
-                )}
-              </div>
-              <div className={styles.row}>
-                <div className={styles.field}>
+                }
+              />
+              <Field
+                label="Email"
+                placeholder='Add Email'
+                value={selectedCard?.email}
+                onChange={(value) => {
+                  setSelectedCard({
+                    ...selectedCard,
+                    email: value,
+                  });
+                }}
+                onEnter={() => {
+                  handleCardUpdate()
+                }}
+                labelIcon={
                   <Email2 stroke='#3D3D3D' width={20} height={20} fill='none' />
-                  <p className={styles.fieldTitle}>Email</p>
-                </div>
-                {selectedCard?.email ? (
-                  <input
-                    className={styles.input}
-                    value={selectedCard.email}
-                    readOnly
-                  />
-                ) : (
-                  <input
-                    className={styles.input}
-                    placeholder='Add email'
-                    type='text'
-                  />
-                )}
-              </div>
+                }
+              />
               <div className={styles.row}>
                 <div className={styles.field}>
                   <Lifecycle
@@ -322,16 +365,39 @@ const Page = () => {
                 </div>
               </div>
               {selectedCard?.additional_contact?.map(contact => (
-                <div className={styles.row} key={contact.name}>
-                  <div className={styles.field}>
-                    <p className={styles.fieldTitle}>{contact.name}</p>
-                  </div>
-                  <input
-                    className={styles.input}
-                    value={contact.value}
-                    readOnly
-                  />
-                </div>
+                // <div className={styles.row} key={contact.name}>
+                //   <div className={styles.field}>
+                //     <p className={styles.fieldTitle}>{contact.name}</p>
+                //   </div>
+                //   <input
+                //     className={styles.input}
+                //     value={contact.value}
+                //     readOnly
+                //   />
+                // </div>
+                <Field
+                  label={contact.name}
+                  placeholder={`Add ${contact.name}`}
+                  value={contact.value}
+                  onChange={(value) => {
+                    setSelectedCard({
+                      ...selectedCard,
+                      additional_contact: selectedCard.additional_contact.map((c) =>
+                        c.name === contact.name ? { ...c, value: value } : c
+                      ),
+                    });
+                  }}
+                  onEnter={() => {
+                    handleContactCustomFieldUpdate(
+                      selectedCard.id,
+                      contact.id,
+                      contact.value
+                    )
+                  }}
+                  labelIcon={
+                    <Email2 stroke='#3D3D3D' width={20} height={20} fill='none' />
+                  }
+                />
               ))}
             </div>
             <div className={styles.newField}>
@@ -376,54 +442,101 @@ const Page = () => {
             </div>
             <div className={styles.form}>
               {companyFields.map(field => (
-                <div className={styles.row} key={field.key}>
-                  <div className={styles.field}>
+                // <div className={styles.row} key={field.key}>
+                //   <div className={styles.field}>
+                //     <field.Icon
+                //       stroke='#3D3D3D'
+                //       width={20}
+                //       height={20}
+                //       fill='none'
+                //     />
+                //     <p className={styles.fieldTitle}>{field.label}</p>
+                //   </div>
+                //   {selectedCard?.company?.[field.key as keyof CompanyData] ? (
+                //     <input
+                //       className={styles.input}
+                //       type='string'
+                //       value={
+                //         selectedCard.company[field.key as keyof CompanyData]
+                //       }
+                //       readOnly
+                //     />
+                //   ) : (
+                //     <input
+                //       className={styles.input}
+                //       placeholder={field.placeholder}
+                //       type='text'
+                //     />
+                //   )}
+                // </div>
+                <Field
+                  label={field.label}
+                  placeholder={`Add ${field.label.toLowerCase()}`}
+                  value={selectedCard.company[field.key as keyof CompanyData]}
+                  onChange={(value) => {
+                    setSelectedCard({
+                      ...selectedCard,
+                      company: {
+                        ...selectedCard.company,
+                        [field.key as keyof CompanyData]: value,
+                      },
+                    });
+                  }}
+                  onEnter={() => {
+                    handleCardUpdate()
+                  }}
+                  labelIcon={
                     <field.Icon
                       stroke='#3D3D3D'
                       width={20}
                       height={20}
-                      fill='none'
-                    />
-                    <p className={styles.fieldTitle}>{field.label}</p>
-                  </div>
-                  {selectedCard?.company?.[field.key as keyof CompanyData] ? (
-                    <input
-                      className={styles.input}
-                      type='string'
-                      value={
-                        selectedCard.company[field.key as keyof CompanyData]
-                      }
-                      readOnly
-                    />
-                  ) : (
-                    <input
-                      className={styles.input}
-                      placeholder={field.placeholder}
-                      type='text'
-                    />
-                  )}
-                </div>
+                      fill='none' />
+                  }
+                />
               ))}
               {selectedCard?.additional_company?.map(contact => (
-                <div className={styles.row} key={contact.name}>
-                  <div className={styles.field}>
-                    <p className={styles.fieldTitle}>{contact.name}</p>
-                  </div>
-                  <input
-                    className={styles.input}
-                    value={contact.value}
-                    placeholder={`Add ${contact.name.toLowerCase()}`}
-                    onChange={(e) => {
-                      const newValue = e.target.value;
-                      setSelectedCard({
-                        ...selectedCard,
-                        additional_company: selectedCard.additional_company.map((c) =>
-                          c.name === contact.name ? { ...c, value: newValue } : c
-                        ),
-                      });
-                    }}
-                  />
-                </div>
+                // <div className={styles.row} key={contact.name}>
+                //   <div className={styles.field}>
+                //     <p className={styles.fieldTitle}>{contact.name}</p>
+                //   </div>
+                //   <input
+                //     className={styles.input}
+                //     value={contact.value}
+                //     placeholder={`Add ${contact.name.toLowerCase()}`}
+                //     onChange={(e) => {
+                //       const newValue = e.target.value;
+                //       setSelectedCard({
+                //         ...selectedCard,
+                //         additional_company: selectedCard.additional_company.map((c) =>
+                //           c.name === contact.name ? { ...c, value: newValue } : c
+                //         ),
+                //       });
+                //     }}
+                //   />
+                // </div>
+                <Field
+                  label={contact.name}
+                  placeholder={`Add ${contact.name.toLowerCase()}`}
+                  value={contact.value}
+                  onChange={(value) => {
+                    setSelectedCard({
+                      ...selectedCard,
+                      additional_company: selectedCard.additional_company.map((c) =>
+                        c.name === contact.name ? { ...c, value: value } : c
+                      ),
+                    });
+                  }}
+                  onEnter={() => {
+                    handleContactCustomFieldUpdate(
+                      selectedCard.id,
+                      contact.id,
+                      contact.value
+                    )
+                  }}
+                  labelIcon={
+                    <Email2 stroke='#3D3D3D' width={20} height={20} fill='none' />
+                  }
+                />
               ))}
             </div>
             <div className={styles.newField}>

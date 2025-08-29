@@ -79,6 +79,7 @@ export interface CardByIdData {
   email: string
   phone: string
   image_url: string
+  location: string
   ListID: number
   CardOrder: number
   tags: {
@@ -96,11 +97,13 @@ export interface CardByIdData {
     email: string
   }
   additional_contact: {
+    id: number
     name: string
     value: string
     data_type: string
   }[]
   additional_company: {
+    id: number
     name: string
     value: string
     data_type: string
