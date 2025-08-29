@@ -1,266 +1,292 @@
 .main {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-  height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    min-height: 100vh;
 }
 
 .top_row {
-  display: flex;
-
-  .btn_back {
     display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    cursor: pointer;
-    p {
-      color: var(--Colors-blue-1, #194eff);
-      font-size: 1rem;
-      font-weight: 400;
+
+    .btn_back {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        p {
+            color: var(--Colors-blue-1, #194eff);
+            font-size: 1rem;
+            font-weight: 400;
+        }
     }
-  }
 }
 
 .container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 1.5rem;
-  border-radius: 0.75rem;
-  background: var(--bg-colors-opaque, #fff);
-  padding: 1rem;
-}
-
-.content {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  justify-content: space-between;
-
-  .user {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex: 1;
-    min-width: 0;
-
-    .avatar {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .userDetails {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      flex: 1;
-
-      .name {
-        font-size: 1.25rem;
-        font-weight: 500;
-        color: var(--text-colors-primary-dark, #00020f);
-      }
-      .designation {
-        font-size: 1rem;
-        font-weight: 400;
-        color: var(--text-colors-secondary-dark, #3d3d3d);
-      }
-    }
-  }
-
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-
-    .icons {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 0.25rem;
-      min-width: 50px;
-
-      .actionIcons {
-        display: flex;
-        width: 2.5rem;
-        height: 2.5rem;
-        padding: 0.5rem;
-        justify-content: center;
-        align-items: center;
-        border-radius: 0.75rem;
-        background: var(--bg-colors-grey-light, #f9fbff);
-      }
-      .actionTitle {
-        text-align: center;
-        font-size: 0.75rem;
-        font-weight: 500;
-        color: var(--text-colors-secondary-dark, #3d3d3d);
-      }
-    }
-  }
-}
-
-.tags {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-
-  .tag {
-    display: flex;
-    padding: 0.5rem;
-    align-items: center;
-    border-radius: 0.5rem;
-    background: var(--Colors-green-1, #75c699);
-
-    .tagTitle {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--text-colors-primary-dark, #00020f);
-      font-size: 1rem;
-      font-weight: 400;
-    }
-  }
-
-  .addTag {
-    display: flex;
-    padding: 0.25rem 0.5rem;
-    align-items: center;
-    gap: 0.25rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    .add {
-      color: var(--Colors-blue-1, #194eff);
-      font-size: 0.875rem;
-      font-weight: 400;
-    }
-  }
-}
-
-.cardDetails {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  flex: 1;
-  min-height: 0;
-
-  .details {
     display: flex;
     flex-direction: column;
     flex: 1;
-    align-self: stretch;
-    border-radius: 1rem;
-    border-top: 4px solid var(--bg-colors-grey-accentured, #dfe5f3);
-    background: var(--bg-colors-grey-light, #f9fbff);
-    overflow: hidden;
+    gap: 1.5rem;
+    border-radius: 0.75rem;
+    background: var(--bg-colors-opaque, #fff);
+    overflow-y: auto;
+    min-height: 0;
+    outline: none;
+}
 
-    .detailHeader {
-      display: flex;
-      padding: 1rem;
-      justify-content: space-between;
-      align-items: center;
-      .detailTitle {
-        font-weight: 500;
-      }
-      .addNote {
+.content {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    justify-content: space-between;
+
+    .user {
         display: flex;
-        padding: 0.25rem 0.5rem;
         align-items: center;
-        gap: 0.25rem;
-        cursor: pointer;
-        .add {
-          color: var(--Colors-blue-1, #194eff);
-          font-size: 0.875rem;
+        gap: 0.75rem;
+        flex: 1;
+        min-width: 0;
+
+        .avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            object-fit: cover;
         }
-      }
+        .userDetails {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex: 1;
+
+            .name {
+                font-size: 1.25rem;
+                font-weight: 500;
+                color: var(--text-colors-primary-dark, #00020f);
+            }
+            .designation {
+                font-size: 1rem;
+                font-weight: 400;
+                color: var(--text-colors-secondary-dark, #3d3d3d);
+            }
+        }
     }
 
-    .form {
-      display: flex;
-      padding: 0 0.75rem 0.75rem;
-      flex-direction: column;
-      gap: 0.5rem;
-      flex: 1;
-    }
-
-    .row {
-      display: flex;
-      min-height: 3rem;
-      align-items: center;
-      gap: 0.75rem;
-      border-radius: 0.75rem;
-      background: var(--bg-colors-opaque, #fff);
-      padding: 0 1rem;
-
-      .field {
+    .actions {
         display: flex;
+        justify-content: space-between;
         align-items: center;
         gap: 0.5rem;
-        width: 7rem;
 
-        .fieldTitle {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          color: #3d3d3d; /* CHANGED */
-          font-size: 0.875rem;
+        .icons {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25rem;
+            min-width: 50px;
+            cursor: pointer;
+
+            .actionIcons {
+                display: flex;
+                width: 2.5rem;
+                height: 2.5rem;
+                padding: 0.5rem;
+                justify-content: center;
+                align-items: center;
+                border-radius: 0.75rem;
+                background: var(--bg-colors-grey-light, #f9fbff);
+            }
+            .actionTitle {
+                text-align: center;
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: var(--text-colors-secondary-dark, #3d3d3d);
+            }
         }
-      }
-      .tag {
+    }
+}
+
+.tags {
     display: flex;
-    padding: 0.5rem;
     align-items: center;
-    border-radius: 0.5rem;
-    background: var(--Colors-green-1, #75c699);
+    gap: 0.5rem;
+    align-self: stretch;
+    border-radius: 0.75rem;
+    flex-wrap: wrap;
 
-    .tagTitle {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--text-colors-primary-dark, #00020f);
-      font-size: 1rem;
-      font-weight: 400;
+    .seprater {
+        width: 0.0625rem;
+        height: 1.5rem;
+        background: var(--border-colors-regular, #e2e8f0);
     }
-  }
-
-      .input {
-        flex: 1;
-        width: 100%;
-        height: 100%;
-        color: #00020f; /* CHANGED */
-        font-size: 1rem;
-        border: none;
-        outline: none;
-        background: transparent;
-        
-        &::placeholder { /* ADDED */
-          color: #bcbbb8;
-          opacity: 1;
-        }
-      }
-    }
-
-    .newField {
-      display: flex;
-      padding: 0.75rem;
-      justify-content: center;
-      align-items: center;
-
-      .addNewField {
+    .tag {
         display: flex;
-        padding: 0.25rem 0.5rem;
+        padding: 0.5rem;
+        align-items: center;
+        border-radius: 0.5rem;
+        gap: 0.5rem;
+
+        .tagIcons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tagTitle {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-colors-primary-dark, #00020f);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+    }
+
+    .addTag {
+        display: flex;
         align-items: center;
         gap: 0.25rem;
+        border-radius: 0.25rem;
         cursor: pointer;
+        padding: 0.25rem 0.5rem;
+
         .add {
-          color: var(--Colors-blue-1, #194eff);
-          font-size: 0.875rem;
+            color: var(--Colors-blue-1, #194eff);
+            font-size: 0.875rem;
+            font-weight: 400;
         }
-      }
     }
-  }
+}
+
+.cardDetails {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    flex: 1;
+    min-height: 0;
+
+    .details {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        align-self: stretch;
+        border-radius: 1rem;
+        border-top: 4px solid var(--bg-colors-grey-accentured, #dfe5f3);
+        background: var(--bg-colors-grey-light, #f9fbff);
+        overflow: hidden;
+
+        .detailHeader {
+            display: flex;
+            padding: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            .detailTitle {
+                font-weight: 500;
+            }
+            .addNote {
+                display: flex;
+                padding: 0.25rem 0.5rem;
+                align-items: center;
+                gap: 0.25rem;
+                cursor: pointer;
+                .add {
+                    color: var(--Colors-blue-1, #194eff);
+                    font-size: 0.875rem;
+                }
+            }
+        }
+
+        .form {
+            display: flex;
+            padding: 0 0.75rem 0.75rem;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .row {
+            display: flex;
+            min-height: 3rem;
+            align-items: center;
+            gap: 0.75rem;
+            border-radius: 0.75rem;
+            background: var(--bg-colors-opaque, #fff);
+            padding: 0 1rem;
+
+            .field {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                width: 7rem;
+
+                .fieldTitle {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    color: #3d3d3d;
+                    font-size: 0.875rem;
+                }
+            }
+            .tag {
+                display: flex;
+                padding: 0.5rem;
+                align-items: center;
+                border-radius: 0.5rem;
+
+                .tagTitle {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    color: var(--text-colors-primary-dark, #00020f);
+                    font-size: 1rem;
+                    font-weight: 400;
+                }
+            }
+
+            .input {color: var(--text-colors-primary-dark, #00020F);
+font-feature-settings: 'liga' off, 'clig' off;
+font-family: "Inter Tight";
+font-size: 1rem;
+font-style: normal;
+font-weight: 400;
+line-height: 1.3125rem; /* 131.25% */
+width: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+
+                &::placeholder {
+                    flex: 1 0 0;
+                    color: var(--gray-gray-150, #bcbbb8);
+                    font-feature-settings:
+                        "liga" off,
+                        "clig" off;
+                    font-family: "Inter Tight";
+                    font-size: 1rem;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: normal;
+                }
+            }
+        }
+
+        .newField {
+            display: flex;
+            padding: 0.75rem;
+            justify-content: center;
+            align-items: center;
+
+            .addNewField {
+                display: flex;
+                padding: 0.25rem 0.5rem;
+                align-items: center;
+                gap: 0.25rem;
+                cursor: pointer;
+                .add {
+                    color: var(--Colors-blue-1, #194eff);
+                    font-size: 0.875rem;
+                }
+            }
+        }
+    }
 }
