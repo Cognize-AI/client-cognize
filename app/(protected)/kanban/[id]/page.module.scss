@@ -1,5 +1,5 @@
 .main {
-    display: flex;
+    display: flex; 
     flex-direction: column;
     gap: 1.5rem;
     width: 100%;
@@ -203,6 +203,12 @@
             gap: 0.5rem;
             flex: 1;
             padding: 0rem 0.75rem;
+            overflow: scroll;
+
+            scrollbar-width: none;
+            &::-webkit-scrollbar {
+                display: none;
+            }
         }
 
         .row {

@@ -64,6 +64,14 @@ export type List = {
   cards: Card[];
 }
 
+export type CompanyData = {
+  name: string
+  role: string
+  location: string
+  phone: string
+  email: string
+}
+
 export interface CardByIdData {
   id: number
   name: string
