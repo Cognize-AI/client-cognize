@@ -4,6 +4,7 @@ export { default as Add } from './Add';
 export { default as ArrowDown } from './ArrowDown';
 export { default as ArrowLeft } from './ArrowLeft';
 export { default as Checkmark } from './Checkmark';
+export { default as Close } from './Close';
 export { default as Dashboard } from './Dashboard';
 export { default as Delete } from './Delete';
 export { default as Dots } from './Dots';

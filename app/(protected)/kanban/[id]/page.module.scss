@@ -202,6 +202,7 @@
             flex-direction: column;
             gap: 0.5rem;
             flex: 1;
+            padding: 0rem 0.75rem;
         }
 
         .row {
@@ -243,14 +244,17 @@
                 }
             }
 
-            .input {color: var(--text-colors-primary-dark, #00020F);
-font-feature-settings: 'liga' off, 'clig' off;
-font-family: "Inter Tight";
-font-size: 1rem;
-font-style: normal;
-font-weight: 400;
-line-height: 1.3125rem; /* 131.25% */
-width: 100%;
+            .input {
+                color: var(--text-colors-primary-dark, #00020f);
+                font-feature-settings:
+                    "liga" off,
+                    "clig" off;
+                font-family: "Inter Tight";
+                font-size: 1rem;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 1.3125rem; /* 131.25% */
+                width: 100%;
                 border: none;
                 outline: none;
                 background: transparent;
@@ -272,20 +276,120 @@ width: 100%;
 
         .newField {
             display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
             padding: 0.75rem;
             justify-content: center;
-            align-items: center;
+            align-items: start;
+            padding: 0rem 0.75rem;
 
-            .addNewField {
+            .addNoteForm {
                 display: flex;
-                padding: 0.25rem 0.5rem;
-                align-items: center;
-                gap: 0.25rem;
-                cursor: pointer;
-                .add {
-                    color: var(--Colors-blue-1, #194eff);
-                    font-size: 0.875rem;
+                width: 100%;
+                height: 9rem;
+                padding: 0.75rem;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-end;
+                gap: 2rem;
+                align-self: stretch;
+                border-radius: 0.75rem;
+                background: var(--bg-colors-opaque, #fff);
+                border: 1px solid transparent;
+
+                &:focus-within {
+                    border: 1px solid var(--Colors-blue-1, #194eff);
                 }
+
+                .note {
+                    width: 100%;
+                    flex: 1 0 0;
+                    align-self: stretch;
+                    color: var(--text-colors-primary-dark, #00020f);
+                    font-family: "Inter Tight";
+                    font-size: 1rem;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 1.5rem; /* 150% */
+                }
+
+                .noteOptions {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 0.5rem;
+                    align-self: stretch;
+                    .date {
+                        flex: 1 0 0;
+                        color: var(--gray-gray-500, #57534e);
+                        font-family: "Inter Tight";
+                        font-size: 0.875rem;
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: 1.5rem; /* 171.429% */
+                    }
+
+                    // .options{
+
+                    // }
+                }
+
+                .addNoteInput {
+                    width: 100%;
+                    flex: 1 0 0;
+                    align-self: stretch;
+                    color: var(--text-colors-primary-dark, #00020f);
+                    font-family: "Inter Tight";
+                    font-size: 1rem;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 1.5rem;
+                    border: none;
+                    outline: none;
+                    background-color: transparent;
+                    resize: none;
+
+                    scrollbar-width: none;
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+                }
+            }
+            .saveContainer {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                .save {
+                    display: flex;
+                    padding: 0.5rem;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 0.5rem;
+                    border-radius: 0.75rem;
+                    background: var(--Colors-blue-1, #194eff);
+
+                    .saveButton {
+                        color: var(--text-colors-primary-inverted, #fff);
+                        font-family: "Inter Tight";
+                        font-size: 1rem;
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: 1.5rem; /* 150% */
+                    }
+                }
+            }
+        }
+
+        .addNewField {
+            display: flex;
+            padding: 0.75rem;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+            .add {
+                color: var(--Colors-blue-1, #194eff);
+                font-size: 0.875rem;
             }
         }
     }

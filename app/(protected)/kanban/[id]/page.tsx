@@ -1,8 +1,12 @@
 'use client'
+
 import {
   Add,
   ArrowLeft,
+  Checkmark,
+  Close,
   Dots,
+  Edit,
   Email2,
   Lifecycle,
   Location,
@@ -19,22 +23,42 @@ import styles from './page.module.scss'
 import { useParams, useRouter } from 'next/navigation'
 import { axios_instance } from '@/lib/axios'
 import { useCardStore } from '@/provider/card-store-provider'
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 
 const Page = () => {
   const selectedCard = useCardStore(state => state.selectedCard)
   const setSelectedCard = useCardStore(state => state.setSelectedCard)
 
+  const [note, setNote] = useState('')
+
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const id = params.id
 
-  if (!id) {
-    return null
+  const handleSave = async () => {
+    if (!note.trim()) {
+      console.log('note cannot be empty')
+      return
+    }
+    const payload = {
+      card_id: selectedCard?.id,
+      text: note
+    }
+
+    try {
+      const response = await axios_instance.post('/activity/create', payload)
+      console.log(response)
+      setNote('')
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const fetchCard = async () => {
+  const fetchCard = useCallback(() => {
+    if (!id) {
+      return
+    }
     axios_instance
       .get(`/card/${id}`)
       .then(response => {
@@ -44,14 +68,20 @@ const Page = () => {
       .catch(error => {
         console.log(error)
       })
-  }
+  }, [id, setSelectedCard])
 
   useEffect(() => {
     fetchCard()
-  }, [id])
+  }, [fetchCard])
 
   const handleMailClick = () => {
-    window.location.href = `mailto:${selectedCard?.email}`
+    if (selectedCard?.email) {
+      window.location.href = `mailto:${selectedCard.email}`
+    }
+  }
+
+  if (!selectedCard) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -73,8 +103,8 @@ const Page = () => {
             <div className={styles.avatar}>
               {selectedCard?.image_url && (
                 <Image
-                  src={selectedCard?.image_url}
-                  alt={selectedCard?.name}
+                  src={selectedCard.image_url}
+                  alt={selectedCard.name}
                   className={styles.avatar}
                   width={36}
                   height={36}
@@ -127,7 +157,10 @@ const Page = () => {
         </div>
 
         <div className={styles.tags}>
-          <div className={styles.tag} style={{ backgroundColor: selectedCard?.list_color }}>
+          <div
+            className={styles.tag}
+            style={{ backgroundColor: selectedCard?.list_color }}
+          >
             <p className={styles.tagTitle}>{selectedCard?.list_name}</p>
           </div>
 
@@ -152,7 +185,7 @@ const Page = () => {
         </div>
 
         <div className={styles.cardDetails}>
-          <div className={styles.details} >
+          <div className={styles.details}>
             <div className={styles.detailHeader}>
               <p className={styles.detailTitle}>Contact Information</p>
               <div className={styles.addNote}>
@@ -388,7 +421,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className={styles.details} >
+          <div className={styles.details}>
             <div className={styles.detailHeader}>
               <p className={styles.detailTitle}>Activity (8)</p>
               <div className={styles.addNote}>
@@ -397,6 +430,30 @@ const Page = () => {
               </div>
             </div>
             <div className={styles.newField}>
+              <div className={styles.addNoteForm}>
+                <textarea
+                  className={styles.addNoteInput}
+                  value={note}
+                  onChange={e => setNote(e.target.value)}
+                />
+                <div className={styles.saveContainer}>
+                  <Close width={20} height={20} fill='#3D3D3D' />
+                  <div className={styles.save}>
+                    <Checkmark width={20} height={20} fill='white' />
+                    <p onClick={handleSave} className={styles.saveButton}>
+                      Save
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.addNoteForm}>
+                <p className={styles.note}> Yes, that’s a great idea, let’s try out soon</p>
+                <div className={styles.noteOptions}>
+                  <div className={styles.date}>Created on Aug 14, 2025</div>
+                  <Trash width={20} height={20} fill='#F77272' />
+                  <Edit width={20} height={20} fill='#194EFF' />
+                </div>
+              </div>
               <div className={styles.addNewField}>
                 <Add width={16} height={16} fill='#194EFF' />
                 <p className={styles.add}>Add new note...</p>

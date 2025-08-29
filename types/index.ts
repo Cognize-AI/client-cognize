@@ -79,6 +79,7 @@ export interface CardByIdData {
     color: string
   }[]
   list_name: string
+  list_color: string
   company: {
     name: string
     role: string
