@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { axios_instance } from '@/lib/axios'
 import { useTagsStore } from '@/provider/tags-store-provider'
 
-import { Add, ArrowLeft, Pen, Tag as TagIcon, Trash } from '@/components/icons'
+import { Add, ArrowLeft, Tag as TagIcon } from '@/components/icons'
 import AddInput from '@/components/AddInput/AddInput'
 
 import styles from './page.module.scss'
@@ -71,12 +71,9 @@ const Page = () => {
 
   const fetchTags = async () => {
     axios_instance.get('/tag/')
-      .then(response => {
-        console.log(response.data?.data?.tags)
+      .then((response) => {
         addTags(response.data?.data?.tags)
       })
-      .catch(error => {
-      });
   }
 
   useEffect(() => {
@@ -113,7 +110,7 @@ const Page = () => {
                       setNewTagData={setEditTagData}
                       setTagOpen={setTagEditing}
                       newTagData={editTagData}
-                    /> : <Tag id={tag.id} name={tag.name} color={key} setEditTagData={setEditTagData} setTagEditing={setTagEditing} deleteTag={deleteTag} />
+                    /> : <Tag key={tag.id} id={tag.id} name={tag.name} color={key} setEditTagData={setEditTagData} setTagEditing={setTagEditing} deleteTag={deleteTag} />
                     // <div className={styles.tag} style={{ background: key }} key={tag.id}>
                     //   <p>
                     //     {tag.name}

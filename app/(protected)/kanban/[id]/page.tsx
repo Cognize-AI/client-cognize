@@ -129,7 +129,7 @@ const Page = () => {
       company_email: selectedCard.company.email
     }
 
-    axios_instance.put(`/card/details/${selectedCard.id}`, data).then(response => {
+    axios_instance.put(`/card/details/${selectedCard.id}`, data).then(() => {
       fetchCard()
     })
   }
@@ -376,6 +376,7 @@ const Page = () => {
                 //   />
                 // </div>
                 <Field
+                  key={contact.id}
                   label={contact.name}
                   placeholder={`Add ${contact.name}`}
                   value={contact.value}
@@ -470,6 +471,7 @@ const Page = () => {
                 //   )}
                 // </div>
                 <Field
+                  key={field.key}                
                   label={field.label}
                   placeholder={`Add ${field.label.toLowerCase()}`}
                   value={selectedCard.company[field.key as keyof CompanyData]}
@@ -515,6 +517,7 @@ const Page = () => {
                 //   />
                 // </div>
                 <Field
+                  key={contact.id}
                   label={contact.name}
                   placeholder={`Add ${contact.name.toLowerCase()}`}
                   value={contact.value}
