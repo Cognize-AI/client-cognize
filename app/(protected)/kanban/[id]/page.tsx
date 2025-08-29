@@ -127,7 +127,7 @@ const Page = () => {
         </div>
 
         <div className={styles.tags}>
-          <div className={styles.tag} style={{ backgroundColor: '#F8BBD0' }}>
+          <div className={styles.tag} style={{ backgroundColor: selectedCard?.list_color }}>
             <p className={styles.tagTitle}>{selectedCard?.list_name}</p>
           </div>
 
@@ -152,7 +152,7 @@ const Page = () => {
         </div>
 
         <div className={styles.cardDetails}>
-          <div className={styles.details} style={{ flex: 1, minWidth: 0 }}>
+          <div className={styles.details} >
             <div className={styles.detailHeader}>
               <p className={styles.detailTitle}>Contact Information</p>
               <div className={styles.addNote}>
@@ -227,7 +227,7 @@ const Page = () => {
                 </div>
                 <div
                   className={styles.tag}
-                  style={{ backgroundColor: '#F8BBD0' }}
+                  style={{ backgroundColor: selectedCard?.list_color }}
                 >
                   <p className={styles.tagTitle}>{selectedCard?.list_name}</p>
                 </div>
@@ -253,7 +253,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className={styles.details} style={{ flex: 1, minWidth: 0 }}>
+          <div className={styles.details}>
             <div className={styles.detailHeader}>
               <p className={styles.detailTitle}>Company Information</p>
               <div className={styles.addNote}>
@@ -272,21 +272,29 @@ const Page = () => {
                   />
                   <p className={styles.fieldTitle}>Company</p>
                 </div>
-                <input
-                  className={styles.input}
-                  placeholder='Add company'
-                  type='text'
-                />
+                {selectedCard?.company?.name ? (
+                  <input
+                    className={styles.input}
+                    value={selectedCard.company.name}
+                    readOnly
+                  />
+                ) : (
+                  <input
+                    className={styles.input}
+                    placeholder='Add company'
+                    type='text'
+                  />
+                )}
               </div>
               <div className={styles.row}>
                 <div className={styles.field}>
                   <People stroke='#3D3D3D' width={20} height={20} fill='none' />
                   <p className={styles.fieldTitle}>Role</p>
                 </div>
-                {selectedCard?.designation ? (
+                {selectedCard?.company?.role ? (
                   <input
                     className={styles.input}
-                    value={selectedCard.designation}
+                    value={selectedCard.company.role}
                     readOnly
                   />
                 ) : (
@@ -307,33 +315,57 @@ const Page = () => {
                   />
                   <p className={styles.fieldTitle}>Location</p>
                 </div>
-                <input
-                  className={styles.input}
-                  placeholder='Add location'
-                  type='text'
-                />
+                {selectedCard?.company?.location ? (
+                  <input
+                    className={styles.input}
+                    value={selectedCard.company.location}
+                    readOnly
+                  />
+                ) : (
+                  <input
+                    className={styles.input}
+                    placeholder='Add location'
+                    type='text'
+                  />
+                )}
               </div>
               <div className={styles.row}>
                 <div className={styles.field}>
                   <Phone2 stroke='#3D3D3D' width={20} height={20} fill='none' />
                   <p className={styles.fieldTitle}>Phone</p>
                 </div>
-                <input
-                  className={styles.input}
-                  placeholder='Add phone'
-                  type='text'
-                />
+                {selectedCard?.company?.phone ? (
+                  <input
+                    className={styles.input}
+                    value={selectedCard.company.phone}
+                    readOnly
+                  />
+                ) : (
+                  <input
+                    className={styles.input}
+                    placeholder='Add phone'
+                    type='text'
+                  />
+                )}
               </div>
               <div className={styles.row}>
                 <div className={styles.field}>
                   <Email2 stroke='#3D3D3D' width={20} height={20} fill='none' />
                   <p className={styles.fieldTitle}>Email</p>
                 </div>
-                <input
-                  className={styles.input}
-                  placeholder='Add email'
-                  type='text'
-                />
+                {selectedCard?.company?.email ? (
+                  <input
+                    className={styles.input}
+                    value={selectedCard.company.email}
+                    readOnly
+                  />
+                ) : (
+                  <input
+                    className={styles.input}
+                    placeholder='Add email'
+                    type='text'
+                  />
+                )}
               </div>
               <div className={styles.row}>
                 <input
@@ -356,7 +388,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className={styles.details} style={{ flex: 1, minWidth: 0 }}>
+          <div className={styles.details} >
             <div className={styles.detailHeader}>
               <p className={styles.detailTitle}>Activity (8)</p>
               <div className={styles.addNote}>
