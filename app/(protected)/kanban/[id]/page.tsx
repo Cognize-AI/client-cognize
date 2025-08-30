@@ -49,8 +49,8 @@ const Page = () => {
     value: string
   }>({
     show: false,
-    name: "",
-    value: ""
+    name: '',
+    value: ''
   })
 
   const [newCompanyFields, setNewCompanyFields] = useState<{
@@ -59,8 +59,8 @@ const Page = () => {
     value: string
   }>({
     show: false,
-    name: "",
-    value: ""
+    name: '',
+    value: ''
   })
 
   const [isEditingProfile, setIsEditingProfile] = useState(false)
@@ -95,11 +95,9 @@ const Page = () => {
     if (!id) {
       return
     }
-    axios_instance
-      .get(`/card/${id}`)
-      .then(response => {
-        setSelectedCard(response?.data?.data)
-      })
+    axios_instance.get(`/card/${id}`).then(response => {
+      setSelectedCard(response?.data?.data)
+    })
   }, [id, setSelectedCard])
 
   const fetchAvailableTags = useCallback(() => {
@@ -511,7 +509,17 @@ const Page = () => {
   // }, [showMoreMenu, isTagSearchOpen])
 
   if (!selectedCard) {
-    return <div>Loading...</div>
+    return (
+      <div className={styles.page}>
+        <div className={styles.spinnerWrapper}>
+          <div className={styles.spinnerOuter}></div>
+          <p className={styles.spinnerText}>Organizing your pipeline...</p>
+          <p className={styles.spinnerSubtext}>
+            Stay with us, precision takes a moment.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -760,14 +768,16 @@ const Page = () => {
           </div>
 
           {isTagSearchOpen && (
-            <TagModal
-              ref={tagModalRef}
-              tagSearchQuery={tagSearchQuery}
-              setTagSearchQuery={setTagSearchQuery}
-              filteredTags={filteredTags}
-              editedCard={selectedCard?.tags || []}
-              handleTagToggle={handleTagToggle}
-            />
+            <div className={styles.tagModal}>
+              <TagModal
+                ref={tagModalRef}
+                tagSearchQuery={tagSearchQuery}
+                setTagSearchQuery={setTagSearchQuery}
+                filteredTags={filteredTags}
+                editedCard={selectedCard?.tags || []}
+                handleTagToggle={handleTagToggle}
+              />
+            </div>
           )}
         </div>
         <div className={styles.cardDetails}>
@@ -881,48 +891,59 @@ const Page = () => {
                   }
                 />
               ))}
-            </div>
-            <div className={styles.newField}>
-              {!newContactFields.show ? (
-                <div
-                  className={styles.addNewField}
-                  onClick={() => setNewContactFields(prev => ({
-                    ...prev,
-                    show: true
-                  }))}
-                >
-                  <Add width={16} height={16} fill='#194EFF' />
-                  <p className={styles.add}>Add new field...</p>
-                </div>
-              ) : (
-                <div className={styles.row} style={{ alignItems: 'center' }}>
-                  <input
-                    type='text'
-                    className={styles.input}
-                    placeholder='Field name...'
-                    value={newContactFields.name}
-                    onChange={e => setNewContactFields(prev => ({
-                      ...prev,
-                      name: e.target.value
-                    }))}
-                  />
-                  <input
-                    type='text'
-                    className={styles.input}
-                    placeholder='Add value...'
-                    value={newContactFields.value}
-                    onChange={e => setNewContactFields(prev => ({
-                      ...prev,
-                      value: e.target.value
-                    }))}
-                    onKeyUp={(event) => {
-                      if (event.key === 'Enter') {
-                        handleSaveNewField('CONTACT')
+              <div>
+                <div className={styles.newField}>
+                  {!newContactFields.show ? (
+                    <div
+                      className={styles.addNewField}
+                      onClick={() =>
+                        setNewContactFields(prev => ({
+                          ...prev,
+                          show: true
+                        }))
                       }
-                    }}
-                  />
+                    >
+                      <Add width={16} height={16} fill='#194EFF' />
+                      <p className={styles.add}>Add new field...</p>
+                    </div>
+                  ) : (
+                    <div
+                      className={styles.row}
+                      style={{ alignItems: 'center' }}
+                    >
+                      <input
+                        type='text'
+                        className={styles.input}
+                        placeholder='Field name...'
+                        value={newContactFields.name}
+                        onChange={e =>
+                          setNewContactFields(prev => ({
+                            ...prev,
+                            name: e.target.value
+                          }))
+                        }
+                      />
+                      <input
+                        type='text'
+                        className={styles.input}
+                        placeholder='Add value...'
+                        value={newContactFields.value}
+                        onChange={e =>
+                          setNewContactFields(prev => ({
+                            ...prev,
+                            value: e.target.value
+                          }))
+                        }
+                        onKeyUp={event => {
+                          if (event.key === 'Enter') {
+                            handleSaveNewField('CONTACT')
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
 
@@ -983,48 +1004,59 @@ const Page = () => {
                   }}
                 />
               ))}
-            </div>
-            <div className={styles.newField}>
-              {!newCompanyFields.show ? (
-                <div
-                  className={styles.addNewField}
-                  onClick={() => setNewCompanyFields(prev => ({
-                    ...prev,
-                    show: true
-                  }))}
-                >
-                  <Add width={16} height={16} fill='#194EFF' />
-                  <p className={styles.add}>Add new field...</p>
-                </div>
-              ) : (
-                <div className={styles.row} style={{ alignItems: 'center' }}>
-                  <input
-                    type='text'
-                    className={styles.input}
-                    placeholder='Field name...'
-                    value={newCompanyFields.name}
-                    onChange={e => setNewCompanyFields(prev => ({
-                      ...prev,
-                      name: e.target.value
-                    }))}
-                  />
-                  <input
-                    type='text'
-                    className={styles.input}
-                    placeholder='Add value...'
-                    value={newCompanyFields.value}
-                    onChange={e => setNewCompanyFields(prev => ({
-                      ...prev,
-                      value: e.target.value
-                    }))}
-                    onKeyUp={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSaveNewField('COMPANY')
+              <div>
+                <div className={styles.newField}>
+                  {!newCompanyFields.show ? (
+                    <div
+                      className={styles.addNewField}
+                      onClick={() =>
+                        setNewCompanyFields(prev => ({
+                          ...prev,
+                          show: true
+                        }))
                       }
-                    }}
-                  />
+                    >
+                      <Add width={16} height={16} fill='#194EFF' />
+                      <p className={styles.add}>Add new field...</p>
+                    </div>
+                  ) : (
+                    <div
+                      className={styles.row}
+                      style={{ alignItems: 'center' }}
+                    >
+                      <input
+                        type='text'
+                        className={styles.input}
+                        placeholder='Field name...'
+                        value={newCompanyFields.name}
+                        onChange={e =>
+                          setNewCompanyFields(prev => ({
+                            ...prev,
+                            name: e.target.value
+                          }))
+                        }
+                      />
+                      <input
+                        type='text'
+                        className={styles.input}
+                        placeholder='Add value...'
+                        value={newCompanyFields.value}
+                        onChange={e =>
+                          setNewCompanyFields(prev => ({
+                            ...prev,
+                            value: e.target.value
+                          }))
+                        }
+                        onKeyUp={e => {
+                          if (e.key === 'Enter') {
+                            handleSaveNewField('COMPANY')
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
 

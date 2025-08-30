@@ -5,6 +5,71 @@
     width: 100%;
     min-height: 100vh;
 }
+.spinnerWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+
+  .spinnerText {
+    align-self: stretch;
+    color: var(--text-colors-primary-dark, #00020f);
+    text-align: center;
+    font-family: "Inter Tight";
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .spinnerSubtext {
+    align-self: stretch;
+    color: var(--text-colors-secondary-dark, #3D3D3D);
+    text-align: center;
+    font-family: "Inter Tight";
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+}
+
+.spinnerOuter {
+  position: relative;
+  width: 6.25rem;
+  height: 6.25rem;
+  flex-shrink: 0;
+}
+
+.spinnerOuter::before,
+.spinnerOuter::after {
+  content: "";
+  position: absolute;
+  inset: 0; // fills parent
+  border: 16px solid #194EFF14;
+  // border-top-color: transparent;
+  border-radius: 50%;
+}
+
+.spinnerOuter::before {
+  animation: spin 0.6s linear infinite;
+}
+
+.spinnerOuter::after {
+  border: 16px solid #194EFF; // different color for second circle
+  border-top-color: transparent;
+  animation: spin 1s linear infinite reverse; // slower + reverse for contrast
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .top_row {
     display: flex;
@@ -241,6 +306,10 @@
         width: 0.0625rem;
         height: 1.5rem;
         background: var(--border-colors-regular, #e2e8f0);
+    }
+
+    .tagModal{
+        transform: translateX(-20rem) translateY(8rem);
     }
 
     .tag {
@@ -531,10 +600,8 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            padding: 0.75rem;
             justify-content: center;
             align-items: flex-start;
-            padding: 0rem 0.75rem;
             overflow-y: auto;
 
             &::-webkit-scrollbar {
