@@ -55,6 +55,10 @@ export type Card = {
   tags: Tag[];
 }
 
+export type Item = {
+  id: number;
+  text: string;
+}
 export type List = {
   id: number;
   name: string;
