@@ -98,7 +98,7 @@ const Sidebar = () => {
                             />
                             <p className={styles.user}>{user.name}</p>
                             <div className={styles.dropdownArrow}>
-                                <ArrowDown width={20} height={20} fill='none' stroke='#00020F' />
+                                <ArrowDown width={20} height={20} fill='none' stroke='#00020F' rotate={100} />
                             </div>
                         </div>
 

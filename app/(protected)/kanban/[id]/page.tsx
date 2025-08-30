@@ -681,24 +681,17 @@ const Page = () => {
             >
               <div className={styles.icon_wrapper}>
                 <div className={styles.icon_unif}>
-                  {isEditingProfile ? (
-                    <Checkmark
-                      width={24}
-                      height={24}
-                      fill={uploading ? '#BCBBB8' : '#194EFF'}
-                    />
-                  ) : (
+                  
                     <Dots
                       width={24}
                       height={24}
                       fill='#194EFF'
                       className={styles.actionIcons}
                     />
-                  )}
                 </div>
               </div>
               <p className={styles.actionTitle}>
-                {isEditingProfile ? 'Save' : 'More'}
+                More
               </p>
 
               {showMoreMenu && !isEditingProfile && (
@@ -788,7 +781,7 @@ const Page = () => {
             <div className={styles.form}>
               <Field
                 label='Location'
-                placeholder='Add location'
+                placeholder='Add here...'
                 value={selectedCard?.location}
                 onChange={value => {
                   setSelectedCard({
@@ -810,7 +803,7 @@ const Page = () => {
               />
               <Field
                 label='Phone'
-                placeholder='Add Phone'
+                placeholder='Add here...'
                 value={selectedCard?.phone}
                 onChange={value => {
                   setSelectedCard({
@@ -827,7 +820,7 @@ const Page = () => {
               />
               <Field
                 label='Email'
-                placeholder='Add Email'
+                placeholder='Add here...'
                 value={selectedCard?.email}
                 onChange={value => {
                   setSelectedCard({
@@ -881,14 +874,6 @@ const Page = () => {
                       contact.value
                     )
                   }}
-                  labelIcon={
-                    <Email2
-                      stroke='#3D3D3D'
-                      width={20}
-                      height={20}
-                      fill='none'
-                    />
-                  }
                 />
               ))}
               <div>
