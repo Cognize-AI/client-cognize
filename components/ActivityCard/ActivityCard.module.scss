@@ -80,6 +80,8 @@
     padding: 0;
     width: 100%;
     min-height: 4.5rem;
+    height: auto; // Allow height to adjust
+    overflow: hidden; // Remove scrollbar
     white-space: pre-wrap;
     word-wrap: break-word;
     overflow-wrap: break-word;
