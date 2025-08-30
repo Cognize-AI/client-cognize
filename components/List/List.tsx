@@ -4,7 +4,7 @@ import styles from './List.module.scss'
 import Card from '../Card/Card'
 import AddCard from '../AddCard/AddCard'
 import { CardType, ListType } from '@/types'
-import { AddUser } from '../icons'
+import { Add, AddUser } from '../icons'
 
 type Tag = {
   id: number
@@ -46,13 +46,9 @@ const List = ({
     onCardAdded(newCard)
     setShowAddUser(false)
   }
-
-  // ✅ Implemented: This function now calls the prop passed from the parent
   const handleCardUpdated = (updatedCard: CardType) => {
     onCardUpdated(updatedCard)
   }
-
-  // ✅ Implemented: This function now calls the prop passed from the parent
   const handleCardDeleted = (cardId: number) => {
     onCardDeleted(list.id, cardId)
   }
@@ -127,7 +123,7 @@ const List = ({
             tags={tags}
             index={idx}
             list_id={list.id}
-            onClick = {() => onCardClick(card.id)}
+            onClick={() => onCardClick(card.id)}
             onDragStart={onDragStart}
             onDragEnter={onDragEnter}
             onDragEnd={onDragEnd}
@@ -138,6 +134,24 @@ const List = ({
             setIsTagModalOpen={setIsTagModalOpen}
           />
         ))}
+        
+        <div
+          className={styles.addNewContact}
+          style={{
+            border: `1px solid ${list.color}`,
+            '--hover-color': `${list.color}14`
+          } as React.CSSProperties}
+          onClick={() => setShowAddUser(prev => !prev)}
+        >
+          <div className={styles.addNewContactButton}>
+            <Add width={24} height={24} className={styles.addNewContactIcon} stroke={list.color} />
+
+            <p className={styles.addNewContactText} style={{ color: list.color }}>
+              Add New Contact
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   )

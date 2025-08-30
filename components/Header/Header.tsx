@@ -17,10 +17,11 @@ const Header = () => {
   const [loading, setLoading] = useState(true)
   const [showMenu, setShowMenu] = useState(false)
 
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   const fetchUser = async () => {
-    axios_instance.get('/user/me')
+    axios_instance
+      .get('/user/me')
       .then(response => {
         setUser(response.data?.data)
       })
@@ -67,12 +68,12 @@ const Header = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <p className={styles.heading}>
-          {pathname == "/kanban" && "My Contacts"}
-          {pathname == "/tags" && "Tags Management"}
+          {pathname == '/kanban' && 'My Contacts'}
+          {pathname == '/tags' && 'Tags Management'}
         </p>
         <p className={styles.subheading}>
-          {pathname == "/kanban" && "List of people for communication"}
-          {pathname == "/tags" && "Create view and manage all your tags"}
+          {pathname == '/kanban' && 'List of people for communication'}
+          {pathname == '/tags' && 'Create view and manage all your tags'}
         </p>
       </div>
 
@@ -84,15 +85,20 @@ const Header = () => {
             <div className={styles.profileArea} onClick={toggleMenu}>
               <Image
                 src={user.profilePicture}
-                alt="User Profile Picture"
+                alt='User Profile Picture'
                 width={24}
                 height={24}
                 className={styles.userPic}
                 quality={100}
               />
               <p className={styles.user}>{user.name}</p>
-              <div className={styles.dropdownArrow}  >
-                <ArrowDown width={20} height={20} fill='none' stroke='#00020F' />
+              <div className={styles.dropdownArrow}>
+                <ArrowDown
+                  width={20}
+                  height={20}
+                  fill='none'
+                  stroke='#00020F'
+                />
               </div>
             </div>
 
@@ -103,7 +109,12 @@ const Header = () => {
                     {/* <Image src="/images/settings.png" alt="Settings" width={16} height={16} /> */}
                     <Settings width={16} height={16} fill='#00020F' />
                   </div>
-                  <div className={styles.tag} onClick={() => router.push('/tags')}>Tags man..</div>
+                  <div
+                    className={styles.tag}
+                    onClick={() => router.push('/tags')}
+                  >
+                    Tags man..
+                  </div>
                 </div>
                 <div onClick={handleLogout} className={styles.logoutButton}>
                   <div className={styles.logout}>
@@ -116,7 +127,7 @@ const Header = () => {
             )}
           </>
         ) : (
-          <p className={styles.user}>Profile</p>
+          <p className={styles.user}></p>
         )}
       </div>
     </div>

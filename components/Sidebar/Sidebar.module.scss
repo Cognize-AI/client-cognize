@@ -9,6 +9,7 @@
   align-self: stretch;
   border-right: 1px solid var(--border-colors-regular, #E2E8F0);
 
+  // Styles for the main navigation links container
   .actions {
     margin-top: -14px;
     display: flex;
@@ -30,7 +31,6 @@
       color: #3D3D3D;
 
       p {
-        // color: var(--text-colors-secondary-dark, #3D3D3D);
         font-size: 1.125rem;
         font-style: normal;
         font-weight: 400;
@@ -53,35 +53,122 @@
     }
   }
 
-  .pfp {
+  // Styles for the user profile container at the bottom
+  .userProfile {
+    position: relative;
     display: flex;
     height: 3rem;
     padding: 0.5rem 0.75rem;
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-    align-self: stretch;
     border-radius: 1250000rem;
-    border: 1px solid var(--border-colors-light, #F2F6FC);
+    border: 1px solid var(--border-colors-light, #f2f6fc);
+    align-self: stretch; // Added to make it full-width like the links
 
-    .img {
-      border-radius: 1250000rem;
+    .profileArea {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
     }
 
-    p {
-      overflow: hidden;
-      color: var(--text-colors-primary-dark, #00020F);
-      font-feature-settings: 'liga' off, 'clig' off;
-      text-overflow: ellipsis;
+    .userPic {
+      width: 1.5rem;
+      height: 1.5rem;
+      aspect-ratio: 1/1;
+      border-radius: 1250000rem;
+      background-color: #00020f;
+      object-fit: cover; // Ensures profile picture is not distorted
+    }
+
+    .user {
+      color: var(--text-colors-primary-dark, #00020f);
       font-family: "Inter Tight";
       font-size: 1rem;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
-      flex: 1 0 0;
+      margin: 0;
+    }
+
+    .dropdownArrow {
+      display: flex;
+      align-items: center;
+      margin-left: 0.25rem;
+      opacity: 0.6;
+    }
+
+    .logoutmenu {
+      display: flex;
+      width: max-content; // Adjust width to content
+      min-width: 9.25rem;
+      padding: 0.75rem;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 0.25rem;
+      position: absolute;
+      right: 0;
+      bottom: 100%; // Position above the profile button
+      margin-bottom: 0.5rem; // Add some space
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border-radius: 0.75rem;
+      z-index: 1000;
+      animation: slideUp 0.2s ease-out;
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .tagMenu,
+      .logoutButton {
+        display: flex;
+        padding: 0.5rem;
+        align-items: center;
+        gap: 0.5rem;
+        align-self: stretch;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: #f9fbff;
+        }
+      }
+
+      .logoutButton:hover {
+        background-color: rgba(235, 105, 91, 0.08);
+      }
+
+      .setting,
+      .logout {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .tag,
+      .logoutText {
+        flex: 1 0 0;
+        font-family: "Inter Tight";
+        font-size: 0.875rem;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+      }
+
+      .logoutText {
+        color: var(--danger-500, #fb7285);
+      }
     }
   }
 }

@@ -239,6 +239,12 @@
         max-height: 220px;
         overflow-y: auto;
         padding-right: 0.25rem;
+        
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
         .allTag {
           display: flex;
