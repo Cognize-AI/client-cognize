@@ -102,7 +102,7 @@ const Page = () => {
 
   const fetchAvailableTags = useCallback(() => {
     axios_instance
-      .get('/tag')
+      .get('/tag/')
       .then(response => {
         const tags = response?.data?.data?.tags
         addTags(Array.isArray(tags) ? tags : [])
