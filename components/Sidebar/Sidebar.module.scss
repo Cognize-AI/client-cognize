@@ -9,7 +9,6 @@
   align-self: stretch;
   border-right: 1px solid var(--border-colors-regular, #E2E8F0);
 
-  // Styles for the main navigation links container
   .actions {
     margin-top: -14px;
     display: flex;
@@ -53,7 +52,6 @@
     }
   }
 
-  // Styles for the user profile container at the bottom
   .userProfile {
     position: relative;
     display: flex;
@@ -64,7 +62,7 @@
     gap: 0.25rem;
     border-radius: 1250000rem;
     border: 1px solid var(--border-colors-light, #f2f6fc);
-    align-self: stretch; // Added to make it full-width like the links
+    align-self: stretch; 
 
     .profileArea {
       display: flex;
@@ -72,6 +70,8 @@
       gap: 0.5rem;
       cursor: pointer;
       transition: opacity 0.2s ease;
+      width: 100%;
+      min-width: 0; 
     }
 
     .userPic {
@@ -80,7 +80,8 @@
       aspect-ratio: 1/1;
       border-radius: 1250000rem;
       background-color: #00020f;
-      object-fit: cover; // Ensures profile picture is not distorted
+      object-fit: cover; 
+      flex-shrink: 0;
     }
 
     .user {
@@ -91,6 +92,12 @@
       font-weight: 400;
       line-height: normal;
       margin: 0;
+      
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      min-width: 0; 
     }
 
     .dropdownArrow {
@@ -98,11 +105,12 @@
       align-items: center;
       margin-left: 0.25rem;
       opacity: 0.6;
+      flex-shrink: 0; 
     }
 
     .logoutmenu {
       display: flex;
-      width: max-content; // Adjust width to content
+      width: max-content;
       min-width: 9.25rem;
       padding: 0.75rem;
       flex-direction: column;
@@ -111,8 +119,8 @@
       gap: 0.25rem;
       position: absolute;
       right: 0;
-      bottom: 100%; // Position above the profile button
-      margin-bottom: 0.5rem; // Add some space
+      bottom: 100%; 
+      margin-bottom: 0.5rem;
       background: white;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       border-radius: 0.75rem;

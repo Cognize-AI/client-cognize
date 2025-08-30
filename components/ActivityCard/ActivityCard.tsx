@@ -67,17 +67,18 @@ const ActivityCard = ({ id, content, date, onDelete, onEdit }: Props) => {
         
         {isEditing ? (
           <div className={styles.editActions}>
-            <div 
-              className={`${styles.saveAction} ${isUpdating || !editContent.trim() ? styles.disabled : ''}`}
-              onClick={handleSaveClick}
-            >
-              <Checkmark width={16} height={16} fill='white' />
-            </div>
+           
             <div 
               className={styles.cancelAction}
               onClick={handleCancelClick}
             >
               <Close width={16} height={16} fill='#3D3D3D' />
+            </div>
+             <div 
+              className={`${styles.saveAction} ${isUpdating || !editContent.trim() ? styles.disabled : ''}`}
+              onClick={handleSaveClick}
+            >
+              <Checkmark width={16} height={16} fill='white' />
             </div>
           </div>
         ) : (

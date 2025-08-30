@@ -1,5 +1,4 @@
 'use client'
-
 import Image from "next/image"
 import styles from "./Sidebar.module.scss"
 import Link from "next/link"
@@ -13,7 +12,6 @@ import { User } from "@/types"
 const Sidebar = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [loading, setLoading] = useState(true);
-
     const _user = useUserStore(state => state.user);
     const logoutUser = useUserStore(state => state.logoutUser);
     
@@ -48,7 +46,6 @@ const Sidebar = () => {
                 setShowMenu(false);
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showMenu]);
@@ -101,7 +98,6 @@ const Sidebar = () => {
                                 <ArrowDown width={20} height={20} fill='none' stroke='#00020F' rotate={100} />
                             </div>
                         </div>
-
                         {showMenu && (
                             <div className={styles.logoutmenu}>
                                 <div onClick={handleTag} className={styles.tagMenu}>
