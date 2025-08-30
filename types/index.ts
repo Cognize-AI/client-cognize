@@ -82,6 +82,11 @@ export interface CardByIdData {
   location: string
   ListID: number
   CardOrder: number
+  activity: {
+    id: number
+    content: string
+    created_at: string
+  }[]
   tags: {
     id: number
     name: string

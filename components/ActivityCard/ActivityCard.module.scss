@@ -1,0 +1,55 @@
+.activity {
+  display: flex;
+  height: 9rem;
+  padding: 0.75rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2rem;
+  align-self: stretch;
+  border-radius: 0.75rem;
+  background: var(--bg-colors-opaque, #FFF);
+
+  .content {
+    color: var(--text-colors-primary-dark, #00020F);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5rem;
+    flex: 1 0 0;
+    align-self: stretch;
+  }
+
+  .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: stretch;
+
+    .created {
+      color: var(--gray-gray-500, #57534E);
+      font-size: 0.875rem;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1.5rem;
+      flex: 1 0 0;
+    }
+
+    .delete, .edit {
+      display: flex;
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0.5rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      aspect-ratio: 1/1;
+      border-radius: 0.75rem;
+
+      svg * {
+        fill-opacity: 1;
+      }
+    }
+  }
+}

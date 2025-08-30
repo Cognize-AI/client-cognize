@@ -27,6 +27,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { CompanyData } from '@/types'
 import Field from '@/ui/form/Field/Field'
+import ActivityCard from '@/components/ActivityCard/ActivityCard'
 
 
 const Page = () => {
@@ -575,7 +576,7 @@ const Page = () => {
 
           <div className={styles.details}>
             <div className={styles.detailHeader}>
-              <p className={styles.detailTitle}>Activity (8)</p>
+              <p className={styles.detailTitle}>Activity ({selectedCard?.activity?.length})</p>
               <div className={styles.addNote}>
                 <Add width={16} height={16} fill='#194EFF' />
                 <p className={styles.add}>Add note...</p>
@@ -592,17 +593,13 @@ const Page = () => {
                   </div>
                 </div>
               </div>
-              <div className={styles.addNoteForm}>
-                <p className={styles.note}>
-                  {' '}
-                  Yes, that’s a great idea, let’s try out soon
-                </p>
-                <div className={styles.noteOptions}>
-                  <div className={styles.date}>Created on Aug 14, 2025</div>
-                  <Trash width={20} height={20} fill='#F77272' />
-                  <Edit width={20} height={20} fill='#194EFF' />
-                </div>
-              </div>
+              {
+                selectedCard?.activity?.map(activity => {
+                  return (
+                    <ActivityCard key={activity.id} content={activity.content} date={activity.created_at} onDelete={() => {}} onEdit={() => {}} />
+                  )
+                })
+              }
             </div>
             <div className={styles.addNewField}>
               <Add width={16} height={16} fill='#194EFF' />

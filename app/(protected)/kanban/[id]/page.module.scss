@@ -315,6 +315,11 @@
             justify-content: center;
             align-items: flex-start;
             padding: 0rem 0.75rem;
+            overflow-y: auto;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
 
             .addNoteForm {
                 display: flex;
