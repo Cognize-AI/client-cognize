@@ -537,9 +537,6 @@ const Page = () => {
                       contact.value
                     )
                   }}
-                  labelIcon={
-                    <Email2 stroke='#3D3D3D' width={20} height={20} fill='none' />
-                  }
                 />
               ))}
             </div>

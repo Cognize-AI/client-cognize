@@ -33,11 +33,11 @@ export const metadata: Metadata = {
     title: 'Cognize: To know and understand your contacts.',
     description:
       'Cognize is a simple, AI-powered CRM for startups, freelancers, and small teams.',
-    url: 'https://yourdomain.com',
+    url: 'https://client-cognize.vercel.app',
     siteName: 'Cognize',
     images: [
       {
-        url: 'https://yourdomain.com/og-image.png',
+        url: 'https://client-cognize.vercel.app/og-image.png',
         width: 1200,
         height: 630
       }
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     title: 'Cognize – Simple AI-powered CRM',
     description:
       'Cognize is a simple, AI-powered CRM for startups, freelancers, and small teams.',
-    images: ['https://yourdomain.com/og-image.png']
+    images: ['https://client-cognize.vercel.app/og-image.png']
   }
 }
 
