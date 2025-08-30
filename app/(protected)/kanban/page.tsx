@@ -84,7 +84,7 @@ const Page = () => {
       console.error(err)
       setError(
         (err as Error).message ||
-          'Could not load the board. Please try again later.'
+        'Could not load the board. Please try again later.'
       )
     } finally {
       setLoading(false)
@@ -265,12 +265,14 @@ const Page = () => {
 
   if (loading) {
     return (
-      <div className={styles.spinnerWrapper}>
-        <div className={styles.spinnerOuter}></div>
-        <p className={styles.spinnerText}>Organizing your pipeline...</p>
-        <p className={styles.spinnerSubtext}>
-          Stay with us, precision takes a moment.
-        </p>
+      <div className={styles.page}>
+        <div className={styles.spinnerWrapper}>
+          <div className={styles.spinnerOuter}></div>
+          <p className={styles.spinnerText}>Organizing your pipeline...</p>
+          <p className={styles.spinnerSubtext}>
+            Stay with us, precision takes a moment.
+          </p>
+        </div>
       </div>
     )
   }
