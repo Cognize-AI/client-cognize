@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation'
 import { axios_instance } from '@/lib/axios'
 import { useTagsStore } from '@/provider/tags-store-provider'
 
-import { Add, ArrowLeft, Pen, Tag, Trash } from '@/components/icons'
+import { Add, ArrowLeft, Tag as TagIcon } from '@/components/icons'
 import AddInput from '@/components/AddInput/AddInput'
 
 import styles from './page.module.scss'
+import Tag from '@/components/Tag/Tag'
 
 const Page = () => {
   const router = useRouter();
@@ -23,12 +24,12 @@ const Page = () => {
 
   const createTag = async () => {
     axios_instance.post("/tag/create", { ...newTagData })
-      .then(_response => {
+      .then(() => {
         setNewTagData({ name: '', color: '' })
         setTagOpen(false)
         fetchTags()
       })
-      .catch(_error => {
+      .catch(() => {
         setNewTagData({ name: '', color: '' })
         setTagOpen(false)
         fetchTags()
@@ -46,12 +47,12 @@ const Page = () => {
     }
 
     axios_instance.put(`/tag/`, payload)
-      .then(_response => {
+      .then(() => {
         fetchTags()
         setTagEditing(false)
         setEditTagData({ name: '', color: '' })
       })
-      .catch(_error => {
+      .catch(() => {
         fetchTags()
         setTagEditing(false)
         setEditTagData({ name: '', color: '' })
@@ -60,22 +61,19 @@ const Page = () => {
 
   const deleteTag = async (id: number) => {
     axios_instance.delete(`/tag/${id}`)
-      .then(_response => {
+      .then(() => {
         fetchTags()
       })
-      .catch(_error => {
+      .catch(() => {
         fetchTags()
       });
   }
 
   const fetchTags = async () => {
     axios_instance.get('/tag/')
-      .then(response => {
-        console.log(response.data?.data?.tags)
+      .then((response) => {
         addTags(response.data?.data?.tags)
       })
-      .catch(error => {
-      });
   }
 
   useEffect(() => {
@@ -99,7 +97,7 @@ const Page = () => {
           Object.keys(groupedTags)?.map((key) => {
             return <div className={styles.tag_row} key={key} style={{ background: key + "14" }}>
               <div className={styles.icon} style={{ background: key + "1F" }}>
-                <Tag width={24} height={24} fill='#00020F' />
+                <TagIcon width={24} height={24} fill='#00020F' />
               </div>
               <div className={styles.ta_gs_row}>
                 {
@@ -112,16 +110,17 @@ const Page = () => {
                       setNewTagData={setEditTagData}
                       setTagOpen={setTagEditing}
                       newTagData={editTagData}
-                    /> : <div className={styles.tag} style={{ background: key }} key={tag.id}>
-                      <p>
-                        {tag.name}
-                      </p>
-                      <Pen onClick={() => {
-                        setEditTagData({ name: tag.name, color: key })
-                        setTagEditing(tag.id)
-                      }} className={styles.icons} width={16} height={16} fill='white' />
-                      <Trash onClick={() => deleteTag(tag.id)} className={styles.icons} width={16} height={16} fill='white' />
-                    </div>
+                    /> : <Tag key={tag.id} id={tag.id} name={tag.name} color={key} setEditTagData={setEditTagData} setTagEditing={setTagEditing} deleteTag={deleteTag} />
+                    // <div className={styles.tag} style={{ background: key }} key={tag.id}>
+                    //   <p>
+                    //     {tag.name}
+                    //   </p>
+                    //   <Pen onClick={() => {
+                    //     setEditTagData({ name: tag.name, color: key })
+                    //     setTagEditing(tag.id)
+                    //   }} className={styles.icons} width={16} height={16} fill='white' />
+                    //   <Trash onClick={() => deleteTag(tag.id)} className={styles.icons} width={16} height={16} fill='white' />
+                    // </div>
                   ))
                 }
                 {!(tagOpen && tagOpen === key) && <div onClick={() => {

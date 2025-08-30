@@ -1,0 +1,3 @@
+import type { SVGProps } from "react";
+const People = (props: SVGProps<SVGSVGElement>) => <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" {...props}><path d="M13.3334 5.41683C13.3334 7.25778 11.8411 8.75016 10.0001 8.75016C8.15916 8.75016 6.66677 7.25778 6.66677 5.41683C6.66677 3.57588 8.15916 2.0835 10.0001 2.0835C11.8411 2.0835 13.3334 3.57588 13.3334 5.41683Z" stroke="#3D3D3D" strokeLinejoin="round" /><path d="M10.0001 10.4168C6.58053 10.4168 4.09704 12.8857 3.45938 16.1826C3.36652 16.6627 3.75411 17.0835 4.24309 17.0835H15.7571C16.2461 17.0835 16.6337 16.6627 16.5408 16.1826C15.9032 12.8857 13.4197 10.4168 10.0001 10.4168Z" stroke="#3D3D3D" strokeLinejoin="round" /></svg>;
+export default People;

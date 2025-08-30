@@ -25,6 +25,10 @@ export type CardType = {
   }[];
 };
 
+export type SelectedCard = CardType & {
+  list_name: string; 
+}
+
 export type User = {
   id: number;
   name: string;
@@ -58,4 +62,55 @@ export type List = {
   created_at: string;
   updated_at: string;
   cards: Card[];
+}
+
+export type CompanyData = {
+  name: string
+  role: string
+  location: string
+  phone: string
+  email: string
+}
+
+export interface CardByIdData {
+  id: number
+  name: string
+  designation: string
+  email: string
+  phone: string
+  image_url: string
+  location: string
+  ListID: number
+  CardOrder: number
+  activity: {
+    id: number
+    content: string
+    created_at: string
+  }[]
+  tags: {
+    id: number
+    name: string
+    color: string
+  }[]
+  list_name: string
+  list_color: string
+  company: {
+    name: string
+    role: string
+    location: string
+    phone: string
+    email: string
+  }
+  additional_contact: {
+    id: number
+    name: string
+    value: string
+    data_type: string
+  }[]
+  additional_company: {
+    id: number
+    name: string
+    value: string
+    data_type: string
+  }[]
 }

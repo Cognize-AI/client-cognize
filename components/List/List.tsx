@@ -23,6 +23,7 @@ type Props = {
   onDragEnd: () => void
   onDragEnter: (listId: number, cardIndex: number) => void
   onTagUpdate: () => void
+  onCardClick: (cardId: number) => void
 }
 
 const List = ({
@@ -34,7 +35,8 @@ const List = ({
   onDragStart,
   onDragEnd,
   onDragEnter,
-  onTagUpdate
+  onTagUpdate,
+  onCardClick
 }: Props) => {
   const [showAddUser, setShowAddUser] = useState(false)
   const [isTagModalOpen, setIsTagModalOpen] = useState(false)
@@ -125,6 +127,7 @@ const List = ({
             tags={tags}
             index={idx}
             list_id={list.id}
+            onClick = {() => onCardClick(card.id)}
             onDragStart={onDragStart}
             onDragEnter={onDragEnter}
             onDragEnd={onDragEnd}

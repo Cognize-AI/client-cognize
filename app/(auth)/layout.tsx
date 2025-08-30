@@ -14,12 +14,12 @@ const Layout = ({ children }: Props) => {
 
   useEffect(() => {
     if (token) {
-      router.push('/kanban')
+      router.replace('/kanban')
     }
   }, [token, router])
 
   if (token) {
-    return null
+    return <div>Redirecting...</div>
   }
 
   return <>{children}</>
