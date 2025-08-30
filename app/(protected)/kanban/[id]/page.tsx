@@ -24,13 +24,18 @@ import styles from './page.module.scss'
 import { useParams, useRouter } from 'next/navigation'
 import { axios_instance } from '@/lib/axios'
 import { useCardStore } from '@/provider/card-store-provider'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import Image from 'next/image'
 import { CompanyData } from '@/types'
 import Field from '@/ui/form/Field/Field'
 import ActivityCard from '@/components/ActivityCard/ActivityCard'
+import TagModal from '@/components/TagModal/TagModal'
+import { useOutsideClickListener } from '@/hooks/useOutsideClickListener'
+import { useTagsStore } from '@/provider/tags-store-provider'
 
 const Page = () => {
+  const userTags = useTagsStore(state => state.tags)
+  const addTags = useTagsStore(state => state.addTags)
   const selectedCard = useCardStore(state => state.selectedCard)
   const setSelectedCard = useCardStore(state => state.setSelectedCard)
 
@@ -38,13 +43,25 @@ const Page = () => {
   const router = useRouter()
   const id = params.id
 
-  const [showContactFieldForm, setShowContactFieldForm] = useState(false)
-  const [newContactFieldName, setNewContactFieldName] = useState('')
-  const [newContactFieldValue, setNewContactFieldValue] = useState('')
+  const [newContactFields, setNewContactFields] = useState<{
+    show: boolean
+    name: string
+    value: string
+  }>({
+    show: false,
+    name: "",
+    value: ""
+  })
 
-  const [showCompanyFieldForm, setShowCompanyFieldForm] = useState(false)
-  const [newCompanyFieldName, setNewCompanyFieldName] = useState('')
-  const [newCompanyFieldValue, setNewCompanyFieldValue] = useState('')
+  const [newCompanyFields, setNewCompanyFields] = useState<{
+    show: boolean
+    name: string
+    value: string
+  }>({
+    show: false,
+    name: "",
+    value: ""
+  })
 
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [editedProfile, setEditedProfile] = useState({
@@ -60,12 +77,19 @@ const Page = () => {
   const [noteContent, setNoteContent] = useState('')
   const [savingNote, setSavingNote] = useState(false)
 
-  // Tag functionality states
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
   const [tagSearchQuery, setTagSearchQuery] = useState('')
-  const [availableTags, setAvailableTags] = useState<
-    Array<{ id: number; name: string; color: string }>
-  >([])
+
+  const tagModalRef = useRef<HTMLDivElement>(null)
+  const menuModalRef = useRef<HTMLDivElement>(null)
+
+  useOutsideClickListener(tagModalRef, () => {
+    setIsTagSearchOpen(false)
+  })
+
+  useOutsideClickListener(menuModalRef, () => {
+    setShowMoreMenu(false)
+  })
 
   const fetchCard = useCallback(() => {
     if (!id) {
@@ -75,60 +99,21 @@ const Page = () => {
       .get(`/card/${id}`)
       .then(response => {
         setSelectedCard(response?.data?.data)
-        console.log(response?.data?.data)
-      })
-      .catch(error => {
-        console.log(error)
       })
   }, [id, setSelectedCard])
 
   const fetchAvailableTags = useCallback(() => {
     axios_instance
-      .get('/tag') // Adjust endpoint as needed
+      .get('/tag')
       .then(response => {
-        const tags = response?.data?.data
-        // Ensure we always set an array
-        setAvailableTags(Array.isArray(tags) ? tags : [])
+        const tags = response?.data?.data?.tags
+        addTags(Array.isArray(tags) ? tags : [])
       })
       .catch(error => {
         console.error('Failed to fetch tags:', error)
-        setAvailableTags([]) // Set empty array on error
+        addTags([])
       })
   }, [])
-
-  useEffect(() => {
-    fetchAvailableTags()
-  }, [fetchAvailableTags])
-
-  useEffect(() => {
-    if (selectedCard && !isEditingProfile) {
-      setEditedProfile({
-        name: selectedCard.name || '',
-        designation: selectedCard.designation || '',
-        image_url: selectedCard.image_url || ''
-      })
-      setImageError(false)
-    }
-  }, [selectedCard, isEditingProfile])
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element
-      if (showMoreMenu && !target.closest(`.${styles.moreMenu}`)) {
-        setShowMoreMenu(false)
-      }
-      if (
-        isTagSearchOpen &&
-        !target.closest(`.${styles.addTag}`) &&
-        !target.closest(`.${styles.searchTag}`)
-      ) {
-        setIsTagSearchOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showMoreMenu, isTagSearchOpen])
-
   const handleMailClick = () => {
     if (selectedCard?.email) {
       window.location.href = `mailto:${selectedCard.email}`
@@ -380,17 +365,17 @@ const Page = () => {
     }
   }
 
-  const filteredTags = Array.isArray(availableTags)
-    ? availableTags.filter(t =>
+  const filteredTags = Array.isArray(userTags)
+    ? userTags.filter(t =>
         t.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
       )
     : []
 
   const handleSaveNewField = (type: 'CONTACT' | 'COMPANY') => {
     const fieldName =
-      type === 'CONTACT' ? newContactFieldName : newCompanyFieldName
+      type === 'CONTACT' ? newContactFields.name : newCompanyFields.name
     const fieldValue =
-      type === 'CONTACT' ? newContactFieldValue : newCompanyFieldValue
+      type === 'CONTACT' ? newContactFields.value : newCompanyFields.value
 
     if (!fieldName.trim() || !fieldValue.trim()) {
       return
@@ -416,13 +401,9 @@ const Page = () => {
         console.log('Field value saved successfully:', response)
         fetchCard()
         if (type === 'CONTACT') {
-          setNewContactFieldName('')
-          setNewContactFieldValue('')
-          setShowContactFieldForm(false)
+          setNewContactFields({ show: false, name: '', value: '' })
         } else {
-          setNewCompanyFieldName('')
-          setNewCompanyFieldValue('')
-          setShowCompanyFieldForm(false)
+          setNewCompanyFields({ show: false, name: '', value: '' })
         }
       })
       .catch(error => {
@@ -495,6 +476,39 @@ const Page = () => {
   useEffect(() => {
     fetchCard()
   }, [fetchCard])
+
+  useEffect(() => {
+    fetchAvailableTags()
+  }, [fetchAvailableTags])
+
+  useEffect(() => {
+    if (selectedCard && !isEditingProfile) {
+      setEditedProfile({
+        name: selectedCard.name || '',
+        designation: selectedCard.designation || '',
+        image_url: selectedCard.image_url || ''
+      })
+      setImageError(false)
+    }
+  }, [selectedCard, isEditingProfile])
+
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     const target = event.target as Element
+  //     if (showMoreMenu && !target.closest(`.${styles.moreMenu}`)) {
+  //       setShowMoreMenu(false)
+  //     }
+  //     if (
+  //       isTagSearchOpen &&
+  //       !target.closest(`.${styles.addTag}`) &&
+  //       !target.closest(`.${styles.searchTag}`)
+  //     ) {
+  //       setIsTagSearchOpen(false)
+  //     }
+  //   }
+  //   document.addEventListener('mousedown', handleClickOutside)
+  //   return () => document.removeEventListener('mousedown', handleClickOutside)
+  // }, [showMoreMenu, isTagSearchOpen])
 
   if (!selectedCard) {
     return <div>Loading...</div>
@@ -746,56 +760,16 @@ const Page = () => {
           </div>
 
           {isTagSearchOpen && (
-            <div
-              className={styles.searchTag}
-              onClick={e => e.stopPropagation()}
-            >
-              <input
-                type='text'
-                placeholder='Search tags...'
-                className={styles.searchTagInput}
-                value={tagSearchQuery}
-                onChange={e => setTagSearchQuery(e.target.value)}
-              />
-              <div className={styles.allTags}>
-                {filteredTags && filteredTags.length > 0 ? (
-                  filteredTags.map(tag => {
-                    const currentTags = selectedCard?.tags || []
-                    const isSelected = currentTags.some(
-                      t => t.name === tag.name
-                    )
-
-                    return (
-                      <div key={tag.id} className={styles.allTag}>
-                        <div
-                          className={`${styles.checkbox} ${
-                            isSelected ? styles.checked : ''
-                          }`}
-                          onClick={e => {
-                            e.stopPropagation()
-                            handleTagToggle(tag.id, tag.name, tag.color)
-                          }}
-                        >
-                          <Checkmark width={16} height={16} fill='white' />
-                        </div>
-                        <div
-                          className={styles.tagName}
-                          style={{ backgroundColor: tag.color }}
-                        >
-                          
-                          <p className={styles.tagNameText}>{tag.name}</p>
-                        </div>
-                      </div>
-                    )
-                  })
-                ) : (
-                  <div className={styles.noTags}></div>
-                )}
-              </div>
-            </div>
+            <TagModal
+              ref={tagModalRef}
+              tagSearchQuery={tagSearchQuery}
+              setTagSearchQuery={setTagSearchQuery}
+              filteredTags={filteredTags}
+              editedCard={selectedCard?.tags || []}
+              handleTagToggle={handleTagToggle}
+            />
           )}
         </div>
-
         <div className={styles.cardDetails}>
           <div className={styles.details}>
             <div className={styles.detailHeader}>
@@ -909,10 +883,13 @@ const Page = () => {
               ))}
             </div>
             <div className={styles.newField}>
-              {!showContactFieldForm ? (
+              {!newContactFields.show ? (
                 <div
                   className={styles.addNewField}
-                  onClick={() => setShowContactFieldForm(true)}
+                  onClick={() => setNewContactFields(prev => ({
+                    ...prev,
+                    show: true
+                  }))}
                 >
                   <Add width={16} height={16} fill='#194EFF' />
                   <p className={styles.add}>Add new field...</p>
@@ -923,16 +900,26 @@ const Page = () => {
                     type='text'
                     className={styles.input}
                     placeholder='Field name...'
-                    value={newContactFieldName}
-                    onChange={e => setNewContactFieldName(e.target.value)}
+                    value={newContactFields.name}
+                    onChange={e => setNewContactFields(prev => ({
+                      ...prev,
+                      name: e.target.value
+                    }))}
                   />
                   <input
                     type='text'
                     className={styles.input}
                     placeholder='Add value...'
-                    value={newContactFieldValue}
-                    onChange={e => setNewContactFieldValue(e.target.value)}
-                    onKeyUp={() => handleSaveNewField('CONTACT')}
+                    value={newContactFields.value}
+                    onChange={e => setNewContactFields(prev => ({
+                      ...prev,
+                      value: e.target.value
+                    }))}
+                    onKeyUp={(event) => {
+                      if (event.key === 'Enter') {
+                        handleSaveNewField('CONTACT')
+                      }
+                    }}
                   />
                 </div>
               )}
@@ -998,10 +985,13 @@ const Page = () => {
               ))}
             </div>
             <div className={styles.newField}>
-              {!showCompanyFieldForm ? (
+              {!newCompanyFields.show ? (
                 <div
                   className={styles.addNewField}
-                  onClick={() => setShowCompanyFieldForm(true)}
+                  onClick={() => setNewCompanyFields(prev => ({
+                    ...prev,
+                    show: true
+                  }))}
                 >
                   <Add width={16} height={16} fill='#194EFF' />
                   <p className={styles.add}>Add new field...</p>
@@ -1012,16 +1002,26 @@ const Page = () => {
                     type='text'
                     className={styles.input}
                     placeholder='Field name...'
-                    value={newCompanyFieldName}
-                    onChange={e => setNewCompanyFieldName(e.target.value)}
+                    value={newCompanyFields.name}
+                    onChange={e => setNewCompanyFields(prev => ({
+                      ...prev,
+                      name: e.target.value
+                    }))}
                   />
                   <input
                     type='text'
                     className={styles.input}
                     placeholder='Add value...'
-                    value={newCompanyFieldValue}
-                    onChange={e => setNewCompanyFieldValue(e.target.value)}
-                    onKeyUp={() => handleSaveNewField('COMPANY')}
+                    value={newCompanyFields.value}
+                    onChange={e => setNewCompanyFields(prev => ({
+                      ...prev,
+                      value: e.target.value
+                    }))}
+                    onKeyUp={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSaveNewField('COMPANY')
+                      }
+                    }}
                   />
                 </div>
               )}
