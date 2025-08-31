@@ -81,17 +81,6 @@ const Page = () => {
   }, [])
   return (
     <div className={styles.main}>
-      <div className={styles.top_row}>
-        <div className={styles.btn_back} onClick={() => {
-          router.back();
-        }}>
-          <ArrowLeft width={20} height={20} stroke='#194EFF' fill='none' />
-          <p>Go back</p>
-        </div>
-      </div>
-      <div className={styles.heading}>
-        Tag management
-      </div>
       <div className={styles.tags}>
         {
           Object.keys(groupedTags)?.map((key) => {
@@ -111,16 +100,6 @@ const Page = () => {
                       setTagOpen={setTagEditing}
                       newTagData={editTagData}
                     /> : <Tag key={tag.id} id={tag.id} name={tag.name} color={key} setEditTagData={setEditTagData} setTagEditing={setTagEditing} deleteTag={deleteTag} />
-                    // <div className={styles.tag} style={{ background: key }} key={tag.id}>
-                    //   <p>
-                    //     {tag.name}
-                    //   </p>
-                    //   <Pen onClick={() => {
-                    //     setEditTagData({ name: tag.name, color: key })
-                    //     setTagEditing(tag.id)
-                    //   }} className={styles.icons} width={16} height={16} fill='white' />
-                    //   <Trash onClick={() => deleteTag(tag.id)} className={styles.icons} width={16} height={16} fill='white' />
-                    // </div>
                   ))
                 }
                 {!(tagOpen && tagOpen === key) && <div onClick={() => {

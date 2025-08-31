@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import { Inter_Tight } from 'next/font/google'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import './globals.scss'
 import { TagsStoreProvider } from '@/provider/tags-store-provider'
 import { UserStoreProvider } from '@/provider/user-store-provider'
 import { CardStoreProvider } from '@/provider/card-store-provider'
+import Script from 'next/script'
 
 const interTight = Inter_Tight({
   variable: '--font-inter-tight',
@@ -33,11 +35,11 @@ export const metadata: Metadata = {
     title: 'Cognize: To know and understand your contacts.',
     description:
       'Cognize is a simple, AI-powered CRM for startups, freelancers, and small teams.',
-    url: 'https://client-cognize.vercel.app',
+    url: 'https://cognize.live',
     siteName: 'Cognize',
     images: [
       {
-        url: 'https://client-cognize.vercel.app/og-image.png',
+        url: 'https://cognize.live/og-image.png',
         width: 1200,
         height: 630
       }
@@ -54,19 +56,34 @@ export const metadata: Metadata = {
   }
 }
 
-export default function RootLayout ({
+export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
   if (typeof window !== 'undefined') {
-    console.log = () => {}
-    console.warn = () => {}
-    console.error = () => {}
+    console.log = () => { }
+    console.warn = () => { }
+    console.error = () => { }
   }
   return (
     <html lang='en'>
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-QN94JBF45P"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-QN94JBF45P');
+          `}
+        </Script>
+      </head>
       <body className={`${interTight.variable}`}>
+        <SpeedInsights />
         <UserStoreProvider>
           {/* <HeaderWrapper /> */}
           <TagsStoreProvider>
