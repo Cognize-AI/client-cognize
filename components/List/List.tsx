@@ -39,12 +39,14 @@ const List = ({
   onCardClick
 }: Props) => {
   const [showAddUser, setShowAddUser] = useState(false)
+  const [showAddUserLoc, setShowAddUserLoc] = useState<false | 'top' | 'bottom'>(false)
   const [isTagModalOpen, setIsTagModalOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
 
   const handleNewCard = (newCard: CardType) => {
     onCardAdded(newCard)
     setShowAddUser(false)
+    setShowAddUserLoc(false)
   }
   const handleCardUpdated = (updatedCard: CardType) => {
     onCardUpdated(updatedCard)
@@ -83,7 +85,15 @@ const List = ({
             width={24}
             height={24}
             fill='#3D3D3D'
-            onClick={() => setShowAddUser(prev => !prev)}
+            onClick={() => {
+              setShowAddUser(prev => !prev)
+              setShowAddUserLoc(prev => {
+                if (!prev) {
+                  return 'top'
+                }
+                return false
+              })
+            }}
           />
         </div>
       </div>
@@ -107,12 +117,15 @@ const List = ({
           overflowY: isTagModalOpen ? 'unset' : 'auto'
         }}
       >
-        {showAddUser && (
+        {showAddUser && showAddUserLoc == 'top' && (
           <AddCard
             listId={list.id}
             tags={tags}
             onCardAdded={handleNewCard}
-            onCancel={() => setShowAddUser(false)}
+            onCancel={() => {
+              setShowAddUser(false)
+              setShowAddUserLoc(false)
+            }}
           />
         )}
 
@@ -135,13 +148,33 @@ const List = ({
           />
         ))}
         
-        <div
+        {showAddUser && showAddUserLoc == 'bottom' && (
+          <AddCard
+            listId={list.id}
+            tags={tags}
+            onCardAdded={handleNewCard}
+            onCancel={() => {
+              setShowAddUser(false)
+              setShowAddUserLoc(false)
+            }}
+          />
+        )}
+        
+        { !showAddUser && <div
           className={styles.addNewContact}
           style={{
             border: `1px solid ${list.color}`,
             '--hover-color': `${list.color}14`
           } as React.CSSProperties}
-          onClick={() => setShowAddUser(prev => !prev)}
+          onClick={() => {
+            setShowAddUser(prev => !prev)
+            setShowAddUserLoc(prev => {
+              if (!prev) {
+                return 'bottom'
+              }
+              return false
+            })
+          }}
         >
           <div className={styles.addNewContactButton}>
             <Add width={24} height={24} className={styles.addNewContactIcon} stroke={list.color} />
@@ -150,7 +183,7 @@ const List = ({
               Add New Contact
             </p>
           </div>
-        </div>
+        </div>}
 
       </div>
     </div>

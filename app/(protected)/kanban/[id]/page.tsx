@@ -873,7 +873,7 @@ const Page = () => {
                     >
                       <input
                         type='text'
-                        className={styles.input}
+                        className={styles.input_name}
                         placeholder='Field name...'
                         value={newContactFields.name}
                         onChange={e =>
@@ -986,7 +986,7 @@ const Page = () => {
                     >
                       <input
                         type='text'
-                        className={styles.input}
+                        className={styles.input_name}
                         placeholder='Field name...'
                         value={newCompanyFields.name}
                         onChange={e =>
