@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import styles from './Card.module.scss';
 import { CardType } from '@/types';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import {
   Add,
   AddImage,
@@ -14,6 +14,8 @@ import {
   Phone
 } from '../icons';
 import { axios_instance } from '@/lib/axios';
+import TagModal from '../TagModal/TagModal';
+import { useOutsideClickListener } from '@/hooks/useOutsideClickListener';
 
 type Tag = { id: number; name: string; color: string };
 type CardTag = Tag;
@@ -56,30 +58,23 @@ const Card = ({
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false);
   const [tagSearchQuery, setTagSearchQuery] = useState('');
 
+  const tagModalRef = useRef<HTMLDivElement>(null);
+  const menuModalRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClickListener(tagModalRef, () => {
+    setIsTagSearchOpen(false)
+    setIsTagModalOpen(false)
+  });
+
+  useOutsideClickListener(menuModalRef, () => {
+    setShowMenu(false);
+    setIsTagModalOpen(false)
+  });
+
   useEffect(() => {
     if (!isEditing) setEditedCard(card);
     setImageError(false);
   }, [card, isEditing]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element;
-      if (showMenu && !target.closest(`.${styles.userEdit}`)) {
-        setShowMenu(false);
-        setIsTagModalOpen(false);
-      }
-      if (
-        isTagSearchOpen &&
-        !target.closest(`.${styles.addTag}`) &&
-        !target.closest(`.${styles.searchTag}`)
-      ) {
-        setIsTagSearchOpen(false);
-        setIsTagModalOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showMenu, isTagSearchOpen, setIsTagModalOpen]);
 
   const getTagName = (tag: CardTag) => tag.name;
   const handleImageError = () => setImageError(true);
@@ -391,6 +386,7 @@ const Card = ({
 
           {showMenu && !isEditing && (
             <div
+              ref={menuModalRef}
               className={styles.userMenu}
               onClick={e => e.stopPropagation()}
             >
@@ -506,48 +502,56 @@ const Card = ({
       </div>
 
       {isTagSearchOpen && !uploading && (
-        <div
-          className={styles.searchTag}
-          onClick={e => e.stopPropagation()}
-        >
-          <input
-            type="text"
-            placeholder="Search tags..."
-            className={styles.searchTagInput}
-            value={tagSearchQuery}
-            onChange={e => setTagSearchQuery(e.target.value)}
-          />
-          <div className={styles.allTags}>
-            {filteredTags?.map(tag => {
-              const currentTags = editedCard.tags || [];
-              const isSelected = currentTags.some(
-                t => getTagName(t) === tag.name
-              );
+        // <div
+        //   className={styles.searchTag}
+        //   onClick={e => e.stopPropagation()}
+        // >
+        //   <input
+        //     type="text"
+        //     placeholder="Search tags..."
+        //     className={styles.searchTagInput}
+        //     value={tagSearchQuery}
+        //     onChange={e => setTagSearchQuery(e.target.value)}
+        //   />
+        //   <div className={styles.allTags}>
+        //     {filteredTags?.map(tag => {
+        //       const currentTags = editedCard.tags || [];
+        //       const isSelected = currentTags.some(
+        //         t => getTagName(t) === tag.name
+        //       );
 
-              return (
-                <div key={tag.id} className={styles.allTag}>
-                  <div
-                    className={`${styles.checkbox} ${
-                      isSelected ? styles.checked : ''
-                    }`}
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleTagToggle(tag.id, tag.name, tag.color);
-                    }}
-                  >
-                    <Checkmark width={16} height={16} fill="white" />
-                  </div>
-                  <div
-                    className={styles.tagName}
-                    style={{ backgroundColor: tag.color }}
-                  >
-                    <p className={styles.tagNameText}>{tag.name}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        //       return (
+        //         <div key={tag.id} className={styles.allTag}>
+        //           <div
+        //             className={`${styles.checkbox} ${
+        //               isSelected ? styles.checked : ''
+        //             }`}
+        //             onClick={e => {
+        //               e.stopPropagation();
+        //               handleTagToggle(tag.id, tag.name, tag.color);
+        //             }}
+        //           >
+        //             <Checkmark width={16} height={16} fill="white" />
+        //           </div>
+        //           <div
+        //             className={styles.tagName}
+        //             style={{ backgroundColor: tag.color }}
+        //           >
+        //             <p className={styles.tagNameText}>{tag.name}</p>
+        //           </div>
+        //         </div>
+        //       );
+        //     })}
+        //   </div>
+        // </div>
+        <TagModal
+          ref={tagModalRef}
+          tagSearchQuery={tagSearchQuery}
+          setTagSearchQuery={setTagSearchQuery}
+          filteredTags={filteredTags}
+          editedCard={editedCard}
+          handleTagToggle={handleTagToggle}
+        />
       )}
     </div>
   );

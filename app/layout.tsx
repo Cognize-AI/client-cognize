@@ -59,15 +59,18 @@ export default function RootLayout ({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  if (typeof window !== 'undefined') {
+    console.log = () => {}
+    console.warn = () => {}
+    console.error = () => {}
+  }
   return (
     <html lang='en'>
       <body className={`${interTight.variable}`}>
         <UserStoreProvider>
           {/* <HeaderWrapper /> */}
           <TagsStoreProvider>
-              <CardStoreProvider>
-                {children}
-              </CardStoreProvider>
+            <CardStoreProvider>{children}</CardStoreProvider>
           </TagsStoreProvider>
         </UserStoreProvider>
       </body>

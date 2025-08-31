@@ -1,23 +1,26 @@
 .activity {
   display: flex;
-  height: 9rem;
+  min-height: 9rem;
   padding: 0.75rem;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-end;
-  gap: 2rem;
   align-self: stretch;
   border-radius: 0.75rem;
-  background: var(--bg-colors-opaque, #FFF);
+  gap: 0.5rem;
+  background: var(--bg-colors-opaque, #fff);
 
   .content {
-    color: var(--text-colors-primary-dark, #00020F);
+    color: var(--text-colors-primary-dark, #00020f);
     font-size: 1rem;
     font-style: normal;
     font-weight: 400;
     line-height: 1.5rem;
     flex: 1 0 0;
     align-self: stretch;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .info {
@@ -26,9 +29,10 @@
     align-items: center;
     gap: 0.5rem;
     align-self: stretch;
+    flex-shrink: 0;
 
     .created {
-      color: var(--gray-gray-500, #57534E);
+      color: var(--gray-gray-500, #57534e);
       font-size: 0.875rem;
       font-style: normal;
       font-weight: 400;
@@ -36,7 +40,7 @@
       flex: 1 0 0;
     }
 
-    .delete, .edit {
+    .delete{
       display: flex;
       width: 2.5rem;
       height: 2.5rem;
@@ -46,10 +50,128 @@
       gap: 0.5rem;
       aspect-ratio: 1/1;
       border-radius: 0.75rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: rgba(247, 114, 114, 0.08);
+      }
 
       svg * {
         fill-opacity: 1;
       }
+    }
+    
+    .edit {
+      display: flex;
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0.5rem;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      aspect-ratio: 1/1;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: rgba(25, 78, 255, 0.08);
+      }
+
+      svg * {
+        fill-opacity: 1;
+      }
+    }
+  }
+
+  .editTextarea {
+    color: var(--text-colors-primary-dark, #00020f);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5rem;
+    flex: 1 0 0;
+    align-self: stretch;
+    font-family: inherit;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 0;
+    width: 100%;
+    min-height: 4.5rem;
+    height: auto; // Allow height to adjust
+    overflow: hidden; // Remove scrollbar
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    &:focus {
+      background: rgba(25, 78, 255, 0.02);
+      border-radius: 0.25rem;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &::placeholder {
+      color: var(--gray-gray-500, #57534e);
+    }
+  }
+
+  .editActions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .saveAction {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.75rem;
+    background: #194eff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #1640cc;
+    }
+
+    &.disabled {
+      background: #bcbbb8;
+      cursor: not-allowed;
+    }
+  }
+
+  .cancelAction {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.75rem;
+    background: #f5f5f5;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: #e5e5e5;
     }
   }
 }
