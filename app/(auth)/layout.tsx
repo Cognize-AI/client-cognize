@@ -19,7 +19,7 @@ const Layout = ({ children }: Props) => {
   }, [token, router])
 
   if (token) {
-    return <div>Redirecting...</div>
+    return <div></div>
   }
 
   return <>{children}</>
