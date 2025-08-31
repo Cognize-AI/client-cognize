@@ -374,10 +374,6 @@ const Page = () => {
       type === 'CONTACT' ? newContactFields.name : newCompanyFields.name
     const fieldValue =
       type === 'CONTACT' ? newContactFields.value : newCompanyFields.value
-
-    if (!fieldName.trim() || !fieldValue.trim()) {
-      return
-    }
     axios_instance
       .post('/field/field-definitions', {
         type: type,
@@ -523,7 +519,7 @@ const Page = () => {
             className={`${styles.user} ${
               isEditingProfile ? styles.editing : ''
             }`}
-            onDoubleClick={handleProfileDoubleClick}
+            onClick={handleProfileDoubleClick}
           >
             <div className={styles.avatar}>
               {isEditingProfile ? (
@@ -835,7 +831,7 @@ const Page = () => {
                 <Field
                   key={contact.id}
                   label={contact.name}
-                  placeholder={`Add ${contact.name}`}
+                  placeholder={`Add here...`}
                   value={contact.value}
                   onChange={value => {
                     setSelectedCard({
@@ -999,6 +995,12 @@ const Page = () => {
                             name: e.target.value
                           }))
                         }
+                        onKeyUp={e => {
+                          if (e.key === 'Enter') {
+                            handleSaveNewField('COMPANY')
+                          }
+                        }}
+                        
                       />
                       <input
                         type='text'

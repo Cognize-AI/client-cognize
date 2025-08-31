@@ -52,6 +52,11 @@ const TagModal = ({
               <div
                 className={styles.tagName}
                 style={{ backgroundColor: tag.color }}
+                
+                onClick={e => {
+                  e.stopPropagation()
+                  handleTagToggle(tag.id, tag.name, tag.color)
+                }}
               >
                 <p className={styles.tagNameText}>{tag.name}</p>
               </div>
