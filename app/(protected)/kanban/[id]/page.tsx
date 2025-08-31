@@ -374,10 +374,6 @@ const Page = () => {
       type === 'CONTACT' ? newContactFields.name : newCompanyFields.name
     const fieldValue =
       type === 'CONTACT' ? newContactFields.value : newCompanyFields.value
-
-    if (!fieldName.trim() || !fieldValue.trim()) {
-      return
-    }
     axios_instance
       .post('/field/field-definitions', {
         type: type,
@@ -490,24 +486,6 @@ const Page = () => {
     }
   }, [selectedCard, isEditingProfile])
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     const target = event.target as Element
-  //     if (showMoreMenu && !target.closest(`.${styles.moreMenu}`)) {
-  //       setShowMoreMenu(false)
-  //     }
-  //     if (
-  //       isTagSearchOpen &&
-  //       !target.closest(`.${styles.addTag}`) &&
-  //       !target.closest(`.${styles.searchTag}`)
-  //     ) {
-  //       setIsTagSearchOpen(false)
-  //     }
-  //   }
-  //   document.addEventListener('mousedown', handleClickOutside)
-  //   return () => document.removeEventListener('mousedown', handleClickOutside)
-  // }, [showMoreMenu, isTagSearchOpen])
-
   if (!selectedCard) {
     return (
       <div className={styles.page}>
@@ -541,7 +519,7 @@ const Page = () => {
             className={`${styles.user} ${
               isEditingProfile ? styles.editing : ''
             }`}
-            onDoubleClick={handleProfileDoubleClick}
+            onClick={handleProfileDoubleClick}
           >
             <div className={styles.avatar}>
               {isEditingProfile ? (
@@ -681,18 +659,15 @@ const Page = () => {
             >
               <div className={styles.icon_wrapper}>
                 <div className={styles.icon_unif}>
-                  
-                    <Dots
-                      width={24}
-                      height={24}
-                      fill='#194EFF'
-                      className={styles.actionIcons}
-                    />
+                  <Dots
+                    width={24}
+                    height={24}
+                    fill='#194EFF'
+                    className={styles.actionIcons}
+                  />
                 </div>
               </div>
-              <p className={styles.actionTitle}>
-                More
-              </p>
+              <p className={styles.actionTitle}>More</p>
 
               {showMoreMenu && !isEditingProfile && (
                 <div
@@ -856,7 +831,7 @@ const Page = () => {
                 <Field
                   key={contact.id}
                   label={contact.name}
-                  placeholder={`Add ${contact.name}`}
+                  placeholder={`Add here...`}
                   value={contact.value}
                   onChange={value => {
                     setSelectedCard({
@@ -1020,6 +995,12 @@ const Page = () => {
                             name: e.target.value
                           }))
                         }
+                        onKeyUp={e => {
+                          if (e.key === 'Enter') {
+                            handleSaveNewField('COMPANY')
+                          }
+                        }}
+                        
                       />
                       <input
                         type='text'
@@ -1058,7 +1039,7 @@ const Page = () => {
                 <p className={styles.add}>Add note...</p>
               </div>
             </div>
-            <div className={styles.newField}>
+            <div className={styles.newActivity}>
               {showAddNoteForm && (
                 <div className={styles.addNoteForm}>
                   <textarea
@@ -1068,15 +1049,14 @@ const Page = () => {
                     onChange={e => setNoteContent(e.target.value)}
                   />
                   <div className={styles.saveContainer}>
-                    <Close
-                      width={20}
-                      height={20}
-                      fill='#3D3D3D'
-                      onClick={handleCloseNote}
-                      className={styles.closeIcon}
-                    />
                     <div
-                      className={`${styles.save} ${
+                      className={styles.cancelAction}
+                      onClick={handleCloseNote}
+                    >
+                      <Close width={16} height={16} fill='#3D3D3D' />
+                    </div>
+                    <div
+                      className={`${styles.saveAction} ${
                         savingNote || !noteContent.trim() ? styles.disabled : ''
                       }`}
                       onClick={() => {
@@ -1085,8 +1065,7 @@ const Page = () => {
                         }
                       }}
                     >
-                      <Checkmark width={20} height={20} fill='white' />
-                      <p className={styles.saveButton}>Save</p>
+                      <Checkmark width={16} height={16} fill='white' />
                     </div>
                   </div>
                 </div>
@@ -1103,13 +1082,18 @@ const Page = () => {
                   />
                 )
               })}
-            </div>
-            {!showAddNoteForm && (
-              <div className={styles.addNewField} onClick={handleAddNoteClick}>
-                <Add width={16} height={16} fill='#194EFF' />
-                <p className={styles.add}>Add new note...</p>
+              <div>
+                {!showAddNoteForm && (
+                  <div
+                    className={styles.addNewField}
+                    onClick={handleAddNoteClick}
+                  >
+                    <Add width={16} height={16} fill='#194EFF' />
+                    <p className={styles.add}>Add new note...</p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

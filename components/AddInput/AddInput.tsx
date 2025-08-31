@@ -37,7 +37,7 @@ const AddInput = ({
     <div ref={ref} style={{
       border: `1px solid ${color}`,
     }} className={styles.new_tag} >
-      <input placeholder='New tag name' onKeyUp={(e) => {
+      <input placeholder='Add here...' onKeyUp={(e) => {
         if (e.key === 'Enter') {
           createTag()
         }
