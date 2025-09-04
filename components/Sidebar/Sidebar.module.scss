@@ -48,6 +48,20 @@
         p {
           color: var(--Brand, #194EFF);
         }
+
+      }
+
+      &.profile {
+        svg * {
+          fill: none !important;
+          stroke-width: 1.5;
+        }
+
+        &.active {
+          svg * {
+            stroke: #194EFF;
+          }
+        }
       }
     }
   }

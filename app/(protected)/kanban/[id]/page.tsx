@@ -10,7 +10,11 @@ import {
   AddImage,
   Delete,
   Pen,
-  Trash
+  Trash,
+  SparklesSoft,
+  ListBullet,
+  Activity,
+  Admin
 } from '@/components/icons'
 import styles from './page.module.scss'
 import { useParams, useRouter } from 'next/navigation'
@@ -26,7 +30,8 @@ import TabGroup from '@/components/TabGroup/TabGroup'
 import AiSummary from '@/components/ProspectiveId/AiSummary/AiSummary'
 import Suggestions from '@/components/ProspectiveId/Suggestions/Suggestions'
 import ActivityTimeline from '@/components/ProspectiveId/ActivityTimeline/ActivityTimeline'
-
+import Tabs from '@/components/Tabs/Tabs'
+import Tab from '@/components/Tab/Tab'
 
 const Page = () => {
   const userTags = useTagsStore(state => state.tags)
@@ -590,7 +595,44 @@ const Page = () => {
             </div>
           )}
         </div>
-        <TabGroup activeTab={activeTab} onTabClick={setActiveTab} />
+        {/* <TabGroup activeTab={activeTab} onTabClick={setActiveTab} /> */}
+        <Tabs>
+          <Tab
+            onClick={() => setActiveTab('AI Summary')}
+            isActive={activeTab === 'AI Summary'}
+          >
+            <SparklesSoft className={`${styles.fill_icon} ${activeTab === 'AI Summary' ? styles.active : ''}`} width={20} height={20} />
+            <p>AI Summary</p>
+          </Tab>
+          <Tab
+            onClick={() => setActiveTab('General Field')}
+            isActive={activeTab === 'General Field'}
+          >
+            <ListBullet width={20} height={20} />
+            <p>General Field</p>
+          </Tab>
+          <Tab
+            onClick={() => setActiveTab('Activity')}
+            isActive={activeTab === 'Activity'}
+          >
+            <Activity
+              fill='none'
+              strokeWidth='1.5'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              width={20}
+              height={20}
+            />
+            <p>Activity</p>
+          </Tab>
+          <Tab
+            onClick={() => setActiveTab('Suggestions')}
+            isActive={activeTab === 'Suggestions'}
+          >
+            <Admin width={20} height={20} />
+            <p>Suggestions</p>
+          </Tab>
+        </Tabs>
         <div className={styles.componentWrapper}>{renderActiveComponent()}</div>
       </div>
     </>
