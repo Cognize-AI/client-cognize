@@ -32,7 +32,7 @@ const Layout = ({ children }: Props) => {
   return <div className={styles.main}>
     <Sidebar />
     <div className={styles.main_page}>
-      {['/kanban', '/tags']?.includes(pathname) && <HeaderWrapper />}
+      {['/kanban', '/tags', '/settings']?.includes(pathname) && <HeaderWrapper />}
       {children}
     </div>
   </div>

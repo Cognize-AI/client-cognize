@@ -70,10 +70,12 @@ const Header = () => {
         <p className={styles.heading}>
           {pathname == '/kanban' && 'My Contacts'}
           {pathname == '/tags' && 'Tags Management'}
+          {pathname == '/settings' && 'Settings'}
         </p>
         <p className={styles.subheading}>
           {pathname == '/kanban' && 'List of people for communication'}
           {pathname == '/tags' && 'Create view and manage all your tags'}
+          {pathname == '/settings' && 'Manage your custom fields and API'}
         </p>
       </div>
 

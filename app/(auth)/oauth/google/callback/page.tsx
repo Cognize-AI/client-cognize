@@ -17,7 +17,7 @@ const Page = () => {
 
       try {
         const response = await axios_instance.get(`/oauth/google/callback?code=${code}`)
-        const token = response.data?.data?.token
+        // const token = response.data?.data?.token
         const redirectUrl = response.data?.data?.redirect_url
 
         // if (token) localStorage.setItem('token', token)

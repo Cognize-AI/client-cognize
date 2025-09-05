@@ -3,22 +3,18 @@
 import {
   Add,
   ArrowLeft,
-  Checkmark,
-  Close,
   Dots,
-  Email2,
-  Lifecycle,
-  Location,
   Mail,
-  Pen,
-  People,
   Phone,
-  Phone2,
   Streak,
-  Suitcase,
-  Trash,
   AddImage,
-  Delete
+  Delete,
+  Pen,
+  Trash,
+  SparklesSoft,
+  ListBullet,
+  Activity,
+  Admin
 } from '@/components/icons'
 import styles from './page.module.scss'
 import { useParams, useRouter } from 'next/navigation'
@@ -26,12 +22,16 @@ import { axios_instance } from '@/lib/axios'
 import { useCardStore } from '@/provider/card-store-provider'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Image from 'next/image'
-import { CompanyData } from '@/types'
-import Field from '@/ui/form/Field/Field'
-import ActivityCard from '@/components/ActivityCard/ActivityCard'
 import TagModal from '@/components/TagModal/TagModal'
 import { useOutsideClickListener } from '@/hooks/useOutsideClickListener'
 import { useTagsStore } from '@/provider/tags-store-provider'
+import GeneralField from '@/components/ProspectiveId/GeneralField/GeneralField'
+// import TabGroup from '@/components/TabGroup/TabGroup'
+import AiSummary from '@/components/ProspectiveId/AiSummary/AiSummary'
+import Suggestions from '@/components/ProspectiveId/Suggestions/Suggestions'
+import ActivityTimeline from '@/components/ProspectiveId/ActivityTimeline/ActivityTimeline'
+import Tabs from '@/components/Tabs/Tabs'
+import Tab from '@/components/Tab/Tab'
 
 const Page = () => {
   const userTags = useTagsStore(state => state.tags)
@@ -43,26 +43,7 @@ const Page = () => {
   const router = useRouter()
   const id = params.id
 
-  const [newContactFields, setNewContactFields] = useState<{
-    show: boolean
-    name: string
-    value: string
-  }>({
-    show: false,
-    name: '',
-    value: ''
-  })
-
-  const [newCompanyFields, setNewCompanyFields] = useState<{
-    show: boolean
-    name: string
-    value: string
-  }>({
-    show: false,
-    name: '',
-    value: ''
-  })
-
+  const [activeTab, setActiveTab] = useState('General Field')
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [editedProfile, setEditedProfile] = useState({
     name: '',
@@ -72,10 +53,6 @@ const Page = () => {
   const [uploading, setUploading] = useState(false)
   const [imageError, setImageError] = useState(false)
   const [showMoreMenu, setShowMoreMenu] = useState(false)
-
-  const [showAddNoteForm, setShowAddNoteForm] = useState(false)
-  const [noteContent, setNoteContent] = useState('')
-  const [savingNote, setSavingNote] = useState(false)
 
   const [isTagSearchOpen, setIsTagSearchOpen] = useState(false)
   const [tagSearchQuery, setTagSearchQuery] = useState('')
@@ -102,7 +79,7 @@ const Page = () => {
 
   const fetchAvailableTags = useCallback(() => {
     axios_instance
-      .get('/tag/')
+      .get('/tag')
       .then(response => {
         const tags = response?.data?.data?.tags
         addTags(Array.isArray(tags) ? tags : [])
@@ -111,7 +88,8 @@ const Page = () => {
         console.error('Failed to fetch tags:', error)
         addTags([])
       })
-  }, [])
+  }, [addTags])
+
   const handleMailClick = () => {
     if (selectedCard?.email) {
       window.location.href = `mailto:${selectedCard.email}`
@@ -214,11 +192,13 @@ const Page = () => {
       setIsEditingProfile(false)
     } catch (err) {
       console.error('Profile update failed:', err)
-      setEditedProfile({
-        name: selectedCard.name || '',
-        designation: selectedCard.designation || '',
-        image_url: selectedCard.image_url || ''
-      })
+      if (selectedCard) {
+        setEditedProfile({
+          name: selectedCard.name || '',
+          designation: selectedCard.designation || '',
+          image_url: selectedCard.image_url || ''
+        })
+      }
     }
   }
 
@@ -241,58 +221,6 @@ const Page = () => {
 
   const toggleMoreMenu = () => setShowMoreMenu(prev => !prev)
 
-  const handleAddNoteClick = () => {
-    setShowAddNoteForm(true)
-    setNoteContent('')
-  }
-
-  const handleCloseNote = () => {
-    setShowAddNoteForm(false)
-    setNoteContent('')
-  }
-
-  const handleSaveNote = async () => {
-    if (!noteContent.trim() || !selectedCard || savingNote) return
-
-    setSavingNote(true)
-    try {
-      await axios_instance.post('/activity/create', {
-        card_id: selectedCard.id,
-        text: noteContent.trim()
-      })
-
-      setShowAddNoteForm(false)
-      setNoteContent('')
-      fetchCard()
-    } catch (err) {
-      console.error('Failed to save note:', err)
-    } finally {
-      setSavingNote(false)
-    }
-  }
-
-  const handleDeleteActivity = async (activityId: number) => {
-    try {
-      await axios_instance.delete(`/activity/${activityId}`)
-      fetchCard()
-    } catch (err) {
-      console.error('Failed to delete activity:', err)
-    }
-  }
-
-  const handleEditActivity = async (activityId: number, newContent: string) => {
-    try {
-      await axios_instance.put(`/activity/${activityId}`, {
-        text: newContent
-      })
-      fetchCard()
-    } catch (err) {
-      console.error('Failed to update activity:', err)
-      throw err
-    }
-  }
-
-  // Tag management functions
   const addTagToCard = (
     tagID: number,
     cardID: number,
@@ -369,103 +297,20 @@ const Page = () => {
       )
     : []
 
-  const handleSaveNewField = (type: 'CONTACT' | 'COMPANY') => {
-    const fieldName =
-      type === 'CONTACT' ? newContactFields.name : newCompanyFields.name
-    const fieldValue =
-      type === 'CONTACT' ? newContactFields.value : newCompanyFields.value
-    axios_instance
-      .post('/field/field-definitions', {
-        type: type,
-        field_name: fieldName
-      })
-      .then(response => {
-        const field_id = response.data?.data?.id
-        if (!field_id) {
-          throw new Error('Could not get field ID from response.')
-        }
-
-        return axios_instance.post('/field/field-value', {
-          field_id: field_id,
-          card_id: parseInt(id, 10),
-          value: fieldValue
-        })
-      })
-      .then(response => {
-        console.log('Field value saved successfully:', response)
-        fetchCard()
-        if (type === 'CONTACT') {
-          setNewContactFields({ show: false, name: '', value: '' })
-        } else {
-          setNewCompanyFields({ show: false, name: '', value: '' })
-        }
-      })
-      .catch(error => {
-        console.error('Error saving new field:', error)
-      })
-  }
-
-  const handleCardUpdate = () => {
-    if (!selectedCard) {
-      return
+  const renderActiveComponent = () => {
+    switch (activeTab) {
+      case 'AI Summary':
+        return <AiSummary />
+      case 'General Field':
+        return <GeneralField fetchCard={fetchCard} />
+      case 'Activity':
+        return <ActivityTimeline />
+      case 'Suggestions':
+        return <Suggestions />
+      default:
+        return <GeneralField fetchCard={fetchCard} />
     }
-    const data = {
-      id: selectedCard.id,
-      name: selectedCard.name,
-      designation: selectedCard.designation,
-      email: selectedCard.email,
-      phone: selectedCard.phone,
-      image_url: selectedCard.image_url,
-      location: selectedCard.location,
-      company_name: selectedCard.company.name,
-      company_role: selectedCard.company.role,
-      company_location: selectedCard.company.location,
-      company_phone: selectedCard.company.phone,
-      company_email: selectedCard.company.email
-    }
-
-    axios_instance.put(`/card/details/${selectedCard.id}`, data).then(() => {
-      fetchCard()
-    })
   }
-
-  const handleContactCustomFieldUpdate = (
-    card_id: number,
-    field_def_id: number,
-    value: string
-  ) => {
-    if (!card_id || !field_def_id) {
-      return
-    }
-
-    axios_instance
-      .post('/field/field-value', {
-        field_id: field_def_id,
-        card_id: card_id,
-        value: value
-      })
-      .then(() => {
-        fetchCard()
-      })
-  }
-
-  const companyFields = [
-    {
-      key: 'name',
-      label: 'Company',
-      placeholder: 'Add company',
-      Icon: Suitcase
-    },
-    { key: 'role', label: 'Role', placeholder: 'Add role', Icon: People },
-    {
-      key: 'location',
-      label: 'Location',
-      placeholder: 'Add location',
-      Icon: Location
-    },
-    { key: 'phone', label: 'Phone', placeholder: 'Add phone', Icon: Phone2 },
-    { key: 'email', label: 'Email', placeholder: 'Add email', Icon: Email2 }
-  ]
 
   useEffect(() => {
     fetchCard()
@@ -563,7 +408,9 @@ const Page = () => {
                   onError={handleImageError}
                 />
               ) : (
-                <AddImage width={24} height={24} fill='#BCBBB8' />
+                <div className={styles.avatar}>
+                  <AddImage width={24} height={24} fill='#BCBBB8' />
+                </div>
               )}
             </div>
             <div className={styles.userDetails}>
@@ -671,6 +518,7 @@ const Page = () => {
 
               {showMoreMenu && !isEditingProfile && (
                 <div
+                  ref={menuModalRef}
                   className={styles.moreMenu}
                   onClick={e => e.stopPropagation()}
                 >
@@ -691,7 +539,6 @@ const Page = () => {
             </div>
           </div>
         </div>
-
         <div className={styles.tags}>
           <div
             className={styles.tag}
@@ -748,354 +595,49 @@ const Page = () => {
             </div>
           )}
         </div>
-        <div className={styles.cardDetails}>
-          <div className={styles.details}>
-            <div className={styles.detailHeader}>
-              <p className={styles.detailTitle}>Contact Information</p>
-            </div>
-            <div className={styles.form}>
-              <Field
-                label='Location'
-                placeholder='Add here...'
-                value={selectedCard?.location}
-                onChange={value => {
-                  setSelectedCard({
-                    ...selectedCard,
-                    location: value
-                  })
-                }}
-                onEnter={() => {
-                  handleCardUpdate()
-                }}
-                labelIcon={
-                  <Location
-                    stroke='#3D3D3D'
-                    width={20}
-                    height={20}
-                    fill='none'
-                  />
-                }
-              />
-              <Field
-                label='Phone'
-                placeholder='Add here...'
-                value={selectedCard?.phone}
-                onChange={value => {
-                  setSelectedCard({
-                    ...selectedCard,
-                    phone: value
-                  })
-                }}
-                onEnter={() => {
-                  handleCardUpdate()
-                }}
-                labelIcon={
-                  <Phone2 stroke='#3D3D3D' width={20} height={20} fill='none' />
-                }
-              />
-              <Field
-                label='Email'
-                placeholder='Add here...'
-                value={selectedCard?.email}
-                onChange={value => {
-                  setSelectedCard({
-                    ...selectedCard,
-                    email: value
-                  })
-                }}
-                onEnter={() => {
-                  handleCardUpdate()
-                }}
-                labelIcon={
-                  <Email2 stroke='#3D3D3D' width={20} height={20} fill='none' />
-                }
-              />
-              <div className={styles.row}>
-                <div className={styles.field}>
-                  <Lifecycle
-                    stroke='#3D3D3D'
-                    width={20}
-                    height={20}
-                    fill='none'
-                  />
-                  <p className={styles.fieldTitle}>Lifecycle</p>
-                </div>
-                <div
-                  className={styles.tag}
-                  style={{ backgroundColor: selectedCard?.list_color }}
-                >
-                  <p className={styles.tagTitle}>{selectedCard?.list_name}</p>
-                </div>
-              </div>
-              {selectedCard?.additional_contact?.map(contact => (
-                <Field
-                  key={contact.id}
-                  label={contact.name}
-                  placeholder={`Add here...`}
-                  value={contact.value}
-                  onChange={value => {
-                    setSelectedCard({
-                      ...selectedCard,
-                      additional_contact: selectedCard.additional_contact.map(
-                        c =>
-                          c.name === contact.name ? { ...c, value: value } : c
-                      )
-                    })
-                  }}
-                  onEnter={() => {
-                    handleContactCustomFieldUpdate(
-                      selectedCard.id,
-                      contact.id,
-                      contact.value
-                    )
-                  }}
-                />
-              ))}
-              <div>
-                <div className={styles.newField}>
-                  {!newContactFields.show ? (
-                    <div
-                      className={styles.addNewField}
-                      onClick={() =>
-                        setNewContactFields(prev => ({
-                          ...prev,
-                          show: true
-                        }))
-                      }
-                    >
-                      <Add width={16} height={16} fill='#194EFF' />
-                      <p className={styles.add}>Add new field...</p>
-                    </div>
-                  ) : (
-                    <div
-                      className={styles.row}
-                      style={{ alignItems: 'center' }}
-                    >
-                      <input
-                        type='text'
-                        className={styles.input_name}
-                        placeholder='Field name...'
-                        value={newContactFields.name}
-                        onChange={e =>
-                          setNewContactFields(prev => ({
-                            ...prev,
-                            name: e.target.value
-                          }))
-                        }
-                      />
-                      <input
-                        type='text'
-                        className={styles.input}
-                        placeholder='Add value...'
-                        value={newContactFields.value}
-                        onChange={e =>
-                          setNewContactFields(prev => ({
-                            ...prev,
-                            value: e.target.value
-                          }))
-                        }
-                        onKeyUp={event => {
-                          if (event.key === 'Enter') {
-                            handleSaveNewField('CONTACT')
-                          }
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.details}>
-            <div className={styles.detailHeader}>
-              <p className={styles.detailTitle}>Company Information</p>
-            </div>
-            <div className={styles.form}>
-              {companyFields.map(field => (
-                <Field
-                  key={field.key}
-                  label={field.label}
-                  placeholder={`Add here...`}
-                  value={selectedCard.company[field.key as keyof CompanyData]}
-                  onChange={value => {
-                    setSelectedCard({
-                      ...selectedCard,
-                      company: {
-                        ...selectedCard.company,
-                        [field.key as keyof CompanyData]: value
-                      }
-                    })
-                  }}
-                  onEnter={() => {
-                    handleCardUpdate()
-                  }}
-                  labelIcon={
-                    <field.Icon
-                      stroke='#3D3D3D'
-                      width={20}
-                      height={20}
-                      fill='none'
-                    />
-                  }
-                />
-              ))}
-              {selectedCard?.additional_company?.map(contact => (
-                <Field
-                  key={contact.id}
-                  label={contact.name}
-                  placeholder={`Add here...`}
-                  value={contact.value}
-                  onChange={value => {
-                    setSelectedCard({
-                      ...selectedCard,
-                      additional_company: selectedCard.additional_company.map(
-                        c =>
-                          c.name === contact.name ? { ...c, value: value } : c
-                      )
-                    })
-                  }}
-                  onEnter={() => {
-                    handleContactCustomFieldUpdate(
-                      selectedCard.id,
-                      contact.id,
-                      contact.value
-                    )
-                  }}
-                />
-              ))}
-              <div>
-                <div className={styles.newField}>
-                  {!newCompanyFields.show ? (
-                    <div
-                      className={styles.addNewField}
-                      onClick={() =>
-                        setNewCompanyFields(prev => ({
-                          ...prev,
-                          show: true
-                        }))
-                      }
-                    >
-                      <Add width={16} height={16} fill='#194EFF' />
-                      <p className={styles.add}>Add new field...</p>
-                    </div>
-                  ) : (
-                    <div
-                      className={styles.row}
-                      style={{ alignItems: 'center' }}
-                    >
-                      <input
-                        type='text'
-                        className={styles.input_name}
-                        placeholder='Field name...'
-                        value={newCompanyFields.name}
-                        onChange={e =>
-                          setNewCompanyFields(prev => ({
-                            ...prev,
-                            name: e.target.value
-                          }))
-                        }
-                        onKeyUp={e => {
-                          if (e.key === 'Enter') {
-                            handleSaveNewField('COMPANY')
-                          }
-                        }}
-                        
-                      />
-                      <input
-                        type='text'
-                        className={styles.input}
-                        placeholder='Add value...'
-                        value={newCompanyFields.value}
-                        onChange={e =>
-                          setNewCompanyFields(prev => ({
-                            ...prev,
-                            value: e.target.value
-                          }))
-                        }
-                        onKeyUp={e => {
-                          if (e.key === 'Enter') {
-                            handleSaveNewField('COMPANY')
-                          }
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.details}>
-            <div className={styles.detailHeader}>
-              <p className={styles.detailTitle}>
-                Activity
-                {selectedCard?.activity?.length > 0
-                  ? ` (${selectedCard.activity.length})`
-                  : ''}
-              </p>
-              <div className={styles.addNote} onClick={handleAddNoteClick}>
-                <Add width={16} height={16} fill='#194EFF' />
-                <p className={styles.add}>Add note...</p>
-              </div>
-            </div>
-            <div className={styles.newActivity}>
-              {showAddNoteForm && (
-                <div className={styles.addNoteForm}>
-                  <textarea
-                    className={styles.addNoteInput}
-                    placeholder='Add your note...'
-                    value={noteContent}
-                    onChange={e => setNoteContent(e.target.value)}
-                  />
-                  <div className={styles.saveContainer}>
-                    <div
-                      className={styles.cancelAction}
-                      onClick={handleCloseNote}
-                    >
-                      <Close width={16} height={16} fill='#3D3D3D' />
-                    </div>
-                    <div
-                      className={`${styles.saveAction} ${
-                        savingNote || !noteContent.trim() ? styles.disabled : ''
-                      }`}
-                      onClick={() => {
-                        if (!savingNote && noteContent.trim()) {
-                          handleSaveNote()
-                        }
-                      }}
-                    >
-                      <Checkmark width={16} height={16} fill='white' />
-                    </div>
-                  </div>
-                </div>
-              )}
-              {selectedCard?.activity?.map(activity => {
-                return (
-                  <ActivityCard
-                    key={activity.id}
-                    id={activity.id}
-                    content={activity.content}
-                    date={activity.created_at}
-                    onDelete={handleDeleteActivity}
-                    onEdit={handleEditActivity}
-                  />
-                )
-              })}
-              <div>
-                {!showAddNoteForm && (
-                  <div
-                    className={styles.addNewField}
-                    onClick={handleAddNoteClick}
-                  >
-                    <Add width={16} height={16} fill='#194EFF' />
-                    <p className={styles.add}>Add new note...</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <Tabs>
+          <Tab
+            onClick={() => setActiveTab('AI Summary')}
+            isActive={activeTab === 'AI Summary'}
+          >
+            <SparklesSoft className={`${styles.fill_icon} ${activeTab === 'AI Summary' ? styles.active : ''}`} width={20} height={20} />
+            <p>AI Summary</p>
+          </Tab>
+          <Tab
+            onClick={() => setActiveTab('General Field')}
+            isActive={activeTab === 'General Field'}
+          >
+            <ListBullet className={`${styles.fill_icon} ${
+              activeTab === 'General Field' ? styles.active : ''
+            }`}
+            width={20}
+            height={20} />
+            <p>General Field</p>
+          </Tab>
+          <Tab
+            onClick={() => setActiveTab('Activity')}
+            isActive={activeTab === 'Activity'}
+          >
+            <Activity
+              className={`${styles.stroke_icon} ${
+              activeTab === 'Activity' ? styles.active : ''
+            }`}
+            width={20}
+            height={20}
+            />
+            <p>Activity</p>
+          </Tab>
+          <Tab
+            onClick={() => setActiveTab('Suggestions')}
+            isActive={activeTab === 'Suggestions'}
+          >
+            <Admin className={`${styles.fill_icon} ${
+              activeTab === 'Suggestions' ? styles.active : ''
+            }`} width={20} height={20} />
+            <p>Suggestions</p>
+          </Tab>
+        </Tabs>
+        <div className={styles.componentWrapper}>{renderActiveComponent()}</div>
       </div>
     </>
   )

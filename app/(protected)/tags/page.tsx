@@ -1,19 +1,18 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 
 import { axios_instance } from '@/lib/axios'
 import { useTagsStore } from '@/provider/tags-store-provider'
 
-import { Add, ArrowLeft, Tag as TagIcon } from '@/components/icons'
+import { Add, Tag as TagIcon } from '@/components/icons'
 import AddInput from '@/components/AddInput/AddInput'
 
 import styles from './page.module.scss'
 import Tag from '@/components/Tag/Tag'
 
 const Page = () => {
-  const router = useRouter();
   const groupedTags = useTagsStore((state) => state.groupedTags)
   const addTags = useTagsStore((state) => state.addTags)
 

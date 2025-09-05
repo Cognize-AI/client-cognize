@@ -2,7 +2,7 @@
 import Image from "next/image"
 import styles from "./Sidebar.module.scss"
 import Link from "next/link"
-import { ArrowDown, Dashboard, Logout, Settings, Tag } from "../icons"
+import { ArrowDown, Dashboard, Logout, People, Settings, Tag,  } from "../icons"
 import { useUserStore } from "@/provider/user-store-provider"
 import { useEffect, useState } from "react"
 import { usePathname, useRouter } from 'next/navigation'
@@ -61,6 +61,14 @@ const Sidebar = () => {
       router.push('/tags');
     };
 
+    // const handleSetting = () => {
+    //   router.push('/settings');
+    // };
+
+    // const handleProfile = () => {
+    //   router.push('/profile');
+    // };
+
     const pathname = usePathname();
     const isKanbanActive = pathname.startsWith('/kanban');
 
@@ -76,6 +84,14 @@ const Sidebar = () => {
                 <Link className={`${styles.link} ${pathname === "/tags" ? styles.active : ""}`} href={"/tags"}>
                     <Tag width={20} height={20} fill={pathname === "/tags" ? "#194EFF" : "#3D3D3D"} />
                     <p>Tag Management</p>
+                </Link>
+                <Link className={`${styles.link} ${pathname === "/settings" ? styles.active : ""}`} href={"/settings"}>
+                    <Settings width={20} height={20} fill={pathname === "/settings" ? "#194EFF" : "#3D3D3D"} />
+                    <p>Settings</p>
+                </Link>
+                <Link className={`${styles.link} ${pathname === "/profile" ? styles.active : ""} ${styles.profile}`} href={"/profile"}>
+                    <People width={20} height={20} stroke={pathname === "/profile" ? "#194EFF" : "#3D3D3D"} />
+                    <p>Profile</p>
                 </Link>
             </div>
             
