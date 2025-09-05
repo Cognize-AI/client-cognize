@@ -23,39 +23,38 @@ const CustomField = () => {
   return (
     <div className={styles.main}>
       {fields.map(field => (
-        <div className={styles.container}>
-          <div className={styles.sno}>{field.ID}</div>
-          <div className={styles.field}>{field.Name}</div>
-          <div className={styles.value}>{field.SampleValue}</div>
-          <div
-            className={`${styles.type} ${
-              field.Type?.toLowerCase() === 'company'
-                ? styles.type1
-                : field.Type?.toLowerCase() === 'contact'
-                ? styles.type2
-                : ''
-            }`}
-          >
-            {field.Type}
+        <div className={styles.card}>
+          <div className={styles.container}>
+            <div className={styles.sno}>{field.ID}</div>
+            <div className={styles.field}>{field.Name}</div>
+            <div className={styles.value}>{field.SampleValue}</div>
+            <div
+              className={`${styles.type} ${
+                field.Type?.toLowerCase() === 'company'
+                  ? styles.type1
+                  : field.Type?.toLowerCase() === 'contact'
+                  ? styles.type2
+                  : ''
+              }`}
+            >
+              {field.Type}
+            </div>
+
+            <div className={styles.action}>
+              <div>
+                <Delete width={20} height={20} fill='#F77272' />
+              </div>
+              <div>
+                <Edit width={20} height={20} fill='#194EFF' />
+              </div>
+            </div>
           </div>
 
-          <div className={styles.action}>
-            <div>
-              <Delete width={20} height={20} fill='#F77272' />
-            </div>
-            <div>
-              <Edit width={20} height={20} fill='#194EFF' />
-            </div>
-            
-          </div>
-          
+          <div className={styles.seprater}></div>
         </div>
       ))}
-      
-      <div className={styles.seprater}>dsfsdf</div>
     </div>
   )
 }
 
 export default CustomField
-
