@@ -4,6 +4,7 @@ import styles from './page.module.scss'
 import CustomField from '@/components/SettingCards/CustomFields/CustomField'
 import ApiManagement from '@/components/SettingCards/ApiManagement/ApiManagement'
 import { useState } from 'react'
+import EventTracking from '@/components/SettingCards/EventTracking/EventTracking'
 
 type Props = {}
 const page = () => {
@@ -12,12 +13,12 @@ const page = () => {
     switch (activeTab) {
       case 'Custom Fields':
         return <CustomField/>
-      case 'Api Management':
+      case 'API Management':
         return <ApiManagement/>
-      case 'Activity':
-        // return <ActivityTimeline />
+      case 'Event Tracking':
+       return  <EventTracking />
       case 'Suggestions':
-        return <Suggestions />
+        // return <Suggestions />
       default:
         // return <GeneralField  />
     }
@@ -25,7 +26,7 @@ const page = () => {
 
   return (
     <div className={styles.main}>
-      <SettingTab activeTab={activeTab} setActiveTab={setActiveTab} />
+      <SettingTab activeTab={activeTab} setActiveTab={setActiveTab} onTabClick={(tabName: string) => setActiveTab(tabName)} />
       <div>
         {renderActiveComponent()}
       </div>

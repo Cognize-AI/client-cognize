@@ -1,14 +1,16 @@
 'use client'
-import { Activity, Admin, ListBullet, SparklesSoft } from '../icons'
+import { Dispatch, SetStateAction } from 'react'
+import { Activity, Admin, ListBullet, SparklesSoft, Tag } from '../icons'
 import styles from './SettingTab.module.scss'
 
 type Props = {
   activeTab: string
+  setActiveTab: Dispatch<SetStateAction<string>>
   onTabClick: (tabName: string) => void
 }
 
 const SettingTab = ({ activeTab, onTabClick }: Props) => {
-  const tabs = ['Custom Fields', 'API Management', 'Event Tracking', 'Event Tracking']
+  const tabs = ['Custom Fields', 'API Management', 'Event Tracking', 'EventTracking']
 
   const getIcon = (tabName: string) => {
     switch (tabName) {
@@ -18,16 +20,12 @@ const SettingTab = ({ activeTab, onTabClick }: Props) => {
         return <SparklesSoft width={20} height={20} />
       case 'Event Tracking':
         return (
-          <Activity
-            fill='none'
-            strokeWidth='1.5'
-            strokeLinecap='round'
-            strokeLinejoin='round'
+          <Tag
             width={20}
             height={20}
           />
         )
-      case 'Event Tracking':
+      case 'EventTracking':
         return <Admin width={20} height={20} />
       default:
         return null

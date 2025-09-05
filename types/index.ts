@@ -121,3 +121,10 @@ export interface CardByIdData {
     data_type: string
   }[]
 }
+
+export type FieldType = {
+  ID: number
+  Name: string
+  Type: string
+  SampleValue: string
+}

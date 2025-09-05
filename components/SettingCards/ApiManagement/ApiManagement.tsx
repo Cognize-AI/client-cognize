@@ -12,7 +12,7 @@ const ApiManagement = (props: Props) => {
           <Key width={20} height={20} fill='none' />
         </div>
         <div className={styles.text}>
-          cgnz_sk_VfDAnISTM0hFJDsjGjoKftN5QUyxzOAl
+          cgnz_sk_VfDAnISTM0hFJDsjGjofdsfsdufiusadiofjasodfasKftN5QUyxzOAlf
         </div>
         <div className={styles.actions}>
           <div className={styles.delete}>
