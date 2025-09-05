@@ -2,15 +2,11 @@
 import React, { useRef } from 'react'
 import styles from './ApiManagement.module.scss'
 import { Copy, Delete, Key } from '@/components/icons'
-import { useApiStore } from '@/provider/api-store-provider'
+// import { useApiStore } from '@/provider/api-store-provider'
 
-type Props = {}
-
-
-
-const ApiManagement = (props: Props) => {
-  const apiKey = useApiStore((state) => state.apiKey)
-  const setApiKey = useApiStore((state) => state.setApiKey)
+const ApiManagement = () => {
+  // const apiKey = useApiStore((state) => state.apiKey)
+  // const setApiKey = useApiStore((state) => state.setApiKey)
   
   const textRef = useRef<HTMLDivElement>(null)
 

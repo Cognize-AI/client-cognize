@@ -61,13 +61,13 @@ const Sidebar = () => {
       router.push('/tags');
     };
 
-    const handleSetting = () => {
-      router.push('/settings');
-    };
+    // const handleSetting = () => {
+    //   router.push('/settings');
+    // };
 
-    const handleProfile = () => {
-      router.push('/profile');
-    };
+    // const handleProfile = () => {
+    //   router.push('/profile');
+    // };
 
     const pathname = usePathname();
     const isKanbanActive = pathname.startsWith('/kanban');

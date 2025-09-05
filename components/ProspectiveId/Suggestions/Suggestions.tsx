@@ -1,8 +1,6 @@
 import React from 'react'
 
-type Props = {}
-
-const Suggestions = (props: Props) => {
+const Suggestions = () => {
   return (
     <div>Suggestions</div>
   )

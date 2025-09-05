@@ -1,5 +1,5 @@
 'use client'
-import SettingTab from '@/components/SettingTab/SettingTab'
+// import SettingTab from '@/components/SettingTab/SettingTab'
 import styles from './page.module.scss'
 import CustomField from '@/components/SettingCards/CustomFields/CustomField'
 import ApiManagement from '@/components/SettingCards/ApiManagement/ApiManagement'
@@ -7,10 +7,9 @@ import { useState } from 'react'
 import EventTracking from '@/components/SettingCards/EventTracking/EventTracking'
 import Tabs from '@/components/Tabs/Tabs'
 import Tab from '@/components/Tab/Tab'
-import { Activity, Admin, Key, ListBullet, SparklesSoft } from '@/components/icons'
+import { Activity, Admin, Key, ListBullet } from '@/components/icons'
 
-type Props = {}
-const page = () => {
+const Page = () => {
   const [activeTab, setActiveTab] = useState('Custom Fields')
   const renderActiveComponent = () => {
     switch (activeTab) {
@@ -79,4 +78,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

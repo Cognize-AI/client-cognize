@@ -4,8 +4,6 @@ import { axios_instance } from '@/lib/axios'
 import { useEffect, useState } from 'react'
 import { FieldType } from '@/types'
 
-type Props = {}
-
 const CustomField = () => {
   const [fields, setFields] = useState<FieldType[]>([])
   const [editFieldId, setEditFieldId] = useState<number | null>(null)

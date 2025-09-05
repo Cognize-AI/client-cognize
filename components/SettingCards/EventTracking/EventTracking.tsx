@@ -1,8 +1,5 @@
-import React from 'react'
 
-type Props = {}
-
-const EventTracking = (props: Props) => {
+const EventTracking = () => {
   return (
     <div>Coming soon</div>
   )

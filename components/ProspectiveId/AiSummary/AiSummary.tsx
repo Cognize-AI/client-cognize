@@ -1,9 +1,7 @@
 import styles from '@/components/ProspectiveId/AiSummary/AiSummary.module.scss'
 import { useCardStore } from '@/provider/card-store-provider'
 
-type Props = {}
-
-const AiSummary = (props: Props) => {
+const AiSummary = () => {
   const selectedCard = useCardStore(state => state.selectedCard)
 
   return (

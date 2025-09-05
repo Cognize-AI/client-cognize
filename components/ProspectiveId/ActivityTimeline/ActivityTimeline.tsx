@@ -1,8 +1,6 @@
 import React from 'react'
 
-type Props = {}
-
-const ActivityTimeline = (props: Props) => {
+const ActivityTimeline = () => {
   return (
     <div>ActivityTimeline</div>
   )

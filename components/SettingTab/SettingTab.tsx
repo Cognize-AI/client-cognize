@@ -1,6 +1,6 @@
 'use client'
 import { Dispatch, SetStateAction } from 'react'
-import { Activity, Admin, ListBullet, SparklesSoft, Tag } from '../icons'
+import { Admin, ListBullet, SparklesSoft, Tag } from '../icons'
 import styles from './SettingTab.module.scss'
 
 type Props = {
