@@ -21,8 +21,8 @@ const CustomField = () => {
   }, []);
 
   const handleEditClick = (field: FieldType) => {
-    setEditFieldId(field.ID);
-    setEditFieldName(field.Name);
+    setEditFieldId(field.id);
+    setEditFieldName(field.name);
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +39,7 @@ const CustomField = () => {
 
       setFields((prev) =>
         prev.map((f) =>
-          f.ID === fieldId ? { ...f, Name: editFieldName.trim() } : f,
+          f.id === fieldId ? { ...f, name: editFieldName.trim() } : f,
         ),
       );
       setEditFieldId(null);
@@ -58,7 +58,7 @@ const CustomField = () => {
     try {
       await axios_instance.delete(`/field/delete/${fieldId}`);
 
-      setFields((prev) => prev.filter((f) => f.ID !== fieldId));
+      setFields((prev) => prev.filter((f) => f.id !== fieldId));
     } catch (err) {
       console.error("Failed to delete field:", err);
     }
@@ -67,18 +67,18 @@ const CustomField = () => {
   return (
     <div className={styles.main}>
       {fields.map((field) => (
-        <div key={field.ID} className={styles.card}>
+        <div key={field.id} className={styles.card}>
           <div className={styles.container}>
-            <div className={styles.sno}>{field.ID}</div>
+            <div className={styles.sno}>{field.id}</div>
             <div className={styles.field}>
-              {editFieldId === field.ID ? (
+              {editFieldId === field.id ? (
                 <input
                   type="text"
                   value={editFieldName}
                   onChange={handleEditChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      handleEditSave(field.ID);
+                      handleEditSave(field.id);
                     }
                     if (e.key === "Escape") {
                       handleEditCancel();
@@ -89,30 +89,30 @@ const CustomField = () => {
                   className={styles.editInput}
                 />
               ) : (
-                field.Name
+                field.name
               )}
             </div>
             <div className={styles.value}>
-              <p>{field.SampleValue}</p>
+              <p>{field.sample_value ? field.sample_value : "-"}</p>
             </div>
             <div className={styles.type_box}>
               <div
                 className={`${styles.type} ${
-                  field.Type?.toLowerCase() === "company"
+                  field.type?.toLowerCase() === "company"
                     ? styles.type1
-                    : field.Type?.toLowerCase() === "contact"
+                    : field.type?.toLowerCase() === "contact"
                       ? styles.type2
                       : ""
                 }`}
               >
-                {field.Type}
+                {field.type}
               </div>
             </div>
 
             <div className={styles.action}>
               <div
                 className={styles.delete}
-                onClick={() => handleDeleteClick(field.ID)}
+                onClick={() => handleDeleteClick(field.id)}
                 style={{ cursor: "pointer" }}
               >
                 <Delete width={20} height={20} fill="#F77272" />

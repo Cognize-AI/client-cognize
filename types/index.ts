@@ -123,10 +123,10 @@ export interface CardByIdData {
 }
 
 export type FieldType = {
-  ID: number;
-  Name: string;
-  Type: string;
-  SampleValue: string;
+  id: number;
+  name: string;
+  type: string;
+  sample_value: string;
 };
 
 export type Key = {
