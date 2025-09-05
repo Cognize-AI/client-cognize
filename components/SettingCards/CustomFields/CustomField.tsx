@@ -23,7 +23,7 @@ const CustomField = () => {
   return (
     <div className={styles.main}>
       {fields.map(field => (
-        <div className={styles.card}>
+        <div key={field.ID} className={styles.card}>
           <div className={styles.container}>
             <div className={styles.sno}>{field.ID}</div>
             <div className={styles.field}>{field.Name}</div>
@@ -50,7 +50,7 @@ const CustomField = () => {
             </div>
           </div>
 
-          <div className={styles.seprater}></div>
+          <div className={styles.separator}></div>
         </div>
       ))}
     </div>

@@ -29,6 +29,7 @@
     .actions {
       display: flex;
       gap: 0.5rem;
+      cursor: pointer;
       .delete {
         display: flex;
         width: 2.5rem;
