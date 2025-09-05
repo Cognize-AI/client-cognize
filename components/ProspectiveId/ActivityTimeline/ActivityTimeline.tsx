@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const ActivityTimeline = () => {
-  return (
-    <div>ActivityTimeline</div>
-  )
-}
+	return <div>ActivityTimeline</div>;
+};
 
-export default ActivityTimeline
+export default ActivityTimeline;

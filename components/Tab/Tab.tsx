@@ -1,17 +1,20 @@
-import styles from './Tab.module.scss'
+import styles from "./Tab.module.scss";
 
 type TabProps = {
-  onClick: () => void
-  isActive: boolean
-  children: React.ReactNode
-}
+	onClick: () => void;
+	isActive: boolean;
+	children: React.ReactNode;
+};
 
 const Tab = ({ onClick, isActive, children }: TabProps) => {
-  return (
-    <div onClick={onClick} className={`${styles.tab} ${isActive ? styles.active : ''}`}>
-      {children}
-    </div>
-  )
-}
+	return (
+		<div
+			onClick={onClick}
+			className={`${styles.tab} ${isActive ? styles.active : ""}`}
+		>
+			{children}
+		</div>
+	);
+};
 
-export default Tab
+export default Tab;
