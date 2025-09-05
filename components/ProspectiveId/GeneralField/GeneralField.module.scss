@@ -3,12 +3,16 @@
   align-items: flex-start;
   gap: 0.75rem;
   flex: 1;
-  min-height: 26rem;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 
   .details {
     display: flex;
     flex-direction: column;
     flex: 1;
+    height: 100%;
+    max-height: 100%;
     align-self: stretch;
     border-radius: 1rem;
     border-top: 4px solid var(--bg-colors-grey-accentured, #dfe5f3);
@@ -20,6 +24,7 @@
       padding: 1rem;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
 
       .detailTitle {
         font-weight: 500;
@@ -33,16 +38,18 @@
       gap: 0.5rem;
       overflow-y: auto;
       flex: 1;
+      min-height: 0;
 
       &::-webkit-scrollbar {
-        display: none;
+        width: 0px;
       }
     }
 
     .addNoteForm {
       display: flex;
       width: 100%;
-      height: 9rem;
+      min-height: 9rem;
+      height: auto;
       padding: 0.75rem;
       flex-direction: column;
       justify-content: space-between;
@@ -52,6 +59,8 @@
       background: var(--bg-colors-opaque, #fff);
       border: 1px solid transparent;
       box-sizing: border-box;
+      flex-shrink: 0;
+      margin-bottom: 0.5rem;
 
       &:focus-within {
         border: 1px solid var(--Colors-blue-1, #194eff);
@@ -60,6 +69,7 @@
       .addNoteInput {
         width: 100%;
         flex: 1 0 0;
+        min-height: 4rem;
         color: var(--text-colors-primary-dark, #00020f);
         font-family: "Inter Tight";
         font-size: 1rem;
@@ -69,6 +79,7 @@
         outline: none;
         background-color: transparent;
         resize: none;
+        padding: 0;
 
         &::-webkit-scrollbar {
           display: none;
@@ -84,6 +95,7 @@
       display: flex;
       gap: 0.5rem;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .saveAction {
@@ -131,10 +143,13 @@
       gap: 0.5rem;
       flex: 1 0 0;
       overflow-y: auto;
+      min-height: 0;
 
       &::-webkit-scrollbar {
-        display: none;
+        width: 0px;
       }
+
+      
     }
 
     .row {
@@ -147,6 +162,7 @@
       background: var(--bg-colors-opaque, #fff);
       padding: 0.75rem;
       box-sizing: border-box;
+      flex-shrink: 0;
 
       .field {
         display: flex;
@@ -209,6 +225,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      flex-shrink: 0;
     }
 
     .addNewField {
@@ -217,6 +234,7 @@
       align-items: center;
       gap: 0.25rem;
       cursor: pointer;
+      flex-shrink: 0;
 
       .add {
         color: var(--Colors-blue-1, #194eff);

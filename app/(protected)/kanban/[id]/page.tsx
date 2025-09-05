@@ -595,7 +595,6 @@ const Page = () => {
             </div>
           )}
         </div>
-        {/* <TabGroup activeTab={activeTab} onTabClick={setActiveTab} /> */}
         <Tabs>
           <Tab
             onClick={() => setActiveTab('AI Summary')}
@@ -608,7 +607,11 @@ const Page = () => {
             onClick={() => setActiveTab('General Field')}
             isActive={activeTab === 'General Field'}
           >
-            <ListBullet width={20} height={20} />
+            <ListBullet className={`${styles.fill_icon} ${
+              activeTab === 'General Field' ? styles.active : ''
+            }`}
+            width={20}
+            height={20} />
             <p>General Field</p>
           </Tab>
           <Tab
@@ -616,12 +619,11 @@ const Page = () => {
             isActive={activeTab === 'Activity'}
           >
             <Activity
-              fill='none'
-              strokeWidth='1.5'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              width={20}
-              height={20}
+              className={`${styles.stroke_icon} ${
+              activeTab === 'Activity' ? styles.active : ''
+            }`}
+            width={20}
+            height={20}
             />
             <p>Activity</p>
           </Tab>
@@ -629,7 +631,9 @@ const Page = () => {
             onClick={() => setActiveTab('Suggestions')}
             isActive={activeTab === 'Suggestions'}
           >
-            <Admin width={20} height={20} />
+            <Admin className={`${styles.fill_icon} ${
+              activeTab === 'Suggestions' ? styles.active : ''
+            }`} width={20} height={20} />
             <p>Suggestions</p>
           </Tab>
         </Tabs>

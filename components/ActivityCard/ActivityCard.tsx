@@ -21,23 +21,24 @@ const ActivityCard = ({ id, content, date, onDelete, onEdit }: Props) => {
     const textarea = textareaRef.current
     if (textarea) {
       textarea.style.height = 'auto'
-      textarea.style.height = `${textarea.scrollHeight}px`
+      textarea.style.height = `${Math.max(textarea.scrollHeight, 72)}px`
     }
   }
 
   useEffect(() => {
-    if (isEditing) {
-      autoResize()
-      // Focus the textarea when entering edit mode
-      if (textareaRef.current) {
-        textareaRef.current.focus()
-      }
+    if (isEditing && textareaRef.current) {
+      setTimeout(() => {
+        autoResize()
+        textareaRef.current?.focus()
+      }, 0)
     }
   }, [isEditing])
 
   useEffect(() => {
-    autoResize()
-  }, [editContent])
+    if (isEditing) {
+      autoResize()
+    }
+  }, [editContent, isEditing])
 
   const handleEditClick = () => {
     setIsEditing(true)
@@ -73,20 +74,34 @@ const ActivityCard = ({ id, content, date, onDelete, onEdit }: Props) => {
     setEditContent(e.target.value)
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      handleSaveClick()
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      handleCancelClick()
+    }
+  }
+
   return (
     <div className={styles.activity}>
-      {isEditing ? (
-        <textarea 
-          ref={textareaRef}
-          className={styles.editTextarea}
-          value={editContent}
-          onChange={handleTextareaChange}
-          placeholder="Edit your note..."
-          disabled={isUpdating}
-        />
-      ) : (
-        <p className={styles.content}>{content}</p>
-      )}
+      <div className={styles.contentContainer}>
+        {isEditing ? (
+          <textarea 
+            ref={textareaRef}
+            className={styles.editTextarea}
+            value={editContent}
+            onChange={handleTextareaChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Edit your note..."
+            disabled={isUpdating}
+          />
+        ) : (
+          <p className={styles.content}>{content}</p>
+        )}
+      </div>
       
       <div className={styles.info}>
         <p className={styles.created}>

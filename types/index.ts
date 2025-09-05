@@ -128,3 +128,11 @@ export type FieldType = {
   Type: string
   SampleValue: string
 }
+
+
+export type Key = {
+  id: number
+  name: string
+  key: string
+  created_at: string
+}
