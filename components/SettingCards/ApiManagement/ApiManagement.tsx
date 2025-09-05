@@ -4,6 +4,7 @@ import styles from "./ApiManagement.module.scss";
 import { Copy, Delete, Key } from "@/components/icons";
 import { useApiStore } from "@/provider/api-store-provider";
 import { axios_instance } from "@/lib/axios";
+import toast from "react-hot-toast";
 
 const ApiManagement = () => {
   const apiKey = useApiStore((state) => state.apiKey);
@@ -25,6 +26,7 @@ const ApiManagement = () => {
   const handleCopy = () => {
     if (textRef.current) {
       navigator.clipboard.writeText(textRef.current.innerText);
+      toast.success('Copied!');
     }
   };
 
@@ -42,9 +44,9 @@ const ApiManagement = () => {
           {apiKey?.key || "No API Key Generated Yet"}
         </div>
         <div className={styles.actions}>
-          <div className={styles.delete}>
+          {/* <div className={styles.delete}>
             <Delete width={20} height={20} fill="#F77272" />
-          </div>
+          </div> */}
           <div className={styles.copy} onClick={handleCopy}>
             <Copy width={20} height={20} fill="none" />
           </div>

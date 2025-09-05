@@ -21,6 +21,7 @@
     "next-cloudinary": "^6.16.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-hot-toast": "^2.6.0",
     "sass": "^1.90.0",
     "zustand": "^5.0.7"
   },

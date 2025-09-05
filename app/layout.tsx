@@ -7,6 +7,7 @@ import { UserStoreProvider } from "@/provider/user-store-provider";
 import { CardStoreProvider } from "@/provider/card-store-provider";
 import Script from "next/script";
 import { ApiStoreProvider } from "@/provider/api-store-provider";
+import { Toaster } from "react-hot-toast";
 
 const interTight = Inter_Tight({
   variable: "--font-inter-tight",
@@ -93,6 +94,7 @@ export default function RootLayout({
             </TagsStoreProvider>
           </ApiStoreProvider>
         </UserStoreProvider>
+        <Toaster position="top-right" />
       </body>
     </html>
   );
