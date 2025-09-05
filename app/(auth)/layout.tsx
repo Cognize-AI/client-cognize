@@ -5,24 +5,24 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 type Props = {
-	children: React.ReactNode;
+  children: React.ReactNode;
 };
 
 const Layout = ({ children }: Props) => {
-	const token = useUserStore((state) => state.token);
-	const router = useRouter();
+  const token = useUserStore((state) => state.token);
+  const router = useRouter();
 
-	useEffect(() => {
-		if (token) {
-			router.replace("/kanban");
-		}
-	}, [token, router]);
+  useEffect(() => {
+    if (token) {
+      router.replace("/kanban");
+    }
+  }, [token, router]);
 
-	if (token) {
-		return <div></div>;
-	}
+  if (token) {
+    return <div></div>;
+  }
 
-	return <>{children}</>;
+  return <>{children}</>;
 };
 
 export default Layout;

@@ -14,290 +14,290 @@ import { useCardStore } from "@/provider/card-store-provider";
 // }
 
 const Page = () => {
-	const setSelectedCardId = useCardStore((state) => state.setSelectedCardId);
+  const setSelectedCardId = useCardStore((state) => state.setSelectedCardId);
 
-	const [lists, setLists] = useState<ListType[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const tags = useTagsStore((state) => state.tags);
-	const addTags = useTagsStore((state) => state.addTags);
-	const dragItem = useRef<{ listId: number; cardId: number } | null>(null);
-	const dragOverItem = useRef<{ listId: number; cardIndex: number } | null>(
-		null,
-	);
-	const router = useRouter();
+  const [lists, setLists] = useState<ListType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const tags = useTagsStore((state) => state.tags);
+  const addTags = useTagsStore((state) => state.addTags);
+  const dragItem = useRef<{ listId: number; cardId: number } | null>(null);
+  const dragOverItem = useRef<{ listId: number; cardIndex: number } | null>(
+    null,
+  );
+  const router = useRouter();
 
-	const fetchTags = async () => {
-		try {
-			const token = localStorage.getItem("token");
-			const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			if (!res.ok) throw new Error("Failed to fetch tags");
-			const data = await res.json();
-			addTags(data.data.tags);
-		} catch (error) {
-			console.error("Failed to fetch tags:", error);
-		}
-	};
+  const fetchTags = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tag/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch tags");
+      const data = await res.json();
+      addTags(data.data.tags);
+    } catch (error) {
+      console.error("Failed to fetch tags:", error);
+    }
+  };
 
-	const fetchLists = async () => {
-		try {
-			const token = localStorage.getItem("token");
-			if (!token) {
-				router.push("/");
-				return;
-			}
-			const res = await fetch(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/list/all`,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				},
-			);
-			if (!res.ok) {
-				if (res.status === 404) {
-					const defaultRes = await fetch(
-						`${process.env.NEXT_PUBLIC_BACKEND_URL}/list/create-default`,
-						{
-							method: "GET",
-							headers: { Authorization: `Bearer ${token}` },
-						},
-					);
-					if (!defaultRes.ok) throw new Error("Failed to create default lists");
-					const defaultJson = await defaultRes.json();
-					setLists(defaultJson.data.lists || []);
-				} else {
-					throw new Error("Failed to fetch lists");
-				}
-			} else {
-				const json = await res.json();
-				const listsWithCards = (json.data.lists || []).map(
-					(list: ListType) => ({
-						...list,
-						cards: list.cards || [],
-					}),
-				);
-				setLists(listsWithCards);
-			}
-		} catch (err: unknown) {
-			console.error(err);
-			setError(
-				(err as Error).message ||
-					"Could not load the board. Please try again later.",
-			);
-		} finally {
-			setLoading(false);
-		}
-	};
+  const fetchLists = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/");
+        return;
+      }
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/list/all`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (!res.ok) {
+        if (res.status === 404) {
+          const defaultRes = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/list/create-default`,
+            {
+              method: "GET",
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+          if (!defaultRes.ok) throw new Error("Failed to create default lists");
+          const defaultJson = await defaultRes.json();
+          setLists(defaultJson.data.lists || []);
+        } else {
+          throw new Error("Failed to fetch lists");
+        }
+      } else {
+        const json = await res.json();
+        const listsWithCards = (json.data.lists || []).map(
+          (list: ListType) => ({
+            ...list,
+            cards: list.cards || [],
+          }),
+        );
+        setLists(listsWithCards);
+      }
+    } catch (err: unknown) {
+      console.error(err);
+      setError(
+        (err as Error).message ||
+          "Could not load the board. Please try again later.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-	useEffect(() => {
-		const initializeData = async () => {
-			await Promise.all([fetchLists(), fetchTags()]);
-		};
-		initializeData();
-	}, [router]);
+  useEffect(() => {
+    const initializeData = async () => {
+      await Promise.all([fetchLists(), fetchTags()]);
+    };
+    initializeData();
+  }, [router]);
 
-	const handleCardAdded = (newCard: CardType) => {
-		setLists((prevLists) =>
-			prevLists.map((list) => {
-				if (String(list.id) === String(newCard.list_id)) {
-					return {
-						...list,
-						cards: [...(list.cards || []), newCard],
-					};
-				}
-				return list;
-			}),
-		);
-	};
+  const handleCardAdded = (newCard: CardType) => {
+    setLists((prevLists) =>
+      prevLists.map((list) => {
+        if (String(list.id) === String(newCard.list_id)) {
+          return {
+            ...list,
+            cards: [...(list.cards || []), newCard],
+          };
+        }
+        return list;
+      }),
+    );
+  };
 
-	const handleCardUpdated = (updatedCard: CardType) => {
-		setLists((currentLists) =>
-			currentLists.map((list) => ({
-				...list,
-				cards: list.cards.map((card) =>
-					card.id === updatedCard.id ? updatedCard : card,
-				),
-			})),
-		);
-	};
+  const handleCardUpdated = (updatedCard: CardType) => {
+    setLists((currentLists) =>
+      currentLists.map((list) => ({
+        ...list,
+        cards: list.cards.map((card) =>
+          card.id === updatedCard.id ? updatedCard : card,
+        ),
+      })),
+    );
+  };
 
-	const handleCardDeleted = (listId: number, cardId: number) => {
-		setLists((currentLists) =>
-			currentLists.map((list) => {
-				if (list.id === listId) {
-					return {
-						...list,
-						cards: list.cards.filter((card) => card.id !== cardId),
-					};
-				}
-				return list;
-			}),
-		);
-	};
+  const handleCardDeleted = (listId: number, cardId: number) => {
+    setLists((currentLists) =>
+      currentLists.map((list) => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            cards: list.cards.filter((card) => card.id !== cardId),
+          };
+        }
+        return list;
+      }),
+    );
+  };
 
-	const handleCardClick = (cardId: number) => {
-		setSelectedCardId(cardId);
-		router.push(`/kanban/${cardId}`);
-	};
+  const handleCardClick = (cardId: number) => {
+    setSelectedCardId(cardId);
+    router.push(`/kanban/${cardId}`);
+  };
 
-	const handleTagUpdate = () => {
-		Promise.all([fetchTags(), fetchLists()]);
-	};
+  const handleTagUpdate = () => {
+    Promise.all([fetchTags(), fetchLists()]);
+  };
 
-	const handleDragStart = (listId: number, cardId: number) => {
-		dragItem.current = { listId, cardId };
-	};
+  const handleDragStart = (listId: number, cardId: number) => {
+    dragItem.current = { listId, cardId };
+  };
 
-	const handleDragEnter = (listId: number, cardIndex: number) => {
-		dragOverItem.current = { listId, cardIndex };
-	};
+  const handleDragEnter = (listId: number, cardIndex: number) => {
+    dragOverItem.current = { listId, cardIndex };
+  };
 
-	const handleDragEnd = async () => {
-		if (!dragItem.current || !dragOverItem.current) {
-			return;
-		}
+  const handleDragEnd = async () => {
+    if (!dragItem.current || !dragOverItem.current) {
+      return;
+    }
 
-		const { listId: fromListId, cardId } = dragItem.current;
-		const { listId: toListId, cardIndex } = dragOverItem.current;
+    const { listId: fromListId, cardId } = dragItem.current;
+    const { listId: toListId, cardIndex } = dragOverItem.current;
 
-		const sourceList = lists.find((list) => list.id === fromListId);
-		const draggedCard = sourceList?.cards.find((c) => c.id === cardId);
+    const sourceList = lists.find((list) => list.id === fromListId);
+    const draggedCard = sourceList?.cards.find((c) => c.id === cardId);
 
-		if (!draggedCard) {
-			console.error("Card not found in source list:", { cardId, fromListId });
-			setError("Card not found. Please refresh and try again.");
-			dragItem.current = null;
-			dragOverItem.current = null;
-			return;
-		}
+    if (!draggedCard) {
+      console.error("Card not found in source list:", { cardId, fromListId });
+      setError("Card not found. Please refresh and try again.");
+      dragItem.current = null;
+      dragOverItem.current = null;
+      return;
+    }
 
-		if (fromListId === toListId) {
-			const currentIndex =
-				sourceList?.cards.findIndex((c) => c.id === cardId) || 0;
-			if (currentIndex === cardIndex) {
-				dragItem.current = null;
-				dragOverItem.current = null;
-				return;
-			}
-		}
+    if (fromListId === toListId) {
+      const currentIndex =
+        sourceList?.cards.findIndex((c) => c.id === cardId) || 0;
+      if (currentIndex === cardIndex) {
+        dragItem.current = null;
+        dragOverItem.current = null;
+        return;
+      }
+    }
 
-		const originalLists = JSON.parse(JSON.stringify(lists));
+    const originalLists = JSON.parse(JSON.stringify(lists));
 
-		const targetList = lists.find((list) => list.id === toListId);
-		const targetCards = targetList?.cards || [];
+    const targetList = lists.find((list) => list.id === toListId);
+    const targetCards = targetList?.cards || [];
 
-		let prevCard = 0;
-		let nextCard = 0;
+    let prevCard = 0;
+    let nextCard = 0;
 
-		if (cardIndex > 0) {
-			prevCard = targetCards[cardIndex - 1]?.id || 0;
-		}
+    if (cardIndex > 0) {
+      prevCard = targetCards[cardIndex - 1]?.id || 0;
+    }
 
-		if (cardIndex < targetCards.length) {
-			nextCard = targetCards[cardIndex]?.id || 0;
-		}
+    if (cardIndex < targetCards.length) {
+      nextCard = targetCards[cardIndex]?.id || 0;
+    }
 
-		const updatedLists = lists
-			.map((list) => {
-				if (list.id === fromListId) {
-					return { ...list, cards: list.cards.filter((c) => c.id !== cardId) };
-				}
-				return list;
-			})
-			.map((list) => {
-				if (list.id === toListId) {
-					const newCards = [...list.cards];
-					newCards.splice(cardIndex, 0, { ...draggedCard, list_id: toListId });
-					return { ...list, cards: newCards };
-				}
-				return list;
-			});
+    const updatedLists = lists
+      .map((list) => {
+        if (list.id === fromListId) {
+          return { ...list, cards: list.cards.filter((c) => c.id !== cardId) };
+        }
+        return list;
+      })
+      .map((list) => {
+        if (list.id === toListId) {
+          const newCards = [...list.cards];
+          newCards.splice(cardIndex, 0, { ...draggedCard, list_id: toListId });
+          return { ...list, cards: newCards };
+        }
+        return list;
+      });
 
-		setLists(updatedLists);
-		try {
-			const token = localStorage.getItem("token");
-			const payload = {
-				prev_card: Number(prevCard),
-				curr_card: Number(draggedCard.id),
-				next_card: Number(nextCard),
-				list_id: Number(toListId),
-			};
+    setLists(updatedLists);
+    try {
+      const token = localStorage.getItem("token");
+      const payload = {
+        prev_card: Number(prevCard),
+        curr_card: Number(draggedCard.id),
+        next_card: Number(nextCard),
+        list_id: Number(toListId),
+      };
 
-			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}/card/move`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${token}`,
-					},
-					body: JSON.stringify(payload),
-				},
-			);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/card/move`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => null);
-				const errorText = errorData
-					? JSON.stringify(errorData)
-					: await response.text();
-				console.error("API Error response:", errorData || errorText);
-				throw new Error(
-					`Failed to move card: ${response.status} - ${errorText}`,
-				);
-			}
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorText = errorData
+          ? JSON.stringify(errorData)
+          : await response.text();
+        console.error("API Error response:", errorData || errorText);
+        throw new Error(
+          `Failed to move card: ${response.status} - ${errorText}`,
+        );
+      }
 
-			// const result = await response.json()
-		} catch (error) {
-			console.error("Failed to move card:", error);
+      // const result = await response.json()
+    } catch (error) {
+      console.error("Failed to move card:", error);
 
-			setLists(originalLists);
+      setLists(originalLists);
 
-			const errorMessage =
-				error instanceof Error ? error.message : "Failed to move card";
-			setError(errorMessage);
-			setTimeout(() => setError(null), 5000);
-		}
-		dragItem.current = null;
-		dragOverItem.current = null;
-	};
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to move card";
+      setError(errorMessage);
+      setTimeout(() => setError(null), 5000);
+    }
+    dragItem.current = null;
+    dragOverItem.current = null;
+  };
 
-	if (loading) {
-		return (
-			<div className={styles.page}>
-				<div className={styles.spinnerWrapper}>
-					<div className={styles.spinnerOuter}></div>
-					<p className={styles.spinnerText}>Organizing your pipeline...</p>
-					<p className={styles.spinnerSubtext}>
-						Stay with us, precision takes a moment.
-					</p>
-				</div>
-			</div>
-		);
-	}
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.spinnerWrapper}>
+          <div className={styles.spinnerOuter}></div>
+          <p className={styles.spinnerText}>Organizing your pipeline...</p>
+          <p className={styles.spinnerSubtext}>
+            Stay with us, precision takes a moment.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-	return (
-		<div className={styles.kanbanPage}>
-			{error && <div className={styles.errorMessage}>{error}</div>}
-			<div className={styles.kanbanLists}>
-				{lists.map((list) => (
-					<List
-						key={list.id}
-						list={list}
-						tags={tags}
-						onCardAdded={handleCardAdded}
-						onCardUpdated={handleCardUpdated}
-						onCardDeleted={handleCardDeleted}
-						onDragStart={handleDragStart}
-						onDragEnter={handleDragEnter}
-						onDragEnd={handleDragEnd}
-						onTagUpdate={handleTagUpdate}
-						onCardClick={handleCardClick}
-					/>
-				))}
-			</div>
-		</div>
-	);
+  return (
+    <div className={styles.kanbanPage}>
+      {error && <div className={styles.errorMessage}>{error}</div>}
+      <div className={styles.kanbanLists}>
+        {lists.map((list) => (
+          <List
+            key={list.id}
+            list={list}
+            tags={tags}
+            onCardAdded={handleCardAdded}
+            onCardUpdated={handleCardUpdated}
+            onCardDeleted={handleCardDeleted}
+            onDragStart={handleDragStart}
+            onDragEnter={handleDragEnter}
+            onDragEnd={handleDragEnd}
+            onTagUpdate={handleTagUpdate}
+            onCardClick={handleCardClick}
+          />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Page;

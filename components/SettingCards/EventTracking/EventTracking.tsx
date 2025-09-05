@@ -1,5 +1,5 @@
 const EventTracking = () => {
-	return <div>Coming soon</div>;
+  return <div>Coming soon</div>;
 };
 
 export default EventTracking;

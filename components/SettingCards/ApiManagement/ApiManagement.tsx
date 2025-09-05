@@ -6,52 +6,52 @@ import { useApiStore } from "@/provider/api-store-provider";
 import { axios_instance } from "@/lib/axios";
 
 const ApiManagement = () => {
-	const apiKey = useApiStore((state) => state.apiKey);
-	const setApiKey = useApiStore((state) => state.setApiKey);
+  const apiKey = useApiStore((state) => state.apiKey);
+  const setApiKey = useApiStore((state) => state.setApiKey);
 
-	const textRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
 
-	const getApiKey = async () => {
-		axios_instance
-			.get("/key/")
-			.then((response) => {
-				setApiKey(response.data?.data);
-			})
-			.catch((error) => {
-				console.error("Error fetching API key:", error);
-			});
-	};
+  const getApiKey = async () => {
+    axios_instance
+      .get("/key/")
+      .then((response) => {
+        setApiKey(response.data?.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching API key:", error);
+      });
+  };
 
-	const handleCopy = () => {
-		if (textRef.current) {
-			navigator.clipboard.writeText(textRef.current.innerText);
-		}
-	};
+  const handleCopy = () => {
+    if (textRef.current) {
+      navigator.clipboard.writeText(textRef.current.innerText);
+    }
+  };
 
-	useEffect(() => {
-		getApiKey();
-	}, []);
+  useEffect(() => {
+    getApiKey();
+  }, []);
 
-	return (
-		<div className={styles.main}>
-			<div className={styles.container}>
-				<div className={styles.icon}>
-					<Key width={20} height={20} fill="none" />
-				</div>
-				<div className={styles.text} ref={textRef}>
-					{apiKey?.key || "No API Key Generated Yet"}
-				</div>
-				<div className={styles.actions}>
-					<div className={styles.delete}>
-						<Delete width={20} height={20} fill="#F77272" />
-					</div>
-					<div className={styles.copy} onClick={handleCopy}>
-						<Copy width={20} height={20} fill="none" />
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+  return (
+    <div className={styles.main}>
+      <div className={styles.container}>
+        <div className={styles.icon}>
+          <Key width={20} height={20} fill="none" />
+        </div>
+        <div className={styles.text} ref={textRef}>
+          {apiKey?.key || "No API Key Generated Yet"}
+        </div>
+        <div className={styles.actions}>
+          <div className={styles.delete}>
+            <Delete width={20} height={20} fill="#F77272" />
+          </div>
+          <div className={styles.copy} onClick={handleCopy}>
+            <Copy width={20} height={20} fill="none" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default ApiManagement;

@@ -1,27 +1,27 @@
 import type { SVGProps } from "react";
 const Copy = (props: SVGProps<SVGSVGElement>) => (
-	<svg
-		fill="currentColor"
-		viewBox="0 0 20 20"
-		xmlns="http://www.w3.org/2000/svg"
-		width="1em"
-		height="1em"
-		{...props}
-	>
-		<path
-			d="M13.3333 10.7498V14.2498C13.3333 17.1665 12.1667 18.3332 9.25 18.3332H5.75C2.83333 18.3332 1.66666 17.1665 1.66666 14.2498V10.7498C1.66666 7.83317 2.83333 6.6665 5.75 6.6665H9.25C12.1667 6.6665 13.3333 7.83317 13.3333 10.7498Z"
-			stroke="#194EFF"
-			strokeWidth={1.5}
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		/>
-		<path
-			d="M18.3333 5.74984V9.24984C18.3333 12.1665 17.1667 13.3332 14.25 13.3332H13.3333V10.7498C13.3333 7.83317 12.1667 6.6665 9.25 6.6665H6.66666V5.74984C6.66666 2.83317 7.83333 1.6665 10.75 1.6665H14.25C17.1667 1.6665 18.3333 2.83317 18.3333 5.74984Z"
-			stroke="#194EFF"
-			strokeWidth={1.5}
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		/>
-	</svg>
+  <svg
+    fill="currentColor"
+    viewBox="0 0 20 20"
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    {...props}
+  >
+    <path
+      d="M13.3333 10.7498V14.2498C13.3333 17.1665 12.1667 18.3332 9.25 18.3332H5.75C2.83333 18.3332 1.66666 17.1665 1.66666 14.2498V10.7498C1.66666 7.83317 2.83333 6.6665 5.75 6.6665H9.25C12.1667 6.6665 13.3333 7.83317 13.3333 10.7498Z"
+      stroke="#194EFF"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M18.3333 5.74984V9.24984C18.3333 12.1665 17.1667 13.3332 14.25 13.3332H13.3333V10.7498C13.3333 7.83317 12.1667 6.6665 9.25 6.6665H6.66666V5.74984C6.66666 2.83317 7.83333 1.6665 10.75 1.6665H14.25C17.1667 1.6665 18.3333 2.83317 18.3333 5.74984Z"
+      stroke="#194EFF"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
 );
 export default Copy;
