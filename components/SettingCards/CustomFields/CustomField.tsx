@@ -33,7 +33,8 @@ const CustomField = () => {
     if (!editFieldName.trim()) return;
 
     try {
-      await axios_instance.put(`/field/update/${fieldId}`, {
+      await axios_instance.put(`/field/`, {
+        id: fieldId,
         name: editFieldName.trim(),
       });
 
