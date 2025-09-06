@@ -130,8 +130,42 @@ const Page = () => {
         if (!res.ok) throw new Error("Upload failed");
         const data = await res.json();
         if (!data.url) throw new Error("Upload response did not contain a URL");
-        setEditedProfile((prev) => ({ ...prev, image_url: data.url }));
+        
+        const newImageUrl = data.url;
+        setEditedProfile((prev) => ({ ...prev, image_url: newImageUrl }));
         setImageError(false);
+
+        // Auto-save the profile with the new image
+        if (selectedCard) {
+          try {
+            const updateData = {
+              id: selectedCard.id,
+              name: editedProfile.name || selectedCard.name,
+              designation: editedProfile.designation || selectedCard.designation,
+              email: selectedCard.email,
+              phone: selectedCard.phone,
+              image_url: newImageUrl, // Use the new image URL
+              location: selectedCard.location,
+              company_name: selectedCard.company.name,
+              company_role: selectedCard.company.role,
+              company_location: selectedCard.company.location,
+              company_phone: selectedCard.company.phone,
+              company_email: selectedCard.company.email,
+            };
+
+            await axios_instance.put(`/card/details/${selectedCard.id}`, updateData);
+
+            // Update the selected card with the new image
+            setSelectedCard({
+              ...selectedCard,
+              image_url: newImageUrl,
+            });
+
+            console.log("Profile image auto-saved successfully");
+          } catch (saveErr) {
+            console.error("Failed to auto-save profile image:", saveErr);
+          }
+        }
       } catch (err) {
         console.error("Upload failed:", err);
       } finally {
@@ -375,7 +409,9 @@ const Page = () => {
                   }`}
                 >
                   {uploading ? (
-                    <div className={styles.uploadingSpinner}></div>
+                    <div className={styles.uploadingSpinner}>
+                      <AddImage width={24} height={24} fill="#FFFFFF" />
+                    </div>
                   ) : editedProfile.image_url && !imageError ? (
                     <Image
                       src={editedProfile.image_url}
