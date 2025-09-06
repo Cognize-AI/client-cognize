@@ -1,7 +1,7 @@
 import { Copy, Delete, Edit } from '@/components/icons'
 import styles from './CustomField.module.scss'
 import { axios_instance } from '@/lib/axios'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FieldType } from '@/types'
 import toast from 'react-hot-toast'
 
@@ -9,8 +9,6 @@ const CustomField = () => {
   const [fields, setFields] = useState<FieldType[]>([])
   const [editFieldId, setEditFieldId] = useState<number | null>(null)
   const [editFieldName, setEditFieldName] = useState('')
-
-  const textRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     axios_instance
@@ -68,22 +66,18 @@ const CustomField = () => {
     }
   }
 
-  const handleCopy = () => {
-    if (textRef.current) {
-      navigator.clipboard.writeText(textRef.current.innerText)
-      toast.success('Copied!')
-    }
+  const handleCopy = (textToCopy: string | number) => {
+    navigator.clipboard.writeText(String(textToCopy))
+    toast.success('Copied!')
   }
 
   return (
     <div className={styles.main}>
-      {fields.map(field => (
+      {fields.map((field, index) => (
         <div key={field.id} className={styles.card}>
           <div className={styles.container}>
             <div className={styles.sno}>
-              for (let index = 0; index < fields.length; index++) {
-                
-              }
+              {index + 1}
             </div>
             <div className={styles.field}>
               {editFieldId === field.id ? (
@@ -107,8 +101,8 @@ const CustomField = () => {
                 field.name
               )}
             </div>
-            <div className={styles.value }>
-              <p  ref={textRef}>{field.id}</p>
+            <div className={styles.value}>
+              <p>{field.id}</p>
             </div>
             <div className={styles.type_box}>
               <div
@@ -132,7 +126,11 @@ const CustomField = () => {
               >
                 <Delete width={20} height={20} fill='#F77272' />
               </div>
-              <div className={styles.copy} onClick={handleCopy} style={{ cursor: 'pointer' }}>
+              <div 
+                className={styles.copy} 
+                onClick={() => handleCopy(field.id)} 
+                style={{ cursor: 'pointer' }}
+              >
                 <Copy width={20} height={20} fill='none' />
               </div>
               <div
