@@ -115,9 +115,6 @@ const List = ({
 
       <div
         className={styles.listItemsContainer}
-        style={{
-          overflowY: isTagModalOpen ? "unset" : "auto",
-        }}
       >
         {showAddUser && showAddUserLoc == "top" && (
           <AddCard

@@ -1,14 +1,16 @@
-import { Copy, Delete, Edit } from '@/components/icons'
-import styles from './CustomField.module.scss'
-import { axios_instance } from '@/lib/axios'
 import { useEffect, useState } from 'react'
-import { FieldType } from '@/types'
 import toast from 'react-hot-toast'
+import { Copy, Delete, Edit } from '@/components/icons'
+import { axios_instance } from '@/lib/axios'
+import { FieldType } from '@/types'
+import styles from './CustomField.module.scss'
 
 const CustomField = () => {
   const [fields, setFields] = useState<FieldType[]>([])
-  const [editFieldId, setEditFieldId] = useState<number | null>(null)
-  const [editFieldName, setEditFieldName] = useState('')
+  const [editField, setEditField] = useState<{
+    id: number
+    name: string
+  } | null>(null)
 
   useEffect(() => {
     axios_instance
@@ -22,44 +24,42 @@ const CustomField = () => {
   }, [])
 
   const handleEditClick = (field: FieldType) => {
-    setEditFieldId(field.id)
-    setEditFieldName(field.name)
+    setEditField({ id: field.id, name: field.name })
   }
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditFieldName(e.target.value)
+    if (editField) {
+      setEditField({ ...editField, name: e.target.value })
+    }
   }
 
-  const handleEditSave = async (fieldId: number) => {
-    if (!editFieldName.trim()) return
+  const handleEditSave = async () => {
+    if (!editField?.name.trim()) return
 
     try {
       await axios_instance.put(`/field/`, {
-        id: fieldId,
-        name: editFieldName.trim()
+        id: editField.id,
+        name: editField.name.trim()
       })
 
       setFields(prev =>
         prev.map(f =>
-          f.id === fieldId ? { ...f, name: editFieldName.trim() } : f
+          f.id === editField.id ? { ...f, name: editField.name.trim() } : f
         )
       )
-      setEditFieldId(null)
-      setEditFieldName('')
+      setEditField(null)
     } catch (err) {
       console.error('Failed to update field name:', err)
     }
   }
 
   const handleEditCancel = () => {
-    setEditFieldId(null)
-    setEditFieldName('')
+    setEditField(null)
   }
 
   const handleDeleteClick = async (fieldId: number) => {
     try {
       await axios_instance.delete(`/field/delete/${fieldId}`)
-
       setFields(prev => prev.filter(f => f.id !== fieldId))
     } catch (err) {
       console.error('Failed to delete field:', err)
@@ -76,24 +76,22 @@ const CustomField = () => {
       {fields.map((field, index) => (
         <div key={field.id} className={styles.card}>
           <div className={styles.container}>
-            <div className={styles.sno}>
-              {index + 1}
-            </div>
+            <div className={styles.sno}>{index + 1}</div>
             <div className={styles.field}>
-              {editFieldId === field.id ? (
+              {editField?.id === field.id ? (
                 <input
                   type='text'
-                  value={editFieldName}
+                  value={editField.name}
                   onChange={handleEditChange}
                   onKeyDown={e => {
                     if (e.key === 'Enter') {
-                      handleEditSave(field.id)
+                      handleEditSave()
                     }
                     if (e.key === 'Escape') {
                       handleEditCancel()
                     }
                   }}
-                  onBlur={() => handleEditCancel()}
+                  onBlur={handleEditCancel}
                   autoFocus
                   className={styles.editInput}
                 />
@@ -119,27 +117,27 @@ const CustomField = () => {
             </div>
 
             <div className={styles.action}>
-              <div
+              {/* <div
                 className={styles.delete}
                 onClick={() => handleDeleteClick(field.id)}
                 style={{ cursor: 'pointer' }}
               >
                 <Delete width={20} height={20} fill='#F77272' />
-              </div>
-              <div 
-                className={styles.copy} 
-                onClick={() => handleCopy(field.id)} 
+              </div> */}
+              <div
+                className={styles.copy}
+                onClick={() => handleCopy(field.id)}
                 style={{ cursor: 'pointer' }}
               >
                 <Copy width={20} height={20} fill='none' />
               </div>
-              <div
+              {/* <div
                 className={styles.edit}
                 onClick={() => handleEditClick(field)}
                 style={{ cursor: 'pointer' }}
               >
                 <Edit width={20} height={20} fill='#194EFF' />
-              </div>
+              </div> */}
             </div>
           </div>
 
