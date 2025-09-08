@@ -43,7 +43,7 @@ const Page = () => {
   const router = useRouter();
   const id = params.id;
 
-  const [activeTab, setActiveTab] = useState("General Field");
+  const [activeTab, setActiveTab] = useState("AI Summary");
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
     name: "",
