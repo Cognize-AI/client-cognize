@@ -193,8 +193,12 @@ const List = ({
                 Add New Contact
               </p>
             </div>
+            
           </div>
         )}
+        <div className={styles.emptySpace}>
+
+            </div>
       </div>
     </div>
   );
