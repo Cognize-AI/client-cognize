@@ -117,7 +117,7 @@ const Sidebar = () => {
           />
           <p>Settings</p>
         </Link>
-        <Link
+{/*         <Link
           className={`${styles.link} ${pathname === "/profile" ? styles.active : ""} ${styles.profile}`}
           href={"/profile"}
         >
@@ -127,7 +127,7 @@ const Sidebar = () => {
             stroke={pathname === "/profile" ? "#194EFF" : "#3D3D3D"}
           />
           <p>Profile</p>
-        </Link>
+        </Link> */}
       </div>
 
       <div className={styles.userProfile}>
