@@ -656,7 +656,7 @@ const Page = () => {
             />
             <p>General Field</p>
           </Tab>
-          <Tab
+          {/* <Tab
             onClick={() => setActiveTab("Activity")}
             isActive={activeTab === "Activity"}
           >
@@ -681,7 +681,7 @@ const Page = () => {
               height={20}
             />
             <p>Suggestions</p>
-          </Tab>
+          </Tab> */}
         </Tabs>
         <div className={styles.componentWrapper}>{renderActiveComponent()}</div>
       </div>

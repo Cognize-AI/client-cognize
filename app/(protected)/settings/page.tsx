@@ -8,6 +8,7 @@ import EventTracking from "@/components/SettingCards/EventTracking/EventTracking
 import Tabs from "@/components/Tabs/Tabs";
 import Tab from "@/components/Tab/Tab";
 import { Activity, Admin, Key, ListBullet } from "@/components/icons";
+import Suggestions from "@/components/ProspectiveId/Suggestions/Suggestions";
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState("Custom Fields");
@@ -20,7 +21,7 @@ const Page = () => {
       case "Event Tracking":
         return <EventTracking />;
       case "Suggestions":
-      // return <Suggestions />
+      return <Suggestions />
       default:
       // return <GeneralField  />
     }
@@ -55,7 +56,7 @@ const Page = () => {
           />
           <p>API Management</p>
         </Tab>
-        <Tab
+        {/* <Tab
           onClick={() => setActiveTab("Activity")}
           isActive={activeTab === "Activity"}
         >
@@ -80,7 +81,7 @@ const Page = () => {
             height={20}
           />
           <p>Suggestions</p>
-        </Tab>
+        </Tab> */}
       </Tabs>
       <div>{renderActiveComponent()}</div>
     </div>

@@ -4,7 +4,7 @@ import styles from "./List.module.scss";
 import Card from "../Card/Card";
 import AddCard from "../AddCard/AddCard";
 import { CardType, ListType } from "@/types";
-import { Add, AddUser } from "../icons";
+import { Add, AddUser, Checkmark, SparklesSoft } from "../icons";
 
 type Tag = {
   id: number;
@@ -44,6 +44,7 @@ const List = ({
   >(false);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [linkInput, setLinkInput] = useState(false);
 
   const handleNewCard = (newCard: CardType) => {
     onCardAdded(newCard);
@@ -98,6 +99,14 @@ const List = ({
             }}
           />
         </div>
+        <div className={styles.listActions}>
+          <SparklesSoft
+            width={24}
+            height={24}
+            fill="#130b0bff"
+            onClick={() => setLinkInput((prev) => !prev)}
+          />
+        </div>
       </div>
 
       <div
@@ -112,6 +121,25 @@ const List = ({
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
+      {
+        linkInput && (
+          <div
+        className={styles.linkContainer}
+        style={{ "--active-color": list.color } as React.CSSProperties}
+      >
+        <div className={styles.linkBox}>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Enter any profile url...."
+          />
+          <div className={styles.linkCheck}>
+            <Checkmark width={24} height={24} fill="#194EFF" />
+          </div>
+        </div>
+      </div>
+        )
+      }
 
       <div
         className={styles.listItemsContainer}
@@ -193,12 +221,12 @@ const List = ({
                 Add New Contact
               </p>
             </div>
-            
+
           </div>
         )}
         <div className={styles.emptySpace}>
 
-            </div>
+        </div>
       </div>
     </div>
   );
