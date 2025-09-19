@@ -315,13 +315,19 @@
     background: var(--border-colors-regular, #e2e8f0);
   }
 
-  .tagModal {
+  .addTagContainer{
+    position: relative;
+    display: inline-flex;
+    .tagModal {
     position: absolute;
     top: 100%;
-    left: 0;
+    left: -20;
     margin-top: 0.5rem;
     z-index: 100;
   }
+  }
+
+  
 
   .tag {
     display: flex;

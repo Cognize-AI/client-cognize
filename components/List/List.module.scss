@@ -90,6 +90,12 @@
     align-self: stretch;
     border-radius: 0.75rem;
     background: var(--Bg-colors-opaque, #fff);
+    border: 1px solid transparent;
+
+    &:focus-within {
+      
+  border: 1px solid #194eff;
+    }
 
     .linkBox {
       display: flex;

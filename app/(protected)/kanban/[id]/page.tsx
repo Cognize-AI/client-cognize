@@ -607,7 +607,8 @@ const Page = () => {
             </div>
           ))}
 
-          <div
+          <div className={styles.addTagContainer}>
+            <div
             className={styles.addTag}
             onClick={(e) => {
               e.stopPropagation();
@@ -630,6 +631,7 @@ const Page = () => {
               />
             </div>
           )}
+          </div>
         </div>
         <Tabs>
           <Tab
