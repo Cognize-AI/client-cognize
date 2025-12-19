@@ -8,7 +8,7 @@ type Props = {
 };
 
 const TabGroup = ({ activeTab, onTabClick }: Props) => {
-  const tabs = ["AI Summary", "General Field", "Activity", "Suggestions"];
+  const tabs = ["AI Summary", "General Field"];
 
   const getIcon = (tabName: string) => {
     switch (tabName) {
@@ -16,19 +16,19 @@ const TabGroup = ({ activeTab, onTabClick }: Props) => {
         return <SparklesSoft width={20} height={20} />;
       case "General Field":
         return <ListBullet width={20} height={20} />;
-      case "Activity":
-        return (
-          <Activity
-            fill="none"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            width={20}
-            height={20}
-          />
-        );
-      case "Suggestions":
-        return <Admin width={20} height={20} />;
+      // case "Activity":
+      //   return (
+      //     <Activity
+      //       fill="none"
+      //       strokeWidth="1.5"
+      //       strokeLinecap="round"
+      //       strokeLinejoin="round"
+      //       width={20}
+      //       height={20}
+      //     />
+      //   );
+      // case "Suggestions":
+      //   return <Admin width={20} height={20} />;
       default:
         return null;
     }

@@ -4,9 +4,13 @@ import { useCardStore } from "@/provider/card-store-provider";
 const AiSummary = () => {
   const selectedCard = useCardStore((state) => state.selectedCard);
 
+  const openInNewTab = (url: string) => {
+    window.open(url, "_blank", );
+  }
+
   return (
     <div className={styles.ai_summary}>
-      <div className={styles.profile_url}>
+      <div className={styles.profile_url } onClick={() => openInNewTab(selectedCard?.profile_url || "")}>
         {selectedCard?.profile_url || "No profile URL available."}
       </div>
 

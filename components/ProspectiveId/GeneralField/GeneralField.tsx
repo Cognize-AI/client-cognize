@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useCardStore } from "@/provider/card-store-provider";
 import { axios_instance } from "@/lib/axios";
@@ -27,6 +27,9 @@ const GeneralField = ({ fetchCard }: GeneralFieldProps) => {
   const selectedCard = useCardStore((state) => state.selectedCard);
   const setSelectedCard = useCardStore((state) => state.setSelectedCard);
 
+  // Add ref for auto-scroll functionality
+  const activityContainerRef = useRef<HTMLDivElement>(null);
+
   const [newContactFields, setNewContactFields] = useState({
     show: false,
     name: "",
@@ -40,6 +43,18 @@ const GeneralField = ({ fetchCard }: GeneralFieldProps) => {
   const [showAddNoteForm, setShowAddNoteForm] = useState(false);
   const [noteContent, setNoteContent] = useState("");
   const [savingNote, setSavingNote] = useState(false);
+
+  // Auto-scroll when showAddNoteForm becomes true
+  useEffect(() => {
+    if (showAddNoteForm && activityContainerRef.current) {
+      setTimeout(() => {
+        activityContainerRef.current?.scrollTo({
+          top: activityContainerRef.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 100);
+    }
+  }, [showAddNoteForm]);
 
   const handleAddNoteClick = () => {
     setShowAddNoteForm(true);
@@ -439,7 +454,17 @@ const GeneralField = ({ fetchCard }: GeneralFieldProps) => {
             {sortedActivities.length > 0 ? ` (${sortedActivities.length})` : ""}
           </p>
         </div>
-        <div className={styles.newActivity}>
+        <div className={styles.newActivity} ref={activityContainerRef}>
+          {sortedActivities.map((activity) => (
+            <ActivityCard
+              key={activity.id}
+              id={activity.id}
+              content={activity.content}
+              date={activity.created_at}
+              onDelete={handleDeleteActivity}
+              onEdit={handleEditActivity}
+            />
+          ))}
           {showAddNoteForm && (
             <div className={styles.addNoteForm}>
               <textarea
@@ -463,16 +488,6 @@ const GeneralField = ({ fetchCard }: GeneralFieldProps) => {
               </div>
             </div>
           )}
-          {sortedActivities.map((activity) => (
-            <ActivityCard
-              key={activity.id}
-              id={activity.id}
-              content={activity.content}
-              date={activity.created_at}
-              onDelete={handleDeleteActivity}
-              onEdit={handleEditActivity}
-            />
-          ))}
           {!showAddNoteForm && (
             <div className={styles.addNewField} onClick={handleAddNoteClick}>
               <Add width={16} height={16} fill="#194EFF" />
