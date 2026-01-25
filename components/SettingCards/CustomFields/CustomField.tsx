@@ -76,7 +76,7 @@ const CustomField = () => {
       {fields.map((field, index) => (
         <div key={field.id} className={styles.card}>
           <div className={styles.container}>
-            <div className={styles.sno}>{index + 1}</div>
+            {/* <div className={styles.sno}>{index + 1}</div> */}
             <div className={styles.field}>
               {editField?.id === field.id ? (
                 <input
